@@ -7,17 +7,27 @@
 #define DECLDIR __declspec(dllimport)
 #endif
 #include <future>
+
+#include <GUID.h>
+
+#include "LoadStatus.h"
+
 namespace ResourceHandler
 {
+	class ResourceHandler_Interface;
 	DECLDIR class Resource
 	{
 	public:
 		Resource();
 		~Resource();
 
+		LoadStatus Get();
+
 		void Unload();
 	private:
-		std::future<LoadStatus>
+		Utilz::GUID myGUID;
+		ResourceHandler_Interface* resourceHandler;
+		std::future<LoadStatus> loadFuture;
 	};
 }
 

@@ -20,32 +20,32 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{1C6CDA7B-E523-482B-93D5-F3DB041D2DF1}</ProjectGuid>
-    <RootNamespace>ResourceHandler</RootNamespace>
+    <ProjectGuid>{CCC02C46-9791-4E25-8DC1-40E24134A8C9}</ProjectGuid>
+    <RootNamespace>Test</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -69,38 +69,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <TargetName>$(ProjectName)D</TargetName>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <TargetName>$(ProjectName)D</TargetName>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -108,7 +82,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,7 +91,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -132,7 +104,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -140,15 +111,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\includes\LoadStatus.h" />
-    <ClInclude Include="..\includes\Resource.h" />
-    <ClInclude Include="..\includes\ResourceHandler_Interface.h" />
-    <ClInclude Include="ResourceHandler.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="ResourceHandler.cpp" />
-    <ClCompile Include="ResourceHandler_Interface.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{DB0956C6-0A25-4559-8633-C95323D8512D}</ProjectGuid>
+    <ProjectGuid>{BCF72A4D-3547-4DA8-996C-E45147075F0A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ResourceCopyTest</RootNamespace>
+    <RootNamespace>BasicResourceHandlerTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
   </PropertyGroup>
@@ -77,23 +77,33 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Build/$(Platform)/lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Build/$(Platform)/lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Build/$(Platform)/lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Build/$(Platform)/lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -170,7 +180,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ResourceCopyTest.cpp" />
+    <ClCompile Include="BasicTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ResourceHandler\ResourceHandler.vcxproj">
+      <Project>{1c6cda7b-e523-482b-93d5-f3db041d2df1}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

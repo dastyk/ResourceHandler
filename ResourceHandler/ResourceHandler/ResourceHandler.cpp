@@ -12,6 +12,6 @@ namespace ResourceHandler
 	}
 	Resource ResourceHandler::LoadResource(Utilz::GUID guid)
 	{
-		return Resource();
+		return Resource(this);
 	}
 }

@@ -2,16 +2,28 @@
 #define _RESOURCE_HANDLER_INTERFACE_H_
 #include "Resource.h"
 #include <GUID.h>
+#include <memory>
+
+namespace std
+{
+	template<class T>
+	inline std::unique_ptr<T> make_unique(T* ptr)
+	{
+		return std::unique_ptr<T>(ptr);
+	}
+}
 
 namespace ResourceHandler
 {
 	class ResourceHandler_Interface
 	{
 	public:
+		virtual ~ResourceHandler_Interface() {};
+
 		virtual	Resource LoadResource(Utilz::GUID guid) = 0;
 	protected:
 		ResourceHandler_Interface() {};
-		virtual ~ResourceHandler_Interface() {};
+
 	};
 
 

@@ -6,28 +6,23 @@
 #else
 #define DECLDIR __declspec(dllimport)
 #endif
-#include <future>
 
-#include <GUID.h>
 
 #include "LoadStatus.h"
 
 namespace ResourceHandler
 {
 	class ResourceHandler_Interface;
-	DECLDIR class Resource
+	class DECLDIR Resource
 	{
-	public:
-		Resource();
+	public:		
+		Resource(ResourceHandler_Interface* resourceHandler);
 		~Resource();
 
-		LoadStatus Get();
-
+		LoadStatus GetStatus();
 		void Unload();
 	private:
-		Utilz::GUID myGUID;
 		ResourceHandler_Interface* resourceHandler;
-		std::future<LoadStatus> loadFuture;
 	};
 }
 

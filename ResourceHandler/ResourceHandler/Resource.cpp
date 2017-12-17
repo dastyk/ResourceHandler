@@ -3,7 +3,8 @@
 
 namespace ResourceHandler
 {
-	ResourceHandler::Resource::Resource()
+	ResourceHandler::Resource::Resource(ResourceHandler_Interface* resourceHandler) 
+		: resourceHandler(resourceHandler)
 	{
 	}
 
@@ -11,9 +12,9 @@ namespace ResourceHandler
 	{
 	}
 
-	LoadStatus ResourceHandler::Resource::Get()
+	LoadStatus ResourceHandler::Resource::GetStatus()
 	{
-		return loadFuture.get();
+		return LoadStatus();
 	}
 
 	void ResourceHandler::Resource::Unload()

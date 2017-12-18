@@ -12,10 +12,15 @@ namespace ResourceHandler
 	}
 	Resource ResourceHandler::LoadResource(Utilz::GUID guid)
 	{
-		if (auto resource = entires.find(guid); resource.has_value())
-		{
-			return Resource(this);
-		}
-		return Resource(this);
+		entires[guid];
+		return Resource(guid, this);
+	}
+	const ResourceData ResourceHandler::GetData(Utilz::GUID guid)const
+	{
+		return ResourceData();
+	}
+	LoadStatus ResourceHandler::GetStatus(Utilz::GUID guid)
+	{
+		return LoadStatus();
 	}
 }

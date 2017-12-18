@@ -9,7 +9,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #endif
 namespace BasicResourceHandlerTest
 {		
-	TEST_CLASS(UnitTest1)
+	TEST_CLASS(ResourceHandlerTests)
 	{
 	public:
 		
@@ -29,8 +29,8 @@ namespace BasicResourceHandlerTest
 			Assert::IsNotNull(rh.get(), L"Could not create Resource Handler");
 
 			auto r = rh->LoadResource("TestResource.txt");
-			auto status = r.GetStatus();
-			Assert::IsTrue(status == ResourceHandler::LoadStatus::SUCCESS, L"");
+			Assert::IsTrue(r.GetGUID() == "TestResource.txt", L"GUID not correct");
+			Assert::IsTrue(r.GetStatus() == ResourceHandler::LoadStatus::SUCCESS, L"Could not load resource");
 		}
 	};
 }

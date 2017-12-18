@@ -3,8 +3,8 @@
 
 namespace ResourceHandler
 {
-	ResourceHandler::Resource::Resource(ResourceHandler_Interface* resourceHandler) 
-		: resourceHandler(resourceHandler)
+	ResourceHandler::Resource::Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler)
+		: resourceHandler(resourceHandler), myGUID(guid)
 	{
 	}
 
@@ -14,7 +14,12 @@ namespace ResourceHandler
 
 	LoadStatus ResourceHandler::Resource::GetStatus()
 	{
-		return LoadStatus::FAILED;
+		return resourceHandler->GetStatus(myGUID);
+	}
+
+	const ResourceData Resource::GetData() const
+	{
+		return resourceHandler->GetData(myGUID);
 	}
 
 	void ResourceHandler::Resource::Unload()

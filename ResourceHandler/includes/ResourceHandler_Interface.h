@@ -21,6 +21,8 @@ namespace ResourceHandler
 		virtual ~ResourceHandler_Interface() {};
 
 		virtual	Resource LoadResource(Utilz::GUID guid) = 0;
+		virtual const ResourceData GetData(Utilz::GUID guid)const = 0;
+		virtual LoadStatus GetStatus(Utilz::GUID guid) = 0;
 	protected:
 		ResourceHandler_Interface() {};
 

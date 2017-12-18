@@ -13,7 +13,7 @@ namespace BasicResourceHandlerTest
 	{
 	public:
 		
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(CreateResourceHandlerTest)
 		{
 			// TODO: Your test code here
 			auto rh = std::make_unique(ResourceHandler::CreateResourceHandler());
@@ -22,14 +22,15 @@ namespace BasicResourceHandlerTest
 			rh.reset();
 			Assert::IsNull(rh.get(), L"rh is not null");
 		}
-		TEST_METHOD(TestMethod2)
+		TEST_METHOD(LoadResourceTest)
 		{
 			// TODO: Your test code here
 			auto rh = std::make_unique(ResourceHandler::CreateResourceHandler());
 			Assert::IsNotNull(rh.get(), L"Could not create Resource Handler");
 
-			auto r = rh->LoadResource("test");
-
+			auto r = rh->LoadResource("TestResource.txt");
+			auto status = r.GetStatus();
+			Assert::IsTrue(status == ResourceHandler::LoadStatus::SUCCESS, L"");
 		}
 	};
 }

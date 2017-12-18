@@ -14,7 +14,7 @@ namespace ResourceHandler
 
 	LoadStatus ResourceHandler::Resource::GetStatus()
 	{
-		return LoadStatus();
+		return LoadStatus::FAILED;
 	}
 
 	void ResourceHandler::Resource::Unload()

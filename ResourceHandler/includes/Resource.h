@@ -9,19 +9,26 @@
 
 
 #include "LoadStatus.h"
+#include <GUID.h>
 
 namespace ResourceHandler
 {
 	class ResourceHandler_Interface;
-	class DECLDIR Resource
+	class Resource
 	{
 	public:		
 		Resource(ResourceHandler_Interface* resourceHandler);
-		~Resource();
+		DECLDIR ~Resource();
 
-		LoadStatus GetStatus();
-		void Unload();
+		DECLDIR LoadStatus GetStatus();
+		DECLDIR void Unload();
+		inline Utilz::GUID GetGUID()const
+		{
+			return myGUID;
+		}
+
 	private:
+		Utilz::GUID myGUID;
 		ResourceHandler_Interface* resourceHandler;
 	};
 }

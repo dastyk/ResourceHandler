@@ -25,7 +25,7 @@ namespace BasicResourceHandlerTest
 		}
 
 
-		TEST_METHOD(BinaryLoaderTest)
+		TEST_METHOD(BasicBinaryLoaderEditTest)
 		{
 			auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
 			Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
@@ -65,6 +65,56 @@ namespace BasicResourceHandlerTest
 			result = bl->Destroy("TestFile2", "Test");
 			Assert::IsTrue(result == 0, L"Could not destroy TestFile2");
 			bl->Shutdown();
+		}
+		TEST_METHOD(BasicBinaryLoaderRunTimeTest)
+		{
+			{
+				auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+				Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
+				auto result = bl->Init(ResourceHandler::Mode::READ);
+				Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
+
+				char buf[] = { "Test File" };
+				ResourceData data;
+				data.data = buf;
+				data.size = 9;
+				result = bl->Create("TestFile", "Test", data);
+				Assert::IsTrue(result == -1, L"Could create TestFile");
+			}
+			{
+				auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+				Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
+				auto result = bl->Init(ResourceHandler::Mode::EDIT);
+				Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
+
+				char buf[] = { "Test File" };
+				ResourceData data;
+				data.data = buf;
+				data.size = 9;
+				result = bl->Create("TestFile", "Test", data);
+				Assert::IsTrue(result == 0 || result == 1, L"Could not create TestFile");
+			}
+
+			{
+				auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+				Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
+				auto result = bl->Init(ResourceHandler::Mode::READ);
+				Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
+
+				result = bl->Destroy("TestFile", "Test");
+				Assert::IsTrue(result != 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
+
+			}
+
+		}
+		TEST_METHOD(StressBinaryLoaderTest)
+		{
+			auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+			Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
+			auto result = bl->Init(ResourceHandler::Mode::EDIT);
+			Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
+
+
 		}
 		//TEST_METHOD(LoadResourceTest)
 		//{

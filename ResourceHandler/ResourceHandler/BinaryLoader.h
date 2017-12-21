@@ -24,6 +24,8 @@ namespace ResourceHandler
 		long Create(Utilz::GUID, Utilz::GUID type, const ResourceData& data)noexcept override;
 		long Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
 
+		size_t GetNumberOfFiles()const noexcept override;
+		size_t GetNumberOfTypes()const noexcept override;
 	private:
 		std::fstream file;
 		Mode mode;

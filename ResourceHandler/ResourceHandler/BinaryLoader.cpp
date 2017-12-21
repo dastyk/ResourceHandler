@@ -88,6 +88,7 @@ namespace ResourceHandler
 	long BinaryLoader::Init(Mode mode)noexcept
 	{
 		StartProfile;
+		this->mode = mode;
 		auto m = std::ios::in | std::ios::binary | std::ios::ate;
 		if (mode == Mode::EDIT)
 			m |= std::ios::out;
@@ -218,5 +219,14 @@ namespace ResourceHandler
 			}
 		}
 		return 1;
+	}
+
+	size_t BinaryLoader::GetNumberOfFiles()const noexcept
+	{
+		return fileHeader.numFiles;
+	}
+	size_t BinaryLoader::GetNumberOfTypes()const noexcept
+	{
+		return typeToIndex.size();
 	}
 }

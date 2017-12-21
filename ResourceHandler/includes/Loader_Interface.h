@@ -29,7 +29,6 @@ namespace ResourceHandler
 
 	enum class LoaderType
 	{
-		Directory,
 		Binary
 	};
 

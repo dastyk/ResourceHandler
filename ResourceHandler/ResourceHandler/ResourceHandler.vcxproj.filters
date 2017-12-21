@@ -36,9 +36,6 @@
     <ClInclude Include="..\includes\ResourceData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectoryLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\includes\Loader_Interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Resource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectoryLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Loader_Interface.cpp">

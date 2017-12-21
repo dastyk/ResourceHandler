@@ -150,14 +150,12 @@
     <ClInclude Include="..\includes\ResourceData.h" />
     <ClInclude Include="..\includes\ResourceHandler_Interface.h" />
     <ClInclude Include="BinaryLoader.h" />
-    <ClInclude Include="DirectoryLoader.h" />
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Sofa.h" />
     <ClInclude Include="SuperPromise.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryLoader.cpp" />
-    <ClCompile Include="DirectoryLoader.cpp" />
     <ClCompile Include="Loader_Interface.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceHandler.cpp" />

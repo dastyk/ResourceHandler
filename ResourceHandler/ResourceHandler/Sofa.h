@@ -3,7 +3,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <optional>
-
+#include <fstream>
 namespace Utilz
 {
 	namespace TupleOperations
@@ -30,7 +30,7 @@ namespace Utilz
 		inline typename std::enable_if < I < sizeof...(Types), void>::type
 			copyValue(std::tuple<std::vector<Types>...>& tuple, std::size_t to, std::size_t from)
 		{
-			std::get<I>(tuple)[to] = std::get<I>(tuple)[from];
+			std::get<I>(tuple)[to] = std::move(std::get<I>(tuple)[from]);
 			copyValue<I + 1, Types...>(tuple, to, from);
 		}
 
@@ -46,6 +46,31 @@ namespace Utilz
 			std::get<I>(tuple).resize(newSize);
 			resizeVectorsInTuple<I + 1, Types...>(tuple, newSize);
 		}
+
+		template<std::size_t I = 0, class FILE, typename... Types>
+		inline typename std::enable_if<I == sizeof...(Types), void>::type
+			writeTupleToFile(const std::tuple<std::vector<Types>...>& tuple, FILE& out, size_t size)
+		{ }
+
+		template<std::size_t I = 0, class FILE, class... Types>
+		inline typename std::enable_if < I < sizeof...(Types), void>::type
+			writeTupleToFile(const std::tuple<std::vector<Types>...>& tuple, FILE& out, size_t size)
+		{
+			out.write((char*)std::get<I>(tuple).data(), sizeof(std::get<I>(tuple)[0])*size);
+			writeTupleToFile<I + 1, FILE, Types...>(tuple, out, size);
+		}
+		template<std::size_t I = 0, class FILE, typename... Types>
+		inline typename std::enable_if<I == sizeof...(Types), void>::type
+			readTupleToFile(std::tuple<std::vector<Types>...>& tuple, FILE& in, size_t size)
+		{ }
+
+		template<std::size_t I = 0, class FILE, class... Types>
+		inline typename std::enable_if < I < sizeof...(Types), void>::type
+			readTupleToFile(std::tuple<std::vector<Types>...>& tuple, FILE& in, size_t size)
+		{
+			in.read((char*)std::get<I>(tuple).data(), sizeof(std::get<I>(tuple)[0])*size);
+			readTupleToFile<I + 1, FILE, Types...>(tuple, in, size);
+		}
 	}
 
 
@@ -58,18 +83,57 @@ namespace Utilz
 		{
 			Allocate(allocated);
 		}
+
+		Sofa(std::ifstream& in)
+		{
+			in.read((char*)&used, sizeof(used));
+			if (used)
+			{
+				Allocate(used);
+				TupleOperations::readTupleToFile<0, std::ifstream, Key, Types...>(tvec, in, used);
+
+				auto& v = std::get<0>(tvec);
+				for (size_t i = 0; i < v.size(); i++)
+				{
+					map[v[i]] = i;
+				}
+			}
+		}
+		Sofa(std::fstream& in)
+		{
+			in.read((char*)&used, sizeof(used));
+			if (used)
+			{
+				Allocate(used);
+				TupleOperations::readTupleToFile<0, std::fstream, Key, Types...>(tvec, in, used);
+
+				auto& v = std::get<0>(tvec);
+				for (size_t i = 0; i < v.size(); i++)
+				{
+					map[v[i]] = i;
+				}
+			}
+		}
 		~Sofa()
 		{
 
 		}
+
 		void clear()
 		{
 			used = 0;
 		}
 
+		template<class FILE>
+		void DumpToFile(FILE& out)const
+		{
+			out.write((char*)&used, sizeof(used));
+			TupleOperations::writeTupleToFile<0, FILE, Key, Types...>(tvec, out, used);
+		}
+
 		inline void shrink_to_fit()
 		{
-			Allocate(allocated);
+			Allocate(used);
 		}
 		inline std::optional<std::pair<Key, std::size_t>> find(const Key key)const
 		{
@@ -81,6 +145,13 @@ namespace Utilz
 
 		inline std::size_t size()const { return used; };
 
+		std::size_t add(const Key key)
+		{
+			if (used + 1 > allocated)
+				Allocate(allocated * 2);
+			return map[key] = used++;
+		}
+
 		void add(const Key key, const Types... args)
 		{
 			if (used + 1 > allocated)
@@ -90,31 +161,28 @@ namespace Utilz
 			TupleOperations::setValue<0, Key, Types...>(tvec, tpl, index);
 		}
 
-		std::size_t add(const Key key)
-		{
-			if (used + 1 > allocated)
-				Allocate(allocated * 2);
-			return map[key] = used++;
-		}
-
 		template<std::size_t N, class type>
-		inline void set(std::size_t index, const type&& t)
+		inline void set(std::size_t index, type& t)
 		{
-			std::get<N>(typePointers)[index] = t;
+			std::get<N>(tvec)[index] = t;
+		}
+		template<std::size_t N, class type>
+		inline void set(std::size_t index, type&& t)
+		{
+			std::get<N>(tvec)[index] = t;
 		}
 
 		template<std::size_t N>
 		inline auto& get(std::size_t index)
 		{
-			return std::get<N>(typePointers)[index];
+			return std::get<N>(tvec)[index];
 		}
 
 		template<std::size_t N>
 		inline auto get()
 		{
-			return std::get<N>(typePointers).data();
+			return std::get<N>(tvec).data();
 		}
-
 
 		bool erase(const Key key)
 		{

@@ -74,26 +74,26 @@
     <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
     <TargetExt>.dll</TargetExt>
     <TargetName>$(ProjectName)D</TargetName>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
     <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
     <TargetExt>.dll</TargetExt>
     <TargetName>$(ProjectName)D</TargetName>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
     <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -144,13 +144,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\includes\Loader_Interface.h" />
     <ClInclude Include="..\includes\LoadStatus.h" />
     <ClInclude Include="..\includes\Resource.h" />
+    <ClInclude Include="..\includes\ResourceData.h" />
     <ClInclude Include="..\includes\ResourceHandler_Interface.h" />
+    <ClInclude Include="BinaryLoader.h" />
+    <ClInclude Include="DirectoryLoader.h" />
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Sofa.h" />
+    <ClInclude Include="SuperPromise.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinaryLoader.cpp" />
+    <ClCompile Include="DirectoryLoader.cpp" />
+    <ClCompile Include="Loader_Interface.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceHandler.cpp" />
     <ClCompile Include="ResourceHandler_Interface.cpp" />

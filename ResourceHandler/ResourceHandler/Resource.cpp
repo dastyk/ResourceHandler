@@ -12,7 +12,7 @@ namespace ResourceHandler
 	{
 	}
 
-	LoadStatus ResourceHandler::Resource::GetStatus()
+	LoadStatus ResourceHandler::Resource::Status()
 	{
 		return resourceHandler->GetStatus(myGUID);
 	}

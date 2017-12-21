@@ -8,16 +8,12 @@
 #endif
 
 
-#include "LoadStatus.h"
 #include <GUID.h>
+
+#include "LoadStatus.h"
+#include "ResourceData.h"
 namespace ResourceHandler
 {
-	struct ResourceData
-	{
-		void* data;
-		size_t size;
-	};
-
 	class ResourceHandler_Interface;
 	class Resource
 	{
@@ -25,16 +21,20 @@ namespace ResourceHandler
 		Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler);
 		DECLDIR ~Resource();
 
-		DECLDIR LoadStatus GetStatus();
+		DECLDIR LoadStatus Status();
 		DECLDIR const ResourceData GetData()const;
 		DECLDIR void Unload();
-		inline Utilz::GUID GetGUID()const
+		inline Utilz::GUID GUID()const
 		{
 			return myGUID;
 		}
-
+		inline Utilz::GUID Type()const
+		{
+			return myType;
+		}
 	private:
 		Utilz::GUID myGUID;
+		Utilz::GUID myType;
 		ResourceHandler_Interface* resourceHandler;
 	};
 }

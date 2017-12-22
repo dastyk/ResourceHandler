@@ -1,10 +1,14 @@
 #ifndef _RESOURCE_HANDLER_INTERFACE_H_
 #define _RESOURCE_HANDLER_INTERFACE_H_
 #include <memory>
+#include <functional>
 
 #include <GUID.h>
+#include <Utilz\ThreadPool.h>
 
 #include "Resource.h"
+#include "Loader_Interface.h"
+
 namespace std
 {
 	template<class T>
@@ -12,21 +16,29 @@ namespace std
 	{
 		return std::unique_ptr<T>(ptr);
 	}
-	template<class T, class LAMBDA>
-	inline std::unique_ptr<T> make_unique(T* ptr, const LAMBDA& l)
+	template<class T>
+	inline std::unique_ptr<T> make_unique(T* ptr, std::function<void(T*)>&& deleter)
 	{
-		return std::unique_ptr<T>(ptr, l);
+		return std::unique_ptr<T, std::function<void(T*)>>(ptr, deleter);
 	}
 }
 
 namespace ResourceHandler
 {
+	enum class MemoryType
+	{
+		RAM,
+		VRAM
+	};
+
 	class ResourceHandler_Interface
 	{
 		friend class Resource;
 	public:
-		virtual ~ResourceHandler_Interface() {};
+		using PassThroughCallback = std::function<void()>;
 
+		virtual ~ResourceHandler_Interface() {};
+		virtual long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) = 0;
 		virtual	Resource LoadResource(Utilz::GUID guid, Utilz::GUID type) = 0;
 	
 	protected:
@@ -43,7 +55,7 @@ namespace ResourceHandler
 #else
 #define DECLDIR __declspec(dllimport)
 #endif
-	DECLDIR ResourceHandler_Interface* CreateResourceHandler();
+	DECLDIR ResourceHandler_Interface* CreateResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
 }
 
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

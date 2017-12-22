@@ -18,7 +18,7 @@ namespace ResourceHandler
 	class Resource
 	{
 	public:		
-		Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler);
+		Resource(Utilz::GUID guid, Utilz::GUID type, ResourceHandler_Interface* resourceHandler);
 		DECLDIR ~Resource();
 
 		DECLDIR LoadStatus Status();

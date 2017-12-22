@@ -9,7 +9,8 @@ namespace ResourceHandler
 		SUCCESS				=		1 << 0,
 		NOT_FOUND			=		1 << 1,
 		COULD_NOT_PARSE		=		1 << 2,
-		FAILED				=		1 << 3
+		FAILED				=		1 << 3,
+		COULD_NOT_LOAD		=		1 << 4
 	};
 }
 

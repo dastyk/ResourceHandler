@@ -78,32 +78,32 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)D</TargetName>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)includes;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(SolutionDir)Build/$(Platform)/lib\</LibraryPath>
-    <OutDir>$(SolutionDir)Build/$(Platform)/lib\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/lib/$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <OutDir>$(SolutionDir)Build/$(Platform)/$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

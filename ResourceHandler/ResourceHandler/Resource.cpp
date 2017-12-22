@@ -3,8 +3,8 @@
 
 namespace ResourceHandler
 {
-	ResourceHandler::Resource::Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler)
-		: resourceHandler(resourceHandler), myGUID(guid)
+	ResourceHandler::Resource::Resource(Utilz::GUID guid, Utilz::GUID type, ResourceHandler_Interface* resourceHandler)
+		: resourceHandler(resourceHandler), myGUID(guid), myType(type)
 	{
 	}
 

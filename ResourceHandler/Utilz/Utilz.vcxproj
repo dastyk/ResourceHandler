@@ -20,32 +20,32 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{1C6CDA7B-E523-482B-93D5-F3DB041D2DF1}</ProjectGuid>
-    <RootNamespace>ResourceHandler</RootNamespace>
+    <ProjectGuid>{E4113CCA-C844-4168-B547-03DE962027B0}</ProjectGuid>
+    <RootNamespace>Utilz</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -69,50 +69,30 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <TargetName>$(ProjectName)D</TargetName>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(IncludePath)</IncludePath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(SolutionDir)includes\ResourceHandler/;$(IncludePath)</IncludePath>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)includes\;$(SolutionDir)includes\ResourceHandler/;$(IncludePath)</IncludePath>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <TreatWarningAsError>true</TreatWarningAsError>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,9 +102,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -138,9 +116,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);DLL_EXPORT_RESOURCE_HANDLER</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -148,20 +124,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\includes\ResourceHandler\Loader_Interface.h" />
-    <ClInclude Include="..\includes\ResourceHandler\LoadStatus.h" />
-    <ClInclude Include="..\includes\ResourceHandler\Resource.h" />
-    <ClInclude Include="..\includes\ResourceHandler\ResourceData.h" />
-    <ClInclude Include="..\includes\ResourceHandler\ResourceHandler_Interface.h" />
-    <ClInclude Include="BinaryLoader.h" />
-    <ClInclude Include="ResourceHandler.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="BinaryLoader.cpp" />
-    <ClCompile Include="Loader_Interface.cpp" />
-    <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="ResourceHandler.cpp" />
-    <ClCompile Include="ResourceHandler_Interface.cpp" />
+    <ClInclude Include="..\includes\Utilz\Sofa.h" />
+    <ClInclude Include="..\includes\Utilz\SuperPromise.h" />
+    <ClInclude Include="..\includes\Utilz\ThreadPool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

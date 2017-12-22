@@ -2,7 +2,7 @@
 #define _RESOURCE_HANDLER_LOADER_INTERFACE_H_
 #include <GUID.h>
 
-#include <ResourceData.h>
+#include "ResourceData.h"
 
 namespace ResourceHandler
 {
@@ -15,7 +15,7 @@ namespace ResourceHandler
 	{
 	public:
 		virtual ~Loader_Interface() {};
-		virtual long Init(Mode mode) noexcept = 0;
+		virtual long Init(const char* filePath, Mode mode) noexcept = 0;
 		virtual long Shutdown() noexcept = 0;
 
 		virtual long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept = 0;
@@ -28,6 +28,7 @@ namespace ResourceHandler
 
 		virtual size_t GetNumberOfFiles()const noexcept = 0;
 		virtual size_t GetNumberOfTypes()const noexcept = 0;
+		virtual size_t GetTotalSizeOfAllFiles()const noexcept = 0;
 	protected:
 		Loader_Interface() {};
 	};

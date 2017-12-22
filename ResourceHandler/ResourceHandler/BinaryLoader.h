@@ -3,9 +3,7 @@
 #include <unordered_map>
 #include <fstream>
 
-
 #include "Loader_Interface.h"
-#include "Sofa.h"
 
 namespace ResourceHandler
 {
@@ -15,7 +13,7 @@ namespace ResourceHandler
 		BinaryLoader()noexcept;
 		~BinaryLoader()noexcept;
 
-		long Init(Mode mode)noexcept override;
+		long Init(const char* filePath, Mode mode)noexcept override;
 		long Shutdown()noexcept override;
 
 		long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept override;
@@ -28,7 +26,9 @@ namespace ResourceHandler
 
 		size_t GetNumberOfFiles()const noexcept override;
 		size_t GetNumberOfTypes()const noexcept override;
+		size_t GetTotalSizeOfAllFiles()const noexcept override;
 	private:
+		const char* filePath;
 		std::fstream file;
 		Mode mode;
 		struct FileHeader

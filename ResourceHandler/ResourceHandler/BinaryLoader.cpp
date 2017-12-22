@@ -1,9 +1,12 @@
 #include "BinaryLoader.h"
 #include <Profiler.h>
 #include <optional>
+#include <filesystem>
+namespace fs = std::experimental::filesystem;
 #ifdef _WIN32
 #include <Windows.h>
 #undef min
+#undef CopyFile
 #endif
 
 namespace ResourceHandler
@@ -20,7 +23,24 @@ namespace ResourceHandler
 			file.write((char*)entries.location.data(),		sizeof(entries.location[0]) * numFiles);
 		}
 	}
+	template<class INFILE, class OUTFILE>
+	void CopyFile(INFILE& in, OUTFILE& out, size_t readPos, size_t writePos, size_t size)
+	{
+		size_t copied = 0;
+		char buff[1048576];
+		while (copied < size)
+		{
+			size_t toWrite = std::min(size_t(1048576u), size - copied);
+			copied += toWrite;
+			in.seekg(readPos);
+			in.read(buff, toWrite);
+			out.seekp(writePos);
+			out.write(buff, toWrite);
+			writePos += toWrite;
+			readPos += toWrite;
+		}
 
+	}
 	BinaryLoader::BinaryLoader()noexcept
 	{
 	}
@@ -49,26 +69,17 @@ namespace ResourceHandler
 		size_t last = entries.guid.size() - 1;
 		if (last != index)
 		{
-			if (entries.rawSize[last] <= entries.rawSize[index])
+			if (index + 1 == last)
 			{
-				auto writePos = entries.location[index];
-				auto readPos = entries.location[last];
-				size_t copied = 0;
-				char buff[1048576];
-				while (copied < entries.rawSize[index])
-				{
-					size_t toWrite = std::min(size_t(1048576u), entries.rawSize[index] - copied);
-					copied += toWrite;
-					file.seekg(readPos);			
-					file.read(buff, toWrite);
-					file.seekp(writePos);
-					file.write(buff, toWrite);
-					writePos += toWrite;
-					readPos += toWrite;
-				}
-
-
-				fileHeader.endOfFiles = writePos;
+				CopyFile(file, file, entries.location[last], entries.location[index], entries.rawSize[last]);
+				fileHeader.endOfFiles -= entries.rawSize[index];
+				entries.location[last] = entries.location[index];
+			}
+			else if(entries.rawSize[last] <= entries.rawSize[index])
+			{
+				CopyFile(file, file, entries.location[last], entries.location[index], entries.rawSize[last]);
+				fileHeader.endOfFiles -= entries.rawSize[last];
+				entries.location[last] = entries.location[index];
 			}
 
 			entries.guid[index] = entries.guid[last];
@@ -86,17 +97,18 @@ namespace ResourceHandler
 		entries.rawSize.pop_back();
 		entries.size.pop_back();
 		entries.location.pop_back();
+		if (fileHeader.numFiles-- == 1)
+			fileHeader.endOfFiles = sizeof(fileHeader);
 
 		file.seekp(fileHeader.endOfFiles);
-		fileHeader.numFiles--;
-
+		
 		WriteTail(file, entries, fileHeader.numFiles);
 		fileHeader.tailSize = static_cast<size_t>(file.tellp()) - fileHeader.endOfFiles;
 		file.seekp(0);
 		file.write((char*)&fileHeader, sizeof(fileHeader));
 
 #ifdef _WIN32
-		HANDLE file = CreateFile("data.dat", GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE file = CreateFile(filePath, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		SetFilePointer(file, LONG(fileHeader.endOfFiles + fileHeader.tailSize), 0, FILE_BEGIN);
 		SetEndOfFile(file);
 #endif
@@ -129,17 +141,18 @@ namespace ResourceHandler
 		}
 	}
 
-	long BinaryLoader::Init(Mode mode)noexcept
+	long BinaryLoader::Init(const char* filePath, Mode mode)noexcept
 	{
 		StartProfile;
+		this->filePath = filePath;
 		this->mode = mode;
 		auto m = std::ios::in | std::ios::binary | std::ios::ate;
 		if (mode == Mode::EDIT)
 			m |= std::ios::out;
-		file.open("data.dat", m);
+		file.open(filePath, m);
 		if (!file.is_open())
 		{
-			std::ofstream out("data.dat", std::ios::binary);
+			std::ofstream out(filePath, std::ios::binary);
 			if (!out.is_open())
 				return -1;
 			fileHeader.endOfFiles = sizeof(fileHeader);
@@ -147,7 +160,7 @@ namespace ResourceHandler
 			fileHeader.numFiles = 0;
 			out.write((char*)&fileHeader, sizeof(fileHeader));
 			out.close();
-			file.open("data.dat", m);
+			file.open(filePath, m);
 			if (!file.is_open())
 				return -2;
 			return 0;
@@ -157,7 +170,7 @@ namespace ResourceHandler
 		if (totalFileSize < sizeof(fileHeader))
 		{
 			file.close();
-			std::ofstream out("data.dat", std::ios::binary);
+			std::ofstream out(filePath, std::ios::binary);
 			if (!out.is_open())
 				return -1;
 			fileHeader.endOfFiles = sizeof(fileHeader);
@@ -165,7 +178,7 @@ namespace ResourceHandler
 			fileHeader.numFiles = 0;
 			out.write((char*)&fileHeader, sizeof(fileHeader));
 			out.close();
-			file.open("data.dat", m);
+			file.open(filePath, m);
 			if (!file.is_open())
 				return -2;
 			return 0;
@@ -270,6 +283,28 @@ namespace ResourceHandler
 		if (!out.is_open())
 			return -1;
 
+		out.seekp(sizeof(fileHeader));
+		for (size_t i = 0; i < fileHeader.numFiles; i++)
+		{
+			size_t newLocation = out.tellp();
+			CopyFile(file, out, entries.location[i], newLocation, entries.rawSize[i]);
+			entries.location[i] = newLocation;
+		}
+
+		fileHeader.endOfFiles = out.tellp();
+		WriteTail(out, entries, fileHeader.numFiles);
+		out.seekp(0);
+		out.write((char*)&fileHeader, sizeof(fileHeader));
+
+		out.close();
+		file.close();
+		fs::remove(filePath);
+		fs::rename("data.temp", filePath);
+		fs::remove("data.temp");
+		auto m = std::ios::in | std::ios::binary | std::ios::ate;
+		if (mode == Mode::EDIT)
+			m |= std::ios::out;
+		file.open(filePath, m);
 		return 0;
 	}
 	size_t BinaryLoader::GetNumberOfFiles()const noexcept
@@ -279,5 +314,9 @@ namespace ResourceHandler
 	size_t BinaryLoader::GetNumberOfTypes()const noexcept
 	{
 		return typeToIndex.size();
+	}
+	size_t BinaryLoader::GetTotalSizeOfAllFiles()const noexcept
+	{
+		return fileHeader.endOfFiles - sizeof(fileHeader);
 	}
 }

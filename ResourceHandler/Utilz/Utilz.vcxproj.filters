@@ -24,5 +24,8 @@
     <ClInclude Include="..\includes\Utilz\ThreadPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\includes\Utilz\Flags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,10 +5,15 @@
 
 #include <ResourceHandler_Interface.h>
 #include <Utilz\Sofa.h>
-#include <Utilz\SuperPromise.h>
 
 namespace ResourceHandler 
 {
+	struct ResourcePassThrough
+	{
+		ResourceHandler_Interface::PassThroughCallback passThrough;
+		MemoryType memoryType;
+	};
+
 	class ResourceHandler : public ResourceHandler_Interface
 	{
 		friend class Resource;
@@ -29,7 +34,7 @@ namespace ResourceHandler
 		Utilz::Sofa<
 				Utilz::GUID, Utilz::GUID::Hasher,
 				ResourceData,
-				Utilz::SuperPromise<LoadStatus>,
+				LoadStatus,
 				size_t>
 			entries;
 
@@ -37,15 +42,11 @@ namespace ResourceHandler
 		{
 			GUID,
 			Data,
-			Promise,
+			Status,
 			RefCount
 		};
 
-		struct ResourcePassThrough
-		{
-			PassThroughCallback passThrough;
-			MemoryType memoryType;
-		};
+	
 		std::unordered_map<Utilz::GUID, ResourcePassThrough, Utilz::GUID::Hasher> passThroughs;
 	};
 }

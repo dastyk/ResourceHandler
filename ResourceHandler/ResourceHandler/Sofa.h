@@ -46,31 +46,6 @@ namespace Utilz
 			std::get<I>(tuple).resize(newSize);
 			resizeVectorsInTuple<I + 1, Types...>(tuple, newSize);
 		}
-
-		template<std::size_t I = 0, class FILE, typename... Types>
-		inline typename std::enable_if<I == sizeof...(Types), void>::type
-			writeTupleToFile(const std::tuple<std::vector<Types>...>& tuple, FILE& out, size_t size)
-		{ }
-
-		template<std::size_t I = 0, class FILE, class... Types>
-		inline typename std::enable_if < I < sizeof...(Types), void>::type
-			writeTupleToFile(const std::tuple<std::vector<Types>...>& tuple, FILE& out, size_t size)
-		{
-			out.write((char*)std::get<I>(tuple).data(), sizeof(std::get<I>(tuple)[0])*size);
-			writeTupleToFile<I + 1, FILE, Types...>(tuple, out, size);
-		}
-		template<std::size_t I = 0, class FILE, typename... Types>
-		inline typename std::enable_if<I == sizeof...(Types), void>::type
-			readTupleToFile(std::tuple<std::vector<Types>...>& tuple, FILE& in, size_t size)
-		{ }
-
-		template<std::size_t I = 0, class FILE, class... Types>
-		inline typename std::enable_if < I < sizeof...(Types), void>::type
-			readTupleToFile(std::tuple<std::vector<Types>...>& tuple, FILE& in, size_t size)
-		{
-			in.read((char*)std::get<I>(tuple).data(), sizeof(std::get<I>(tuple)[0])*size);
-			readTupleToFile<I + 1, FILE, Types...>(tuple, in, size);
-		}
 	}
 
 
@@ -84,36 +59,6 @@ namespace Utilz
 			Allocate(allocated);
 		}
 
-		Sofa(std::ifstream& in)
-		{
-			in.read((char*)&used, sizeof(used));
-			if (used)
-			{
-				Allocate(used);
-				TupleOperations::readTupleToFile<0, std::ifstream, Key, Types...>(tvec, in, used);
-
-				auto& v = std::get<0>(tvec);
-				for (size_t i = 0; i < v.size(); i++)
-				{
-					map[v[i]] = i;
-				}
-			}
-		}
-		Sofa(std::fstream& in)
-		{
-			in.read((char*)&used, sizeof(used));
-			if (used)
-			{
-				Allocate(used);
-				TupleOperations::readTupleToFile<0, std::fstream, Key, Types...>(tvec, in, used);
-
-				auto& v = std::get<0>(tvec);
-				for (size_t i = 0; i < v.size(); i++)
-				{
-					map[v[i]] = i;
-				}
-			}
-		}
 		~Sofa()
 		{
 
@@ -122,13 +67,6 @@ namespace Utilz
 		void clear()
 		{
 			used = 0;
-		}
-
-		template<class FILE>
-		void DumpToFile(FILE& out)const
-		{
-			out.write((char*)&used, sizeof(used));
-			TupleOperations::writeTupleToFile<0, FILE, Key, Types...>(tvec, out, used);
 		}
 
 		inline void shrink_to_fit()

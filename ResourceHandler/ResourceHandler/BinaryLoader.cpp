@@ -1,8 +1,26 @@
 #include "BinaryLoader.h"
 #include <Profiler.h>
 #include <optional>
+#ifdef _WIN32
+#include <Windows.h>
+#undef min
+#endif
+
 namespace ResourceHandler
 {
+	template<class FILE, class TAIL>
+	void WriteTail(FILE& file, TAIL& entries, size_t numFiles)
+	{
+		if (numFiles)
+		{
+			file.write((char*)entries.guid.data(),			sizeof(entries.guid[0])		* numFiles);
+			file.write((char*)entries.type.data(),			sizeof(entries.type[0])		* numFiles);
+			file.write((char*)entries.rawSize.data(),		sizeof(entries.rawSize[0])	* numFiles);
+			file.write((char*)entries.size.data(),			sizeof(entries.size[0])		* numFiles);
+			file.write((char*)entries.location.data(),		sizeof(entries.location[0]) * numFiles);
+		}
+	}
+
 	BinaryLoader::BinaryLoader()noexcept
 	{
 	}
@@ -20,7 +38,7 @@ namespace ResourceHandler
 		fileHeader.endOfFiles = file.tellp();
 		fileHeader.numFiles++;
 
-		WriteTail();
+		WriteTail(file, entries, fileHeader.numFiles);
 		fileHeader.tailSize = static_cast<size_t>(file.tellp()) - fileHeader.endOfFiles;
 		file.seekp(0);
 		file.write((char*)&fileHeader, sizeof(fileHeader));
@@ -29,35 +47,61 @@ namespace ResourceHandler
 	void BinaryLoader::RemoveFile(size_t index)
 	{
 		size_t last = entries.guid.size() - 1;
-		entries.guid[index]			= entries.guid[last];
-		entries.type[index]			= entries.type[last];
-		entries.rawSize[index]		= entries.rawSize[last];
-		entries.size[index]			= entries.size[last];
-		entries.location[index]		= entries.location[last];
+		if (last != index)
+		{
+			if (entries.rawSize[last] <= entries.rawSize[index])
+			{
+				auto writePos = entries.location[index];
+				auto readPos = entries.location[last];
+				size_t copied = 0;
+				char buff[1048576];
+				while (copied < entries.rawSize[index])
+				{
+					size_t toWrite = std::min(size_t(1048576u), entries.rawSize[index] - copied);
+					copied += toWrite;
+					file.seekg(readPos);			
+					file.read(buff, toWrite);
+					file.seekp(writePos);
+					file.write(buff, toWrite);
+					writePos += toWrite;
+					readPos += toWrite;
+				}
 
-		auto& files = typeIndexToFiles[typeToIndex[entries.type[index]]];
-		files[entries.guid[index]] = index;
+
+				fileHeader.endOfFiles = writePos;
+			}
+
+			entries.guid[index] = entries.guid[last];
+			entries.type[index] = entries.type[last];
+			entries.rawSize[index] = entries.rawSize[last];
+			entries.size[index] = entries.size[last];
+			entries.location[index] = entries.location[last];	
+
+			auto& files = typeIndexToFiles[typeToIndex[entries.type[index]]];
+			files[entries.guid[index]] = index;
+		}
+
+		entries.guid.pop_back();
+		entries.type.pop_back();
+		entries.rawSize.pop_back();
+		entries.size.pop_back();
+		entries.location.pop_back();
 
 		file.seekp(fileHeader.endOfFiles);
 		fileHeader.numFiles--;
 
-		WriteTail();
+		WriteTail(file, entries, fileHeader.numFiles);
 		fileHeader.tailSize = static_cast<size_t>(file.tellp()) - fileHeader.endOfFiles;
 		file.seekp(0);
 		file.write((char*)&fileHeader, sizeof(fileHeader));
+
+#ifdef _WIN32
+		HANDLE file = CreateFile("data.dat", GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		SetFilePointer(file, LONG(fileHeader.endOfFiles + fileHeader.tailSize), 0, FILE_BEGIN);
+		SetEndOfFile(file);
+#endif
 	}
 
-	void BinaryLoader::WriteTail()
-	{
-		if (fileHeader.numFiles)
-		{
-			file.write((char*)entries.guid.data(),		sizeof(entries.guid[0])		* fileHeader.numFiles);
-			file.write((char*)entries.type.data(),		sizeof(entries.type[0])		* fileHeader.numFiles);
-			file.write((char*)entries.rawSize.data(),	sizeof(entries.rawSize[0])	* fileHeader.numFiles);
-			file.write((char*)entries.size.data(),		sizeof(entries.size[0])		* fileHeader.numFiles);
-			file.write((char*)entries.location.data(),	sizeof(entries.location[0]) * fileHeader.numFiles);
-		}
-	}
 
 	void BinaryLoader::ReadTail()
 	{
@@ -220,7 +264,14 @@ namespace ResourceHandler
 		}
 		return 1;
 	}
+	long BinaryLoader::Defrag()noexcept
+	{
+		std::ofstream out("data.temp", std::ios::binary | std::ios::trunc);
+		if (!out.is_open())
+			return -1;
 
+		return 0;
+	}
 	size_t BinaryLoader::GetNumberOfFiles()const noexcept
 	{
 		return fileHeader.numFiles;

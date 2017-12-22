@@ -43,6 +43,8 @@ namespace BasicResourceHandlerTest
 			data.size = 10;
 			result = bl->Create("TestFile2", "Test", data);
 			Assert::IsTrue(result == 0 || result == 1, L"Could not create TestFile2");
+			Assert::IsTrue(bl->GetNumberOfFiles() == 2, L"More than two files");
+			Assert::IsTrue(bl->GetNumberOfTypes() == 1, L"More than one type");
 
 			result = bl->Exist("TestFile", "Test");
 			Assert::IsTrue(result == 1, L"TestFile did not exist");
@@ -64,6 +66,7 @@ namespace BasicResourceHandlerTest
 			Assert::IsTrue(result == 0, L"Could not destroy TestFile");
 			result = bl->Destroy("TestFile2", "Test");
 			Assert::IsTrue(result == 0, L"Could not destroy TestFile2");
+			Assert::IsTrue(bl->GetNumberOfFiles() == 0, L"Num files not changed");
 			bl->Shutdown();
 		}
 		TEST_METHOD(BasicBinaryLoaderRunTimeTest)
@@ -107,15 +110,7 @@ namespace BasicResourceHandlerTest
 			}
 
 		}
-		TEST_METHOD(StressBinaryLoaderTest)
-		{
-			auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
-			Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
-			auto result = bl->Init(ResourceHandler::Mode::EDIT);
-			Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
 
-
-		}
 		//TEST_METHOD(LoadResourceTest)
 		//{
 		//	// TODO: Your test code here

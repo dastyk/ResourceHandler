@@ -24,6 +24,8 @@ namespace ResourceHandler
 		virtual long Create(Utilz::GUID, Utilz::GUID type, const ResourceData& data) noexcept = 0;
 		virtual long Destroy(Utilz::GUID, Utilz::GUID type) noexcept = 0;
 
+		virtual long Defrag()noexcept = 0;
+
 		virtual size_t GetNumberOfFiles()const noexcept = 0;
 		virtual size_t GetNumberOfTypes()const noexcept = 0;
 	protected:

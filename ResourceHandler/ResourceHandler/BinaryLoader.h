@@ -24,6 +24,8 @@ namespace ResourceHandler
 		long Create(Utilz::GUID, Utilz::GUID type, const ResourceData& data)noexcept override;
 		long Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
 
+		long Defrag()noexcept override;
+
 		size_t GetNumberOfFiles()const noexcept override;
 		size_t GetNumberOfTypes()const noexcept override;
 	private:
@@ -38,7 +40,6 @@ namespace ResourceHandler
 		
 		void AddFile(size_t size, void* data);
 		void RemoveFile(size_t index);
-		void WriteTail();
 		void ReadTail();
 
 		struct FileEntries

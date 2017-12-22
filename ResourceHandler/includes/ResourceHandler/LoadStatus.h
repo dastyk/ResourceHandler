@@ -12,7 +12,10 @@ namespace ResourceHandler
 		PASS_THROUGH_FAILED	=		1 << 2,
 		FAILED				=		1 << 3,
 		COULD_NOT_LOAD		=		1 << 4,
-		LOADED				=		1 << 5
+		LOADED				=		1 << 5,
+		NOT_LOADED			=		1 << 6,
+		NOT_CHECKED_IN		=		1 << 7,
+		LOADING				=		1 << 8
 	};
 
 

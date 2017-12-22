@@ -202,6 +202,32 @@ namespace ResourceHandler
 		StartProfile;
 		return 0;
 	}
+	long BinaryLoader::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
+	{
+		for (auto& files : typeIndexToFiles)
+		{
+			if (auto find = files.find(guid); find != files.end())
+			{
+				type = entries.type[find->second];
+				return 0;
+			}
+		}
+		return -1;
+	}
+	long BinaryLoader::FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept
+	{
+		for (auto& files : typeIndexToFiles)
+		{
+			if (auto find = files.find(guid); find != files.end())
+			{
+				name = entries.guid[find->second];
+				type = entries.type[find->second];
+				return 0;
+			}
+		}
+		return -1;
+	}
+	
 	long BinaryLoader::Exist(Utilz::GUID guid, Utilz::GUID type) const noexcept
 	{
 		StartProfile;

@@ -18,23 +18,34 @@ namespace ResourceHandler
 	class Resource
 	{
 	public:		
-		Resource(Utilz::GUID guid, Utilz::GUID type, ResourceHandler_Interface* resourceHandler);
+		Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler);
 		DECLDIR ~Resource();
 
-		DECLDIR LoadStatus Status();
-		DECLDIR const ResourceData GetData()const;
-		DECLDIR void Unload();
+		DECLDIR Resource(const Resource& other);
+		DECLDIR Resource(Resource&& other)noexcept;
+		DECLDIR Resource& operator=(const Resource& other);
+		DECLDIR Resource& operator=(Resource&& other)noexcept;
+
+		DECLDIR LoadStatus PeekStatus();
+		DECLDIR LoadStatus GetStatus();
+		DECLDIR LoadStatus GetData(ResourceData& data);
+
+		DECLDIR void CheckIn();
+		DECLDIR void CheckOut();
+		DECLDIR size_t GetReferenceCount()const;
+
+		inline size_t GetCheckInCount()const
+		{
+			return checkInCount;
+		}
 		inline Utilz::GUID GUID()const
 		{
 			return myGUID;
 		}
-		inline Utilz::GUID Type()const
-		{
-			return myType;
-		}
+		DECLDIR Utilz::GUID Type()const;
 	private:
 		Utilz::GUID myGUID;
-		Utilz::GUID myType;
+		size_t checkInCount;
 		ResourceHandler_Interface* resourceHandler;
 	};
 }

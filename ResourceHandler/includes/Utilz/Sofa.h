@@ -115,6 +115,12 @@ namespace Utilz
 		{
 			return std::get<N>(tvec)[index];
 		}
+		template<std::size_t N>
+		inline const auto& getConst(std::size_t index)const
+		{
+			return std::get<N>(tvec)[index];
+		}
+
 
 		template<std::size_t N>
 		inline auto get()

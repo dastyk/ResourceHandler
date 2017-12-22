@@ -3,26 +3,86 @@
 
 namespace ResourceHandler
 {
-	ResourceHandler::Resource::Resource(Utilz::GUID guid, Utilz::GUID type, ResourceHandler_Interface* resourceHandler)
-		: resourceHandler(resourceHandler), myGUID(guid), myType(type)
+	Resource::Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler)
+		: resourceHandler(resourceHandler), myGUID(guid), checkInCount(0)
 	{
 	}
 
-	ResourceHandler::Resource::~Resource()
+	Resource::~Resource()
 	{
+		if(checkInCount)
+			resourceHandler->CheckOut(myGUID);
 	}
 
-	LoadStatus ResourceHandler::Resource::Status()
+	Resource::Resource(const Resource & other)
 	{
-		return resourceHandler->GetStatus(myGUID);
+		checkInCount = 0;
+		resourceHandler = other.resourceHandler;
+		myGUID = other.myGUID;
+	}
+	Resource::Resource(Resource && other) noexcept
+	{
+		checkInCount = other.checkInCount;
+		resourceHandler = other.resourceHandler;
+		myGUID = other.myGUID;
 	}
 
-	const ResourceData Resource::GetData() const
+	Resource & Resource::operator=(const Resource & other)
 	{
-		return resourceHandler->GetData(myGUID);
+		checkInCount = 0;
+		resourceHandler = other.resourceHandler;
+		myGUID = other.myGUID;
+		return *this;
+	}
+	Resource& Resource::operator=(Resource && other) noexcept
+	{
+		checkInCount = other.checkInCount;
+		resourceHandler = other.resourceHandler;
+		myGUID = other.myGUID;
+		return *this;
+	}
+	LoadStatus Resource::PeekStatus()
+	{
+		return LoadStatus();
 	}
 
-	void ResourceHandler::Resource::Unload()
+	LoadStatus Resource::GetStatus()
 	{
+		if(checkInCount)
+			return resourceHandler->GetStatus(myGUID);
+		return LoadStatus::NOT_CHECKED_IN;
+	}
+
+	LoadStatus Resource::GetData(ResourceData& data)
+	{
+		if (checkInCount)
+			return resourceHandler->GetData(myGUID,data);
+		return LoadStatus::NOT_CHECKED_IN;
+	}
+
+	void Resource::CheckIn()
+	{
+		if(!checkInCount)
+			resourceHandler->CheckIn(myGUID);
+		checkInCount++;
+		return void();
+	}
+
+	void Resource::CheckOut()
+	{
+		if (!checkInCount)
+			resourceHandler->CheckOut(myGUID);
+		checkInCount--;
+		return void();
+	}
+
+	size_t Resource::GetReferenceCount() const
+	{
+		return resourceHandler->GetReferenceCount(myGUID);
+	}
+
+	Utilz::GUID Resource::Type()const
+	{
+		return Utilz::GUID();
 	}
 }

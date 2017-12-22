@@ -16,6 +16,8 @@ namespace ResourceHandler
 		long Init(const char* filePath, Mode mode)noexcept override;
 		long Shutdown()noexcept override;
 
+		long FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept override;
+		long FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept override;
 		long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept override;
 		long Read(Utilz::GUID guid, Utilz::GUID type, ResourceData& data) noexcept override;
 

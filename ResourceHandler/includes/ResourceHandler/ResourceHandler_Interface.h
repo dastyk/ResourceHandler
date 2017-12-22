@@ -42,9 +42,11 @@ namespace ResourceHandler
 		virtual	Resource LoadResource(Utilz::GUID guid, Utilz::GUID type) = 0;
 	
 	protected:
-		virtual const ResourceData GetData(Utilz::GUID guid)const = 0;
+		virtual LoadStatus GetData(Utilz::GUID guid, ResourceData& data) = 0;
 		virtual LoadStatus GetStatus(Utilz::GUID guid) = 0;
-
+		virtual void CheckIn(Utilz::GUID guid) = 0;
+		virtual void CheckOut(Utilz::GUID guid) = 0;
+		virtual size_t GetReferenceCount(Utilz::GUID guid)const = 0;
 		ResourceHandler_Interface() {};
 
 	};

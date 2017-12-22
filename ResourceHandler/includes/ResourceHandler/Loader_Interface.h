@@ -16,8 +16,10 @@ namespace ResourceHandler
 	public:
 		virtual ~Loader_Interface() {};
 		virtual long Init(const char* filePath, Mode mode) noexcept = 0;
-		virtual long Shutdown() noexcept = 0;
+		virtual long Shutdown() noexcept = 0; 
 
+		virtual long FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept = 0;
+		virtual long FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept = 0;
 		virtual long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept = 0;
 		virtual long Read(Utilz::GUID guid, Utilz::GUID type, ResourceData& data) noexcept = 0;
 

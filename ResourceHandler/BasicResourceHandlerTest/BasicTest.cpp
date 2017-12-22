@@ -218,11 +218,16 @@ namespace BasicResourceHandlerTest
 				Assert::IsNotNull(rh.get(), L"Could not create Resource Handler");
 
 				auto resource1 = rh->LoadResource("TestFile", "Test");
-
-				Assert::IsTrue(resource1.Status() == ResourceHandler::LoadStatus::SUCCESS, L"TestFile could not be loaded");
-
-				resource1.GetData();
-
+				Assert::IsTrue(resource1.GUID() == Utilz::GUID("TestFile") + Utilz::GUID("Test"));
+				Assert::IsTrue(resource1.GetStatus() & ResourceHandler::LoadStatus::NOT_CHECKED_IN, L"TestFile was checked in");
+				resource1.CheckIn();
+				Assert::IsTrue(resource1.GetStatus() & ResourceHandler::LoadStatus::LOADED, L"Test file could not be loaded");
+				Assert::IsTrue(resource1.GetReferenceCount() == 1, L"Reference Count not 1");
+				Assert::IsTrue(resource1.GetCheckInCount() == 1, L"Check in count was not 1");
+				resource1.CheckIn();
+				Assert::IsTrue(resource1.GetReferenceCount() == 1, L"Reference Count not 1");
+				Assert::IsTrue(resource1.GetCheckInCount() == 2, L"Check in count was not 2");
+	
 				bl->Shutdown();
 				delete bl;
 

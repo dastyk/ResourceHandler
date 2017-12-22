@@ -13,6 +13,11 @@ namespace ResourceHandler
 		ResourceHandler_Interface::PassThroughCallback passThrough;
 		MemoryType memoryType;
 	};
+	struct LoadJob
+	{
+		LoadStatus status;
+		ResourceData data;
+	};
 
 	class ResourceHandler : public ResourceHandler_Interface
 	{
@@ -24,25 +29,34 @@ namespace ResourceHandler
 		Resource LoadResource(Utilz::GUID guid, Utilz::GUID type) override;
 	
 	private:
-		const ResourceData GetData(Utilz::GUID guid)const override;
+		LoadStatus GetData(Utilz::GUID guid, ResourceData& data) override;
 		LoadStatus GetStatus(Utilz::GUID guid) override;
-
+		void CheckIn(Utilz::GUID guid) override;
+		void CheckOut(Utilz::GUID guid) override;
+		size_t GetReferenceCount(Utilz::GUID guid)const override;
 
 		Loader_Interface * loader;
 		Utilz::ThreadPool* threadPool;
 
+
 		Utilz::Sofa<
 				Utilz::GUID, Utilz::GUID::Hasher,
+				Utilz::GUID,
+				Utilz::GUID,
 				ResourceData,
 				LoadStatus,
+				std::future<LoadJob>,
 				size_t>
 			entries;
 
 		enum EntryNames : uint32_t
 		{
+			Key,
 			GUID,
+			Type,
 			Data,
 			Status,
+			Future,
 			RefCount
 		};
 

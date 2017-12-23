@@ -35,17 +35,18 @@ namespace ResourceHandler
 		Loader_Interface() {};
 	};
 
-	enum class LoaderType
+	enum class LoaderType : uint32_t
 	{
 		Binary
 	};
 
-
+}
 #if defined DLL_EXPORT_RESOURCE_HANDLER
-#define DECLDIR __declspec(dllexport)
+#define DECLDIR  __declspec(dllexport)
 #else
 #define DECLDIR __declspec(dllimport)
 #endif
-	DECLDIR Loader_Interface* CreateLoader(LoaderType);
-}
+extern "C" DECLDIR ResourceHandler::Loader_Interface* CreateLoader(ResourceHandler::LoaderType);
+extern "C" DECLDIR long InitLoader(ResourceHandler::Loader_Interface*,const char* filePath, ResourceHandler::Mode);
+
 #endif

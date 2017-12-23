@@ -83,7 +83,7 @@ namespace BasicResourceHandlerTest
 		{
 			fs::remove("basictest.dat");
 			{
-				auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+				auto bl = std::make_unique(CreateLoader(ResourceHandler::LoaderType::Binary));
 				Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
 				auto result = bl->Init("basictest.dat", ResourceHandler::Mode::EDIT);
 				Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
@@ -152,7 +152,7 @@ namespace BasicResourceHandlerTest
 			fs::remove("BasicRuntimeTest.dat");
 			{
 				{
-					auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+					auto bl = std::make_unique(CreateLoader(ResourceHandler::LoaderType::Binary));
 					Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
 					auto result = bl->Init("BasicRuntimeTest.dat", ResourceHandler::Mode::READ);
 					Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
@@ -165,7 +165,7 @@ namespace BasicResourceHandlerTest
 					Assert::IsTrue(result == -1, L"Could create TestFile");
 				}
 				{
-					auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+					auto bl = std::make_unique(CreateLoader(ResourceHandler::LoaderType::Binary));
 					Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
 					auto result = bl->Init("BasicRuntimeTest.dat", ResourceHandler::Mode::EDIT);
 					Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
@@ -179,7 +179,7 @@ namespace BasicResourceHandlerTest
 				}
 
 				{
-					auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+					auto bl = std::make_unique(CreateLoader(ResourceHandler::LoaderType::Binary));
 					Assert::IsNotNull(bl.get(), L"Could not create BinaryLoader");
 					auto result = bl->Init("BasicRuntimeTest.dat", ResourceHandler::Mode::READ);
 					Assert::IsTrue(result == 0, (L"Could not Init BinaryLoader, Error: " + std::to_wstring(result)).c_str());
@@ -197,7 +197,7 @@ namespace BasicResourceHandlerTest
 			fs::remove("rhtest.dat");
 			{
 				{
-					auto bl = std::make_unique(ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary));
+					auto bl = std::make_unique(CreateLoader(ResourceHandler::LoaderType::Binary));
 					auto result = bl->Init("rhtest.dat", ResourceHandler::Mode::EDIT);
 					char buf[] = { "Test File" };
 					ResourceData data;
@@ -210,7 +210,7 @@ namespace BasicResourceHandlerTest
 					result = bl->Create("TestFile2", "Test", data);
 
 				}
-				auto bl = ResourceHandler::CreateLoader(ResourceHandler::LoaderType::Binary);
+				auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
 				bl->Init("rhtest.dat", ResourceHandler::Mode::READ);
 				Utilz::ThreadPool tp(4);
 

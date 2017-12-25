@@ -77,4 +77,15 @@ extern "C" DECLDIR long GetSizeOfFileS_C(ResourceHandler::Loader_Interface*, con
 extern "C" DECLDIR uint32_t GetNumberOfFiles_C(ResourceHandler::Loader_Interface*);
 extern "C" DECLDIR uint32_t GetNumberOfTypes_C(ResourceHandler::Loader_Interface*);
 extern "C" DECLDIR uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface*);
+
+
+struct FILE_C
+{
+	uint32_t guid;
+	uint32_t type;
+	char* guid_str;
+	char* type_str;
+};
+extern "C" DECLDIR long GetFiles(ResourceHandler::Loader_Interface* l,
+	FILE_C** files);
 #endif

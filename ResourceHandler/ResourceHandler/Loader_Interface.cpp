@@ -89,3 +89,24 @@ DECLDIR uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface * l)
 {
 	return l->GetTotalSizeOfAllFiles();
 }
+#include <objbase.h>
+DECLDIR long GetFiles(ResourceHandler::Loader_Interface * l, FILE_C ** files)
+{
+	std::vector<ResourceHandler::File> dfiles;
+	long r = l->GetFiles(dfiles);
+	if (dfiles.size())
+	{
+
+		*files = (FILE_C*)::CoTaskMemAlloc(dfiles.size());
+		for (size_t i = 0; i < dfiles.size(); i++)
+		{
+			(*files)[i].guid = dfiles[i].guid;
+			(*files)[i].type = dfiles[i].type;
+			(*files)[i].guid_str = (char*)::CoTaskMemAlloc(dfiles[i].guid_str.size() + 1);
+			strcpy((*files)[i].guid_str, dfiles[i].guid_str.c_str());
+			(*files)[i].type_str = (char*)::CoTaskMemAlloc(dfiles[i].type_str.size() + 1);
+			strcpy((*files)[i].type_str, dfiles[i].type_str.c_str());
+		}
+	}
+	return r;
+}

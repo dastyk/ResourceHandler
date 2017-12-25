@@ -54,6 +54,8 @@ namespace ResourceHandler
 			std::vector <uint64_t>		rawSize;
 			std::vector <uint64_t>		size;
 			std::vector <uint64_t>		location;
+			std::vector <std::string>	guid_str;
+			std::vector <std::string>	type_str;
 		}entries;
 		std::vector<std::unordered_map<Utilz::GUID, uint32_t, Utilz::GUID::Hasher>> typeIndexToFiles;
 		std::unordered_map<Utilz::GUID, uint32_t, Utilz::GUID::Hasher> typeToIndex;

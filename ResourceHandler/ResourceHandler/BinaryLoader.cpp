@@ -52,11 +52,36 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
 	{
-
+		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
+		{
+			auto& filesMap = typeIndexToFiles[findType->second];
+			files.reserve(filesMap.size());
+			for (auto& f : filesMap)
+			{
+				files.push_back(
+					{
+						entries.guid[f.second],
+						type,
+						"",
+						""
+					});
+			}
+			return 0;
+		}
 		return 0;
 	}
 	long BinaryLoader::GetFiles(std::vector<File>& files) const noexcept
 	{
+		files.reserve(fileHeader.numFiles);
+		for (uint32_t i = 0; i < fileHeader.numFiles; i++)
+		{
+			files.push_back({
+				entries.guid[i],
+				entries.type[i],
+				"",
+				""
+				});
+		}
 		return 0;
 	}
 	void BinaryLoader::AddFile(uint64_t size, void* data)

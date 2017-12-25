@@ -108,16 +108,27 @@ namespace BasicResourceHandlerTest
 				result = bl->Exist("TestFile2", "Test");
 				Assert::IsTrue(result == 1, L"TestFile2 did not exist");
 
+				data.size = 0;
+				result = bl->GetSizeOfFile("TestFile", "Test", data.size);
+				Assert::IsTrue(result == 0, L"Could not get size of TestFile");
+				Assert::IsTrue(data.size == 9, L"Size of TestFile was not 9");
+				data.data = operator new(data.size);
+
 				result = bl->Read("TestFile", "Test", data);
 				Assert::IsTrue(result == 0, L"Could not read TestFile");
-				Assert::IsNotNull(data.data, L"TestFile data was nullptr");
-				Assert::IsTrue(data.size == 9, L"TestFile size was not 9");
 				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File", L"Content in TestFile was not 'Test File'");
+				operator delete(data.data);
+				
+				data.size = 0;
+				result = bl->GetSizeOfFile("TestFile2", "Test", data.size);
+				Assert::IsTrue(result == 0, L"Could not get size of TestFile2");
+				Assert::IsTrue(data.size == 10, L"Size of TestFile2 was not 10");
+				data.data = operator new(data.size);
+
 				result = bl->Read("TestFile2", "Test", data);
 				Assert::IsTrue(result == 0, L"Could not read TestFile2");
-				Assert::IsNotNull(data.data, L"TestFile2 data was nullptr");
-				Assert::IsTrue(data.size == 10, L"TestFile2 size was not 10");
 				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFile was not 'Test File2'");
+				operator delete(data.data);
 
 				result = bl->Destroy("TestFile", "Test");
 				Assert::IsTrue(result == 0, L"Could not destroy TestFile");
@@ -128,9 +139,6 @@ namespace BasicResourceHandlerTest
 
 				result = bl->Read("TestFile2", "Test", data);
 				Assert::IsTrue(result == 0, L"Could not read TestFile2 after defrag");
-				Assert::IsNotNull(data.data, L"TestFile2 data was nullptr");
-				Assert::IsTrue(data.size == 10, L"TestFile2 size was not 10");
-
 				auto asd = std::string((char*)data.data, data.size);
 				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFile2 was not 'Test File2'");
 

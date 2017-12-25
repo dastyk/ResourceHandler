@@ -4,7 +4,7 @@
 struct ResourceData
 {
 	void* data = nullptr;
-	size_t size = 0;
+	uint64_t size = 0;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include <Profiler.h>
 #include <optional>
 #include <filesystem>
+
 namespace fs = std::experimental::filesystem;
 #ifdef _WIN32
 #include <Windows.h>
@@ -12,7 +13,7 @@ namespace fs = std::experimental::filesystem;
 namespace ResourceHandler
 {
 	template<class FILE, class TAIL>
-	void WriteTail(FILE& file, TAIL& entries, size_t numFiles)
+	void WriteTail(FILE& file, TAIL& entries, uint32_t numFiles)
 	{
 		if (numFiles)
 		{
@@ -24,13 +25,13 @@ namespace ResourceHandler
 		}
 	}
 	template<class INFILE, class OUTFILE>
-	void CopyFile(INFILE& in, OUTFILE& out, size_t readPos, size_t writePos, size_t size)
+	void CopyFile(INFILE& in, OUTFILE& out, uint64_t readPos, uint64_t writePos, uint64_t size)
 	{
-		size_t copied = 0;
+		uint64_t copied = 0;
 		char buff[1048576];
 		while (copied < size)
 		{
-			size_t toWrite = std::min(size_t(1048576u), size - copied);
+			size_t toWrite = std::min(uint64_t(1048576u), size - copied);
 			copied += toWrite;
 			in.seekg(readPos);
 			in.read(buff, toWrite);
@@ -49,7 +50,16 @@ namespace ResourceHandler
 	BinaryLoader::~BinaryLoader()noexcept
 	{
 	}
-	void BinaryLoader::AddFile(size_t size, void* data)
+	long BinaryLoader::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
+	{
+
+		return 0;
+	}
+	long BinaryLoader::GetFiles(std::vector<File>& files) const noexcept
+	{
+		return 0;
+	}
+	void BinaryLoader::AddFile(uint64_t size, void* data)
 	{
 		StartProfile;
 		file.seekp(fileHeader.endOfFiles);
@@ -59,12 +69,12 @@ namespace ResourceHandler
 		fileHeader.numFiles++;
 
 		WriteTail(file, entries, fileHeader.numFiles);
-		fileHeader.tailSize = static_cast<size_t>(file.tellp()) - fileHeader.endOfFiles;
+		fileHeader.tailSize = static_cast<uint32_t>( static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
 		file.seekp(0);
 		file.write((char*)&fileHeader, sizeof(fileHeader));
 	}
 
-	void BinaryLoader::RemoveFile(size_t index)
+	void BinaryLoader::RemoveFile(uint32_t index)
 	{
 		size_t last = entries.guid.size() - 1;
 		if (last != index)
@@ -103,7 +113,7 @@ namespace ResourceHandler
 		file.seekp(fileHeader.endOfFiles);
 		
 		WriteTail(file, entries, fileHeader.numFiles);
-		fileHeader.tailSize = static_cast<size_t>(file.tellp()) - fileHeader.endOfFiles;
+		fileHeader.tailSize = static_cast<uint32_t>(file.tellp()) - static_cast<uint32_t>(fileHeader.endOfFiles);
 		file.seekp(0);
 		file.write((char*)&fileHeader, sizeof(fileHeader));
 
@@ -131,7 +141,7 @@ namespace ResourceHandler
 			file.read((char*)entries.size.data(),		sizeof(entries.size[0])		* fileHeader.numFiles);
 			file.read((char*)entries.location.data(),	sizeof(entries.location[0]) * fileHeader.numFiles);
 
-			for (size_t i = 0; i < fileHeader.numFiles; i++)
+			for (uint32_t i = 0; i < fileHeader.numFiles; i++)
 			{
 				if (auto findType = typeToIndex.find(entries.type[i]); findType == typeToIndex.end())
 					typeIndexToFiles.push_back({});
@@ -239,7 +249,7 @@ namespace ResourceHandler
 		}			
 		return 0;
 	}
-	long BinaryLoader::Read(Utilz::GUID guid, Utilz::GUID type, ResourceData & data) noexcept
+	long BinaryLoader::GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size) const noexcept
 	{
 		StartProfile;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
@@ -247,14 +257,29 @@ namespace ResourceHandler
 			auto& files = typeIndexToFiles[findType->second];
 			if (auto findEntry = files.find(guid); findEntry != files.end())
 			{
-				file.seekg(entries.location[findEntry->second]);
-				data.size = entries.rawSize[findEntry->second];
-				data.data = operator new(data.size);
-				file.read((char*)data.data, data.size);
+				size = entries.size[findEntry->second];
 				return 0;
 			}
 		}
 		return -1;
+	}
+	long BinaryLoader::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceData & data) noexcept
+	{
+		StartProfile;
+		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
+		{
+			auto& files = typeIndexToFiles[findType->second];
+			if (auto findEntry = files.find(guid); findEntry != files.end())
+			{
+				if (data.size > entries.size[findEntry->second])
+					return -1;
+
+				file.seekg(entries.location[findEntry->second]);
+				file.read((char*)data.data, data.size);
+				return 0;
+			}
+		}
+		return -2;
 	}
 	long BinaryLoader::Create(Utilz::GUID guid, Utilz::GUID type, const ResourceData & data)noexcept
 	{
@@ -273,10 +298,10 @@ namespace ResourceHandler
 		{
 			index = typeIndexToFiles.size();
 			typeIndexToFiles.push_back({});
-			typeToIndex[type] = index;
+			typeToIndex[type] = static_cast<uint32_t>(index);
 		}
 		auto& files = typeIndexToFiles[index];
-		files[guid] = entries.guid.size();
+		files[guid] = static_cast<uint32_t>(entries.guid.size());
 		entries.guid.push_back(guid);
 		entries.type.push_back(type);
 		entries.rawSize.push_back(data.size);
@@ -333,15 +358,15 @@ namespace ResourceHandler
 		file.open(filePath, m);
 		return 0;
 	}
-	size_t BinaryLoader::GetNumberOfFiles()const noexcept
+	uint32_t BinaryLoader::GetNumberOfFiles()const noexcept
 	{
 		return fileHeader.numFiles;
 	}
-	size_t BinaryLoader::GetNumberOfTypes()const noexcept
+	uint32_t BinaryLoader::GetNumberOfTypes()const noexcept
 	{
-		return typeToIndex.size();
+		return static_cast<uint32_t>(typeToIndex.size());
 	}
-	size_t BinaryLoader::GetTotalSizeOfAllFiles()const noexcept
+	uint64_t BinaryLoader::GetTotalSizeOfAllFiles()const noexcept
 	{
 		return fileHeader.endOfFiles - sizeof(fileHeader);
 	}

@@ -42,6 +42,7 @@ namespace ResourceHandler
 		virtual long Read(Utilz::GUID guid, Utilz::GUID type,const ResourceData& data) noexcept = 0;
 
 		virtual long Create(const std::string& guid,const std::string& type, const ResourceData& data) noexcept = 0;
+		virtual long CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept = 0;
 		virtual long Destroy(Utilz::GUID, Utilz::GUID type) noexcept = 0;
 
 		virtual long Defrag()noexcept = 0;
@@ -74,6 +75,7 @@ extern "C" DECLDIR long InitLoader_C(ResourceHandler::Loader_Interface*,const ch
 extern "C" DECLDIR long Read_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type, void* data, uint64_t size);
 extern "C" DECLDIR long Destroy_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type);
 extern "C" DECLDIR long CreateS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, void* data, uint64_t size);
+extern "C" DECLDIR long CreateFromFile_C(ResourceHandler::Loader_Interface*l, const char* path, const char* guid, const char* type);
 extern "C" DECLDIR long Exist_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type);
 extern "C" DECLDIR long ExistS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type);
 extern "C" DECLDIR long ReadS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, void* data, uint64_t size);

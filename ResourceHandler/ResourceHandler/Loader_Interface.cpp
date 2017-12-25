@@ -40,6 +40,11 @@ DECLDIR long CreateS_C(ResourceHandler::Loader_Interface *l, const char * guid, 
 	return l->Create(std::string(guid), std::string(type), { data, size });
 }
 
+DECLDIR long CreateFromFile_C(ResourceHandler::Loader_Interface * l, const char * path, const char * guid, const char * type)
+{
+	return l->CreateFromFile(path, guid, type);
+}
+
 DECLDIR long Exist_C(ResourceHandler::Loader_Interface * l, uint32_t guid, uint32_t type)
 {
 	return l->Exist(guid, type);

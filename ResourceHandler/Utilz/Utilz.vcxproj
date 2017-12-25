@@ -125,6 +125,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\includes\Utilz\Flags.h" />
+    <ClInclude Include="..\includes\Utilz\PathHelpers.h" />
     <ClInclude Include="..\includes\Utilz\Sofa.h" />
     <ClInclude Include="..\includes\Utilz\SuperPromise.h" />
     <ClInclude Include="..\includes\Utilz\ThreadPool.h" />

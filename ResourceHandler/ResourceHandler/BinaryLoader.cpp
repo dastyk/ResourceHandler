@@ -2,6 +2,7 @@
 #include <Profiler.h>
 #include <optional>
 #include <filesystem>
+#include <fstream>
 
 namespace fs = std::experimental::filesystem;
 #ifdef _WIN32
@@ -70,6 +71,46 @@ namespace ResourceHandler
 	BinaryLoader::~BinaryLoader()noexcept
 	{
 	}
+
+	long BinaryLoader::CreateFromFile(const char * filePath,const std::string& guid, const std::string & type)noexcept
+	{
+		StartProfile;
+		if (mode != Mode::EDIT)
+			return -1;
+		size_t index;
+		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
+		{
+			index = findType->second;
+			auto& files = typeIndexToFiles[index];
+			if (auto findEntry = files.find(guid); findEntry != files.end())
+				return 1;
+		}
+		else
+		{
+			index = typeIndexToFiles.size();
+			typeIndexToFiles.push_back({});
+			typeToIndex[type] = static_cast<uint32_t>(index);
+		}
+
+		std::fstream fileIn (filePath, std::ios::binary | std::ios::ate | std::ios::in);
+		if (!fileIn.is_open())
+			return -2;
+
+		uint64_t size = static_cast<uint64_t>(fileIn.tellg());
+		auto& files = typeIndexToFiles[index];
+		files[guid] = static_cast<uint32_t>(entries.guid.size());
+		entries.guid.push_back(guid);
+		entries.type.push_back(type);
+		entries.rawSize.push_back(size);
+		entries.size.push_back(size);
+		entries.location.push_back(fileHeader.endOfFiles);
+		entries.guid_str.push_back(guid);
+		entries.type_str.push_back(type);
+
+		fileIn.seekg(0);
+		AddFile(size, fileIn);
+		return 0;
+	}
 	long BinaryLoader::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
 	{
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
@@ -130,6 +171,21 @@ namespace ResourceHandler
 
 		WriteTail(file, entries, fileHeader.numFiles);
 		fileHeader.tailSize = static_cast<uint32_t>( static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
+		file.seekp(0);
+		file.write((char*)&fileHeader, sizeof(fileHeader));
+	}
+
+	void BinaryLoader::AddFile(uint64_t size, std::fstream & in)
+	{
+		StartProfile;
+		file.seekp(fileHeader.endOfFiles);
+		CopyFile(in, file, 0, fileHeader.endOfFiles, size);
+
+		fileHeader.endOfFiles = file.tellp();
+		fileHeader.numFiles++;
+
+		WriteTail(file, entries, fileHeader.numFiles);
+		fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
 		file.seekp(0);
 		file.write((char*)&fileHeader, sizeof(fileHeader));
 	}

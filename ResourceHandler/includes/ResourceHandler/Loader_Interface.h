@@ -79,7 +79,7 @@ extern "C" DECLDIR uint32_t GetNumberOfTypes_C(ResourceHandler::Loader_Interface
 extern "C" DECLDIR uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface*);
 
 
-struct FILE_C
+extern "C" DECLDIR struct FILE_C
 {
 	uint32_t guid;
 	uint32_t type;

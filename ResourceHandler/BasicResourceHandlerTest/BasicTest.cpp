@@ -130,6 +130,9 @@ namespace BasicResourceHandlerTest
 				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFile was not 'Test File2'");
 				operator delete(data.data);
 
+				bl->Shutdown();
+				result = bl->Init("basictest.dat", ResourceHandler::Mode::EDIT);
+				Assert::IsTrue(result == 0, L"Could not reinit loader");
 
 				std::vector<ResourceHandler::File> files;
 				result = bl->GetFilesOfType("Test", files);

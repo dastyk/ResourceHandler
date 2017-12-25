@@ -15,7 +15,7 @@ namespace ResourceHandler
 	template<class FILE>
 	void writeString(FILE& out, const std::string& str)
 	{
-		uint32_t size = str.size();
+		uint32_t size = static_cast<uint32_t>(str.size());
 		out.write((char*)&size, sizeof(size));
 		out.write(str.c_str(), size);
 	}
@@ -261,6 +261,10 @@ namespace ResourceHandler
 	long BinaryLoader::Shutdown()noexcept
 	{
 		StartProfile;
+		file.close();
+		typeIndexToFiles.clear();
+		typeToIndex.clear();
+
 		return 0;
 	}
 	long BinaryLoader::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
@@ -332,7 +336,7 @@ namespace ResourceHandler
 		}
 		return -2;
 	}
-	long BinaryLoader::Create(Utilz::GUID guid, Utilz::GUID type, const ResourceData & data)noexcept
+	long BinaryLoader::Create(const std::string& guid, const std::string& type, const ResourceData & data)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -358,6 +362,8 @@ namespace ResourceHandler
 		entries.rawSize.push_back(data.size);
 		entries.size.push_back(data.size);
 		entries.location.push_back(fileHeader.endOfFiles);
+		entries.guid_str.push_back(guid);
+		entries.type_str.push_back(type);
 		AddFile(data.size, data.data);
 		return 0;
 	}

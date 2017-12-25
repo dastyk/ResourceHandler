@@ -25,11 +25,6 @@ DECLDIR long InitLoader_C(ResourceHandler::Loader_Interface* loader,const char *
 	return loader->Init(filePath, mode);
 }
 
-DECLDIR long Create_C(ResourceHandler::Loader_Interface* l, uint32_t guid, uint32_t type, void * data, uint64_t size)
-{
-	return l->Create(guid, type, { data, size });
-}
-
 DECLDIR long Read_C(ResourceHandler::Loader_Interface * l, uint32_t guid, uint32_t type, void * data, uint64_t  size)
 {
 	return l->Read(guid, type, { data, size });

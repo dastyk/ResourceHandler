@@ -21,7 +21,7 @@ namespace ResourceHandler
 		long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept override;
 		long Read(Utilz::GUID guid, Utilz::GUID type,const ResourceData& data) noexcept override;
 
-		long Create(Utilz::GUID, Utilz::GUID type, const ResourceData& data)noexcept override;
+		long Create(const std::string&, const std::string& type, const ResourceData& data)noexcept override;
 		long Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
 
 		long Defrag()noexcept override;

@@ -104,6 +104,21 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
+	long BinaryLoader::GetFiles(FILE_C * files, uint32_t numfiles) const noexcept
+	{ 
+		if (numfiles != fileHeader.numFiles)
+			return -1;
+
+		auto& f = files;
+		for (uint32_t i = 0; i < fileHeader.numFiles; i++)
+		{
+			f[i].guid = entries.guid[i].id;
+			f[i].type = entries.type[i].id;
+			f[i].guid_str = entries.guid_str[i].c_str();
+			f[i].type_str = entries.type_str[i].c_str();
+		}
+		return 0;
+	}
 	void BinaryLoader::AddFile(uint64_t size, void* data)
 	{
 		StartProfile;

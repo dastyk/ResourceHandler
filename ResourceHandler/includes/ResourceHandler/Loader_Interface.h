@@ -22,7 +22,13 @@ namespace ResourceHandler
 		std::string guid_str;
 		std::string type_str;
 	};
-
+	struct FILE_C
+	{
+		uint32_t guid;
+		uint32_t type;
+		const char* guid_str;
+		const char* type_str;
+	};
 	class Loader_Interface
 	{
 	public:
@@ -42,6 +48,7 @@ namespace ResourceHandler
 
 		virtual long GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept = 0;
 		virtual long GetFiles(std::vector<File>& files)const noexcept = 0;
+		virtual long GetFiles(FILE_C* files, uint32_t numfiles)const noexcept = 0;
 		virtual long GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept = 0;
 		virtual uint32_t GetNumberOfFiles()const noexcept = 0;
 		virtual uint32_t GetNumberOfTypes()const noexcept = 0;
@@ -79,14 +86,8 @@ extern "C" DECLDIR uint32_t GetNumberOfTypes_C(ResourceHandler::Loader_Interface
 extern "C" DECLDIR uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface*);
 
 
-extern "C" DECLDIR struct FILE_C
-{
-	uint32_t guid;
-	uint32_t type;
-	char* guid_str;
-	char* type_str;
-};
+
 extern "C" DECLDIR long GetFiles_C(ResourceHandler::Loader_Interface* l,
-	FILE_C** files,
-	uint32_t * numFiles);
+	ResourceHandler::FILE_C* files,
+	uint32_t  numFiles);
 #endif

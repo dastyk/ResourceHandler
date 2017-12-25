@@ -147,6 +147,10 @@ namespace BasicResourceHandlerTest
 				Assert::IsTrue(files[1].guid_str == "TestFile2", L"Filesstr not TestFile2");
 				Assert::IsTrue(files[1].type_str == "Test", L"Filestypestr not Test");
 
+				ResourceHandler::FILE_C* fc = new ResourceHandler::FILE_C[2];
+				uint32_t nF = 2;
+				GetFiles_C(bl.get(), fc, nF);
+
 				result = bl->Destroy("TestFile", "Test");
 				Assert::IsTrue(result == 0, L"Could not destroy TestFile");
 				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 10, L"Total file size not 10, after destroy that is next to last");

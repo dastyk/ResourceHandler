@@ -86,6 +86,6 @@ struct FILE_C
 	char* guid_str;
 	char* type_str;
 };
-extern "C" DECLDIR long GetFiles(ResourceHandler::Loader_Interface* l,
+extern "C" DECLDIR long GetFiles_C(ResourceHandler::Loader_Interface* l,
 	FILE_C** files);
 #endif

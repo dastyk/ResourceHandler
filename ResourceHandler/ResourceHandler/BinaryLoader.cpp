@@ -92,7 +92,6 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::GetFiles(std::vector<File>& files) const noexcept
 	{
-		(char**)::cota
 		files.reserve(fileHeader.numFiles);
 		for (uint32_t i = 0; i < fileHeader.numFiles; i++)
 		{

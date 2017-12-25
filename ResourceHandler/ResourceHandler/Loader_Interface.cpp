@@ -90,7 +90,8 @@ DECLDIR uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface * l)
 	return l->GetTotalSizeOfAllFiles();
 }
 #include <objbase.h>
-DECLDIR long GetFiles(ResourceHandler::Loader_Interface * l, FILE_C ** files)
+
+DECLDIR long GetFiles_C(ResourceHandler::Loader_Interface * l, FILE_C ** files)
 {
 	std::vector<ResourceHandler::File> dfiles;
 	long r = l->GetFiles(dfiles);

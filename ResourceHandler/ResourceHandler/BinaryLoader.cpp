@@ -82,8 +82,8 @@ namespace ResourceHandler
 					{
 						entries.guid[f.second],
 						type,
-						"",
-						""
+						entries.guid_str[f.second],
+						entries.type_str[f.second]
 					});
 			}
 			return 0;
@@ -98,8 +98,8 @@ namespace ResourceHandler
 			files.push_back({
 				entries.guid[i],
 				entries.type[i],
-				"",
-				""
+				entries.guid_str[i],
+				entries.type_str[i]
 				});
 		}
 		return 0;

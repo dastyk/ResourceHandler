@@ -1,6 +1,7 @@
 #ifndef _RESOURCE_HANDLER_LOADER_INTERFACE_H_
 #define _RESOURCE_HANDLER_LOADER_INTERFACE_H_
 #include <string>
+#include <vector>
 
 #include <GUID.h>
 

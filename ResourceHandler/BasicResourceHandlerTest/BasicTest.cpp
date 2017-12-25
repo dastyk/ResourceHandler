@@ -130,6 +130,17 @@ namespace BasicResourceHandlerTest
 				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFile was not 'Test File2'");
 				operator delete(data.data);
 
+
+				std::vector<ResourceHandler::File> files;
+				result = bl->GetFilesOfType("Test", files);
+				Assert::IsTrue(result == 0, L"Could not get filesoftype");
+				Assert::IsTrue(files.size() == 2, L"Files size not 2");
+				Assert::IsTrue(files[0].guid == "TestFile", L"Files not TestFile");
+				Assert::IsTrue(files[0].type == "Test", L"Files not Test");
+				Assert::IsTrue(files[1].guid == "TestFile2", L"Files not TestFile2");
+				Assert::IsTrue(files[1].type == "Test", L"Files not Test");
+
+
 				result = bl->Destroy("TestFile", "Test");
 				Assert::IsTrue(result == 0, L"Could not destroy TestFile");
 				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 10, L"Total file size not 10, after destroy that is next to last");

@@ -139,10 +139,13 @@ namespace BasicResourceHandlerTest
 				Assert::IsTrue(result == 0, L"Could not get filesoftype");
 				Assert::IsTrue(files.size() == 2, L"Files size not 2");
 				Assert::IsTrue(files[0].guid == "TestFile", L"Files not TestFile");
-				Assert::IsTrue(files[0].type == "Test", L"Files not Test");
+				Assert::IsTrue(files[0].type == "Test", L"Filestype not Test");
+				Assert::IsTrue(files[0].guid_str == "TestFile", L"Filesstr not TestFile");
+				Assert::IsTrue(files[0].type_str == "Test", L"Filestypestr not Test");
 				Assert::IsTrue(files[1].guid == "TestFile2", L"Files not TestFile2");
-				Assert::IsTrue(files[1].type == "Test", L"Files not Test");
-
+				Assert::IsTrue(files[1].type == "Test", L"Filestype not Test");
+				Assert::IsTrue(files[1].guid_str == "TestFile2", L"Filesstr not TestFile2");
+				Assert::IsTrue(files[1].type_str == "Test", L"Filestypestr not Test");
 
 				result = bl->Destroy("TestFile", "Test");
 				Assert::IsTrue(result == 0, L"Could not destroy TestFile");

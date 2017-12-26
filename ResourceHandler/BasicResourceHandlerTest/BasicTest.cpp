@@ -151,8 +151,8 @@ namespace BasicResourceHandlerTest
 				ResourceHandler::FILE_C* fc = new ResourceHandler::FILE_C[2];
 				uint32_t nF = 2;
 				GetFiles_C(bl.get(), fc, nF);
-
-			/*	std::fstream out("TestFile.txt", std::ios::binary | std::ios::out);
+				/*
+				std::fstream out("TestFile.txt", std::ios::binary | std::ios::out);
 				out.write(buf2, 10);
 				out.close();
 				result = bl->CreateFromFile("TestFile.txt", "TestFileTxt", "Test");
@@ -164,26 +164,26 @@ namespace BasicResourceHandlerTest
 				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFileTxt was not 'Test File2'");
 				operator delete(data.data);*/
 
-				//result = bl->Destroy("TestFile", "Test");
-				//Assert::IsTrue(result == 0, L"Could not destroy TestFile");
-				//Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 29, L"Total file size not 20, after destroy that does not fit");
-				//result = bl->Defrag();
-				//Assert::IsTrue(result == 0, L"Defrag failed");
-				//Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 20, L"Total file size not 20, after defrag");
+				result = bl->Destroy("TestFile", "Test");
+				Assert::IsTrue(result == 0, L"Could not destroy TestFile");
+				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 10, L"Total file size not 20, after destroy that is next to last");
+				result = bl->Defrag();
+				Assert::IsTrue(result == 0, L"Defrag failed");
+				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 10, L"Total file size not 10, after defrag");
 
-				//result = bl->Read("TestFile2", "Test", data);
-				//Assert::IsTrue(result == 0, L"Could not read TestFile2 after defrag");
-				//auto asd = std::string((char*)data.data, data.size);
-				//Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFile2 was not 'Test File2'");
+				result = bl->Read("TestFile2", "Test", data);
+				Assert::IsTrue(result == 0, L"Could not read TestFile2 after defrag");
+				auto asd = std::string((char*)data.data, data.size);
+				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFile2 was not 'Test File2'");
 
-				//result = bl->Destroy("TestFile2", "Test");
-				//Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 10, L"Total file size not 10, after destroying TestFile2 file");
-				//Assert::IsTrue(result == 0, L"Could not destroy TestFile2");
-				//Assert::IsTrue(bl->GetNumberOfFiles() == 0, L"Num files not changed");
+				result = bl->Destroy("TestFile2", "Test");
+				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 0, L"Total file size not 10, after destroying TestFile2 file");
+				Assert::IsTrue(result == 0, L"Could not destroy TestFile2");
+				Assert::IsTrue(bl->GetNumberOfFiles() == 0, L"Num files not changed");
 
-				//result = bl->Defrag();
-				//Assert::IsTrue(result == 0, L"Defrag failed");
-				//Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 10, L"Total file size not 10, after defrag");
+				result = bl->Defrag();
+				Assert::IsTrue(result == 0, L"Defrag failed");
+				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 0, L"Total file size not 0, after defrag");
 
 				bl->Shutdown();
 			}

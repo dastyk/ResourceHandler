@@ -151,18 +151,8 @@ namespace BasicResourceHandlerTest
 				ResourceHandler::FILE_C* fc = new ResourceHandler::FILE_C[2];
 				uint32_t nF = 2;
 				GetFiles_C(bl.get(), fc, nF);
-				/*
-				std::fstream out("TestFile.txt", std::ios::binary | std::ios::out);
-				out.write(buf2, 10);
-				out.close();
-				result = bl->CreateFromFile("TestFile.txt", "TestFileTxt", "Test");
-				Assert::IsTrue(result == 0, L"Could not create from file");
 
-				data.data = operator new(data.size);
-				result = bl->Read("TestFileTxt", "Test", data);
-				Assert::IsTrue(result == 0, L"Could not read TestFileTxt");
-				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFileTxt was not 'Test File2'");
-				operator delete(data.data);*/
+				
 
 				result = bl->Destroy("TestFile", "Test");
 				Assert::IsTrue(result == 0, L"Could not destroy TestFile");
@@ -176,14 +166,33 @@ namespace BasicResourceHandlerTest
 				auto asd = std::string((char*)data.data, data.size);
 				Assert::IsTrue(std::string((char*)data.data, data.size) == "Test File2", L"Content in TestFile2 was not 'Test File2'");
 
-				result = bl->Destroy("TestFile2", "Test");
-				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 0, L"Total file size not 10, after destroying TestFile2 file");
-				Assert::IsTrue(result == 0, L"Could not destroy TestFile2");
-				Assert::IsTrue(bl->GetNumberOfFiles() == 0, L"Num files not changed");
+				//result = bl->Destroy("TestFile2", "Test");
+				//Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 0, L"Total file size not 10, after destroying TestFile2 file");
+				//Assert::IsTrue(result == 0, L"Could not destroy TestFile2");
+				//Assert::IsTrue(bl->GetNumberOfFiles() == 0, L"Num files not changed");
 
-				result = bl->Defrag();
-				Assert::IsTrue(result == 0, L"Defrag failed");
-				Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 0, L"Total file size not 0, after defrag");
+				//result = bl->Defrag();
+				//Assert::IsTrue(result == 0, L"Defrag failed");
+				//Assert::IsTrue(bl->GetTotalSizeOfAllFiles() == 0, L"Total file size not 0, after defrag");
+
+
+				result = bl->CreateFromFile("test.txt", "TestFileTxt", "Test");
+				Assert::IsTrue(result == 0, L"Could not create from file");
+				Assert::IsTrue(bl->GetNumberOfFiles() == 2, L"Num files not 2 before reinit");
+
+				bl->Shutdown();
+				bl.reset();
+				bl = std::make_unique(CreateLoader(ResourceHandler::LoaderType::Binary));
+				result = bl->Init("basictest.dat", ResourceHandler::Mode::EDIT);
+				Assert::IsTrue(result == 0, L"Could not reinit");
+				Assert::IsTrue(bl->GetNumberOfFiles() == 2, L"Numfiles not 2 after reinit");
+				data.data = operator new(data.size);
+				data.size = 4;
+				result = bl->Read("TestFileTxt", "Test", data);
+				Assert::IsTrue(result == 0, L"Could not read TestFileTxt");
+				Assert::IsTrue(std::string((char*)data.data, data.size) == "test", L"Content in test.txt was not 'test'");
+				operator delete(data.data);
+
 
 				bl->Shutdown();
 			}

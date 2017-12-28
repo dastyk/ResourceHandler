@@ -67,31 +67,31 @@ namespace ResourceHandler
 
 }
 #if defined DLL_EXPORT_RESOURCE_HANDLER
-#define DECLDIR  __declspec(dllexport)
+#define DECLDIR_RH extern "C" __declspec(dllexport)
 #else
-#define DECLDIR __declspec(dllimport)
+#define DECLDIR_RH extern "C" __declspec(dllimport)
 #endif
-extern "C" DECLDIR ResourceHandler::Loader_Interface* CreateLoader(ResourceHandler::LoaderType);
-extern "C" DECLDIR long DestroyLoader(ResourceHandler::Loader_Interface*);
-extern "C" DECLDIR long InitLoader_C(ResourceHandler::Loader_Interface*,const char* filePath, ResourceHandler::Mode);
-extern "C" DECLDIR long Read_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type, void* data, uint64_t size);
-extern "C" DECLDIR long Destroy_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type);
-extern "C" DECLDIR long CreateS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, void* data, uint64_t size);
-extern "C" DECLDIR long CreateFromFile_C(ResourceHandler::Loader_Interface*l, const char* path, const char* guid, const char* type);
-extern "C" DECLDIR long Exist_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type);
-extern "C" DECLDIR long ExistS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type);
-extern "C" DECLDIR long ReadS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, void* data, uint64_t size);
-extern "C" DECLDIR long DestroyS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type);
-extern "C" DECLDIR long Defrag_C(ResourceHandler::Loader_Interface*);
-extern "C" DECLDIR long GetSizeOfFile_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type, uint64_t* size);
-extern "C" DECLDIR long GetSizeOfFileS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, uint64_t* size);
-extern "C" DECLDIR uint32_t GetNumberOfFiles_C(ResourceHandler::Loader_Interface*);
-extern "C" DECLDIR uint32_t GetNumberOfTypes_C(ResourceHandler::Loader_Interface*);
-extern "C" DECLDIR uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface*);
+DECLDIR_RH ResourceHandler::Loader_Interface* CreateLoader(ResourceHandler::LoaderType);
+DECLDIR_RH long DestroyLoader(ResourceHandler::Loader_Interface*);
+DECLDIR_RH long InitLoader_C(ResourceHandler::Loader_Interface*,const char* filePath, ResourceHandler::Mode);
+DECLDIR_RH long Read_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type, void* data, uint64_t size);
+DECLDIR_RH long Destroy_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type);
+DECLDIR_RH long CreateS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, void* data, uint64_t size);
+DECLDIR_RH long CreateFromFile_C(ResourceHandler::Loader_Interface*l, const char* path, const char* guid, const char* type);
+DECLDIR_RH long Exist_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type);
+DECLDIR_RH long ExistS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type);
+DECLDIR_RH long ReadS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, void* data, uint64_t size);
+DECLDIR_RH long DestroyS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type);
+DECLDIR_RH long Defrag_C(ResourceHandler::Loader_Interface*);
+DECLDIR_RH long GetSizeOfFile_C(ResourceHandler::Loader_Interface*, uint32_t guid, uint32_t type, uint64_t* size);
+DECLDIR_RH long GetSizeOfFileS_C(ResourceHandler::Loader_Interface*, const char* guid, const char* type, uint64_t* size);
+DECLDIR_RH uint32_t GetNumberOfFiles_C(ResourceHandler::Loader_Interface*);
+DECLDIR_RH uint32_t GetNumberOfTypes_C(ResourceHandler::Loader_Interface*);
+DECLDIR_RH uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface*);
 
 
 
-extern "C" DECLDIR long GetFiles_C(ResourceHandler::Loader_Interface* l,
+DECLDIR_RH long GetFiles_C(ResourceHandler::Loader_Interface* l,
 	ResourceHandler::FILE_C* files,
 	uint32_t  numFiles);
 #endif

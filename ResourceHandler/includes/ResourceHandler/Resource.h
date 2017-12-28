@@ -2,9 +2,9 @@
 #define _RESOURCE_HANDLER_RESOURCE_H_
 
 #if defined DLL_EXPORT_RESOURCE_HANDLER
-#define DECLDIR __declspec(dllexport)
+#define DECLDIR_RH __declspec(dllexport)
 #else
-#define DECLDIR __declspec(dllimport)
+#define DECLDIR_RH __declspec(dllimport)
 #endif
 
 
@@ -19,20 +19,20 @@ namespace ResourceHandler
 	{
 	public:		
 		Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler);
-		DECLDIR ~Resource();
+		DECLDIR_RH ~Resource();
 
-		DECLDIR Resource(const Resource& other);
-		DECLDIR Resource(Resource&& other)noexcept;
-		DECLDIR Resource& operator=(const Resource& other);
-		DECLDIR Resource& operator=(Resource&& other)noexcept;
+		DECLDIR_RH Resource(const Resource& other);
+		DECLDIR_RH Resource(Resource&& other)noexcept;
+		DECLDIR_RH Resource& operator=(const Resource& other);
+		DECLDIR_RH Resource& operator=(Resource&& other)noexcept;
 
-		DECLDIR LoadStatus PeekStatus();
-		DECLDIR LoadStatus GetStatus();
-		DECLDIR LoadStatus GetData(ResourceData& data);
+		DECLDIR_RH LoadStatus PeekStatus();
+		DECLDIR_RH LoadStatus GetStatus();
+		DECLDIR_RH LoadStatus GetData(ResourceData& data);
 
-		DECLDIR void CheckIn();
-		DECLDIR void CheckOut();
-		DECLDIR size_t GetReferenceCount()const;
+		DECLDIR_RH void CheckIn();
+		DECLDIR_RH void CheckOut();
+		DECLDIR_RH size_t GetReferenceCount()const;
 
 		inline size_t GetCheckInCount()const
 		{
@@ -42,7 +42,7 @@ namespace ResourceHandler
 		{
 			return myGUID;
 		}
-		DECLDIR Utilz::GUID Type()const;
+		DECLDIR_RH Utilz::GUID Type()const;
 	private:
 		Utilz::GUID myGUID;
 		size_t checkInCount;

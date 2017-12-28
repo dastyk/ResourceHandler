@@ -53,11 +53,11 @@ namespace ResourceHandler
 
 
 #if defined DLL_EXPORT_RESOURCE_HANDLER
-#define DECLDIR __declspec(dllexport)
+#define DECLDIR_RH __declspec(dllexport)
 #else
-#define DECLDIR __declspec(dllimport)
+#define DECLDIR_RH __declspec(dllimport)
 #endif
-	DECLDIR ResourceHandler_Interface* CreateResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
+	DECLDIR_RH ResourceHandler_Interface* CreateResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
 }
 
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

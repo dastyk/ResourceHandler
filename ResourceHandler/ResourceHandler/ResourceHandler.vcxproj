@@ -70,30 +70,30 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
     <TargetExt>.dll</TargetExt>
     <TargetName>$(ProjectName)D</TargetName>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
     <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
     <TargetExt>.dll</TargetExt>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes\;$(SolutionDir)includes\ResourceHandler/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes/;$(SolutionDir)includes\ResourceHandler/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)Build/$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate/$(Platform)/$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
+    <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
     <TargetExt>.dll</TargetExt>
-    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes\;$(SolutionDir)includes\ResourceHandler/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)../../Profiler\Profiler\Profiler;$(SolutionDir)../../CompileTimeGUID/include;$(SolutionDir)../../ResourceHandler/ResourceHandler/includes/;$(SolutionDir)includes\ResourceHandler/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

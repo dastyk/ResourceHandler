@@ -14,8 +14,7 @@ namespace ResourceHandler
 		COULD_NOT_LOAD		=		1 << 4,
 		LOADED				=		1 << 5,
 		NOT_LOADED			=		1 << 6,
-		NOT_CHECKED_IN		=		1 << 7,
-		LOADING				=		1 << 8
+		LOADING				=		1 << 7
 	};
 
 

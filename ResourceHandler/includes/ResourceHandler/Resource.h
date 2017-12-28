@@ -12,23 +12,36 @@ namespace ResourceHandler
 	class Resource
 	{
 	public:		
-		Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler);
+		Resource(Utilz::GUID guid, Utilz::GUID type) : myGUID(guid), myType(type), checkInCount(0) {}
+		void Reset()
+		{
+			checkInCount = 0;
+		}
+		Resource::Resource(const Resource & other)noexcept
+		{
+			checkInCount = 0;
+			myGUID = other.myGUID;
+		}
+		Resource::Resource(Resource && other) noexcept
+		{
+			checkInCount = other.checkInCount;
+			myGUID = other.myGUID;
+		}
+
+		Resource & Resource::operator=(const Resource & other)noexcept
+		{
+			checkInCount = 0;
+			myGUID = other.myGUID;
+			return *this;
+		}
+		Resource& Resource::operator=(Resource && other) noexcept
+		{
+			checkInCount = other.checkInCount;
+			myGUID = other.myGUID;
+			return *this;
+		}
 		DECLDIR_RH ~Resource();
-
-		DECLDIR_RH Resource(const Resource& other);
-		DECLDIR_RH Resource(Resource&& other)noexcept;
-		DECLDIR_RH Resource& operator=(const Resource& other);
-		DECLDIR_RH Resource& operator=(Resource&& other)noexcept;
-
-		DECLDIR_RH LoadStatus PeekStatus();
-		DECLDIR_RH LoadStatus GetStatus();
-		DECLDIR_RH LoadStatus GetData(ResourceData& data);
-
-		DECLDIR_RH void CheckIn();
-		DECLDIR_RH void CheckOut();
-		DECLDIR_RH size_t GetReferenceCount()const;
-
-		inline size_t GetCheckInCount()const
+		inline uint32_t GetCheckInCount()const
 		{
 			return checkInCount;
 		}
@@ -36,11 +49,17 @@ namespace ResourceHandler
 		{
 			return myGUID;
 		}
-		DECLDIR_RH Utilz::GUID Type()const;
+		inline Utilz::GUID Type()const
+		{
+			return myType;
+		}
+		void operator=(ResourceHandler_Interface* rh);
+		Resource& operator++();
+		Resource& operator--();
 	private:
 		Utilz::GUID myGUID;
-		size_t checkInCount;
-		ResourceHandler_Interface* resourceHandler;
+		Utilz::GUID myType;
+		uint32_t checkInCount;
 	};
 }
 

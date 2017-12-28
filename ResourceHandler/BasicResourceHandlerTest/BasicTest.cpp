@@ -268,17 +268,35 @@ namespace BasicResourceHandlerTest
 				auto rh = std::make_unique(ResourceHandler::CreateResourceHandler(bl, &tp));
 				Assert::IsNotNull(rh.get(), L"Could not create Resource Handler");
 
-				auto resource1 = rh->LoadResource("TestFile", "Test");
-				Assert::IsTrue(resource1.GUID() == Utilz::GUID("TestFile") + Utilz::GUID("Test"));
-				Assert::IsTrue(resource1.GetStatus() & ResourceHandler::LoadStatus::NOT_CHECKED_IN, L"TestFile was checked in");
-				resource1.CheckIn();
-				Assert::IsTrue(resource1.GetStatus() & ResourceHandler::LoadStatus::LOADED, L"Test file could not be loaded");
-				Assert::IsTrue(resource1.GetReferenceCount() == 1, L"Reference Count not 1");
-				Assert::IsTrue(resource1.GetCheckInCount() == 1, L"Check in count was not 1");
-				resource1.CheckIn();
-				Assert::IsTrue(resource1.GetReferenceCount() == 1, L"Reference Count not 1");
-				Assert::IsTrue(resource1.GetCheckInCount() == 2, L"Check in count was not 2");
-	
+				ResourceHandler::Resource resource1("TestFile", "Test");
+				rh->LoadResource(resource1); 
+
+				Assert::IsTrue(01u == rh->GetReferenceCount(resource1), L"Refcount not 0", LINE_INFO());
+				Assert::IsTrue(0u == resource1.GetCheckInCount(), L"CheckInCount not 0", LINE_INFO());
+
+				rh->CheckIn(resource1);
+
+				Assert::IsTrue(1u == rh->GetReferenceCount(resource1), L"Refcount not 1", LINE_INFO());
+				Assert::IsTrue(1u == resource1.GetCheckInCount(), L"CheckInCount not 1", LINE_INFO());
+
+				rh->CheckIn(resource1);
+
+				Assert::IsTrue(1u == rh->GetReferenceCount(resource1), L"Refcount not 1", LINE_INFO());
+				Assert::IsTrue(2u == resource1.GetCheckInCount(), L"CheckInCount not 2", LINE_INFO());
+
+				rh->CheckOut(resource1);
+
+				Assert::IsTrue(1u == rh->GetReferenceCount(resource1), L"Refcount not 1", LINE_INFO());
+				Assert::IsTrue(1u == resource1.GetCheckInCount(), L"CheckInCount not 1", LINE_INFO());
+
+				auto r2 = resource1;
+
+				rh->CheckIn(resource1);
+
+				Assert::IsTrue(2u == rh->GetReferenceCount(resource1), L"Refcount not 2", LINE_INFO());
+				Assert::IsTrue(1u == resource1.GetCheckInCount(), L"CheckInCount not 1", LINE_INFO());
+				Assert::IsTrue(1u == r2.GetCheckInCount(), L"CheckInCount not 1", LINE_INFO());
+
 				bl->Shutdown();
 				delete bl;
 

@@ -1,46 +1,38 @@
 #include <ResourceHandler\Resource.h>
 #include <ResourceHandler\ResourceHandler_Interface.h>
-
+static ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
-	Resource::Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler)
-		: resourceHandler(resourceHandler), myGUID(guid), checkInCount(0)
-	{
-	}
+	//Resource::Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler)
+	//	: resourceHandler(resourceHandler), myGUID(guid), checkInCount(0)
+	//{
+	//}
 
 	Resource::~Resource()
 	{
+		_ASSERT_EXPR(resourceHandler, "A resource never got coupled with a resource handler");
 		if(checkInCount)
-			resourceHandler->CheckOut(myGUID);
+			resourceHandler->CheckOut(*this);
 	}
 
-	Resource::Resource(const Resource & other)
+	void Resource::operator=(ResourceHandler_Interface * rh)
 	{
-		checkInCount = 0;
-		resourceHandler = other.resourceHandler;
-		myGUID = other.myGUID;
-	}
-	Resource::Resource(Resource && other) noexcept
-	{
-		checkInCount = other.checkInCount;
-		resourceHandler = other.resourceHandler;
-		myGUID = other.myGUID;
+		resourceHandler = rh;
 	}
 
-	Resource & Resource::operator=(const Resource & other)
+	Resource & Resource::operator++()
 	{
-		checkInCount = 0;
-		resourceHandler = other.resourceHandler;
-		myGUID = other.myGUID;
+		checkInCount++;
 		return *this;
 	}
-	Resource& Resource::operator=(Resource && other) noexcept
+
+	Resource & Resource::operator--()
 	{
-		checkInCount = other.checkInCount;
-		resourceHandler = other.resourceHandler;
-		myGUID = other.myGUID;
+		checkInCount--;
 		return *this;
 	}
+
+/*
 	LoadStatus Resource::PeekStatus()
 	{
 		return LoadStatus();
@@ -81,8 +73,12 @@ namespace ResourceHandler
 		return resourceHandler->GetReferenceCount(myGUID);
 	}
 
+	Resource::Resource(Utilz::GUID guid, Utilz::GUID type)
+	{
+	}
+
 	Utilz::GUID Resource::Type()const
 	{
 		return Utilz::GUID();
-	}
+	}*/
 }

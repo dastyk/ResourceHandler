@@ -8,7 +8,7 @@
 
 #include "Resource.h"
 #include "Loader_Interface.h"
-
+#include "../DLLExport.h"
 namespace std
 {
 	template<class T>
@@ -52,12 +52,7 @@ namespace ResourceHandler
 	};
 
 
-#if defined DLL_EXPORT_RESOURCE_HANDLER
-#define DECLDIR_RH __declspec(dllexport)
-#else
-#define DECLDIR_RH __declspec(dllimport)
-#endif
-	DECLDIR_RH ResourceHandler_Interface* CreateResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
+	DECLDIR_RH_C ResourceHandler_Interface* CreateResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
 }
 
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

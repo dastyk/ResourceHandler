@@ -1,17 +1,11 @@
 #ifndef _RESOURCE_HANDLER_RESOURCE_H_
 #define _RESOURCE_HANDLER_RESOURCE_H_
 
-#if defined DLL_EXPORT_RESOURCE_HANDLER
-#define DECLDIR_RH __declspec(dllexport)
-#else
-#define DECLDIR_RH __declspec(dllimport)
-#endif
-
-
 #include <GUID.h>
 
 #include "LoadStatus.h"
 #include "ResourceData.h"
+#include "../DLLExport.h"
 namespace ResourceHandler
 {
 	class ResourceHandler_Interface;

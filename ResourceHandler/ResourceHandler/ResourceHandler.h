@@ -3,7 +3,7 @@
 
 #include <unordered_map>
 
-#include <ResourceHandler_Interface.h>
+#include <ResourceHandler\ResourceHandler_Interface.h> 
 #include <Utilz\Sofa.h>
 
 namespace ResourceHandler 

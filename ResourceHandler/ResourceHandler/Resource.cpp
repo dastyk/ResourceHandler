@@ -1,5 +1,5 @@
-#include <Resource.h>
-#include <ResourceHandler_Interface.h>
+#include <ResourceHandler\Resource.h>
+#include <ResourceHandler\ResourceHandler_Interface.h>
 
 namespace ResourceHandler
 {

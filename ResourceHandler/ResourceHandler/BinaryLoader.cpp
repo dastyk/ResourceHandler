@@ -72,6 +72,52 @@ namespace ResourceHandler
 	{
 	}
 
+	long BinaryLoader::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<void(std::fstream&file)>& function)noexcept
+	{
+		StartProfile;
+		if (mode != Mode::EDIT)
+			return -1;
+		size_t index;
+		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
+		{
+			index = findType->second;
+			auto& files = typeIndexToFiles[index];
+			if (auto findEntry = files.find(guid); findEntry != files.end())
+				return 1;
+		}
+		else
+		{
+			index = typeIndexToFiles.size();
+			typeIndexToFiles.push_back({});
+			typeToIndex[type] = static_cast<uint32_t>(index);
+		}
+
+
+		file.seekp(fileHeader.endOfFiles);
+		function(file);
+		uint64_t size = static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles;
+	
+
+		auto& files = typeIndexToFiles[index];
+		files[guid] = static_cast<uint32_t>(entries.guid.size());
+		entries.guid.push_back(guid);
+		entries.type.push_back(type);
+		entries.rawSize.push_back(size);
+		entries.size.push_back(size);
+		entries.location.push_back(fileHeader.endOfFiles);
+		entries.guid_str.push_back(guid);
+		entries.type_str.push_back(type);
+		
+		fileHeader.endOfFiles = file.tellp();
+		fileHeader.numFiles++;
+
+		WriteTail(file, entries, fileHeader.numFiles);
+		fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
+		file.seekp(0);
+		file.write((char*)&fileHeader, sizeof(fileHeader));
+		return 0;
+	}
+
 	long BinaryLoader::CreateFromFile(const char * filePath,const std::string& guid, const std::string & type)noexcept
 	{
 		StartProfile;

@@ -87,7 +87,9 @@ namespace Utilz
 		{
 			if (used + 1 > allocated)
 				Allocate(allocated * 2);
-			return map[key] = used++;
+			auto index = used++;
+			std::get<0>(tvec)[index] = key;
+			return map[key] = index;
 		}
 
 		void add(const Key key, const Types... args)

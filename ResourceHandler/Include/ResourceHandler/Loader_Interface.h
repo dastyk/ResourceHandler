@@ -41,9 +41,9 @@ namespace ResourceHandler
 		virtual long FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept = 0;
 		virtual long FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept = 0;
 		virtual long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept = 0;
-		virtual long Read(Utilz::GUID guid, Utilz::GUID type,const ResourceData& data) noexcept = 0;
+		virtual long Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid& data) noexcept = 0;
 
-		virtual long Create(const std::string& guid,const std::string& type, const ResourceData& data) noexcept = 0;
+		virtual long Create(const std::string& guid,const std::string& type, const ResourceDataVoid& data) noexcept = 0;
 		virtual long CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept = 0;
 		virtual long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<void(std::fstream& file)>& function)noexcept = 0;
 		virtual long Destroy(Utilz::GUID, Utilz::GUID type) noexcept = 0;

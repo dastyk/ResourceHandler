@@ -16,7 +16,7 @@ namespace ResourceHandler
 	struct LoadJob
 	{
 		LoadStatus status;
-		ResourceData data;
+		ResourceDataVoid data;
 	};
 
 	class ResourceHandler : public ResourceHandler_Interface
@@ -27,7 +27,7 @@ namespace ResourceHandler
 		~ResourceHandler();
 		long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) override;
 		void LoadResource(Resource& resource) override;
-		LoadStatus GetData(const Resource& resource, ResourceData& data) override;
+		LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) override;
 		LoadStatus GetStatus(const Resource& resource) override;
 		void CheckIn(Resource& resource) override;
 		void CheckOut(Resource& resource) override;
@@ -41,7 +41,7 @@ namespace ResourceHandler
 
 		Utilz::Sofa<
 				Utilz::GUID, Utilz::GUID::Hasher,
-				ResourceData,
+				ResourceDataVoid,
 				LoadStatus,
 				std::future<LoadJob>,
 				uint32_t>

@@ -40,7 +40,7 @@ namespace ResourceHandler
 		virtual ~ResourceHandler_Interface() {};
 		virtual long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) = 0;
 		virtual	void LoadResource(Resource& resource) = 0;
-		virtual LoadStatus GetData(const Resource& resource, ResourceData& data) = 0;
+		virtual LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) = 0;
 		virtual LoadStatus GetStatus(const Resource& resource) = 0;
 		virtual void CheckIn(Resource& resource) = 0;
 		virtual void CheckOut(Resource& resource) = 0;

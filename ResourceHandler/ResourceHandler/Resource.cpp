@@ -11,8 +11,12 @@ namespace ResourceHandler
 	Resource::~Resource()
 	{
 		_ASSERT_EXPR(resourceHandler, "A resource never got coupled with a resource handler");
-		if(checkInCount)
+		if (checkInCount)
+		{
+			checkInCount = 1;
 			resourceHandler->CheckOut(*this);
+		}
+			
 	}
 
 	void Resource::operator=(ResourceHandler_Interface * rh)

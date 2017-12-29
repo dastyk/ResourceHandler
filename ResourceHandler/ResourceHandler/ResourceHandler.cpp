@@ -9,8 +9,13 @@ namespace ResourceHandler
 		if (exist == 0)
 			return { LoadStatus::NOT_FOUND | LoadStatus::FAILED };
 
-		ResourceData data;
-		auto result = loader->Read(guid, type, data);
+
+		ResourceDataVoid data;
+		auto result = loader->GetSizeOfFile(guid, type, data.size);
+		if(result < 0)
+			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED };
+		data.data = operator new(data.size);
+		result = loader->Read(guid, type, data);
 		if (result < 0)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED };
 
@@ -63,7 +68,7 @@ namespace ResourceHandler
 			index = entries.add(finalGUID);
 			entries.get<Status>(index) = LoadStatus::NOT_LOADED;
 			entries.get<RefCount>(index) = 0;
-			entries.get<Data>(index) = ResourceData();
+			entries.get<Data>(index) = ResourceDataVoid();
 		}
 		if (entries.get<Status>()[index] & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING))
 		{
@@ -73,17 +78,17 @@ namespace ResourceHandler
 
 		resource = this;
 	}
-	LoadStatus ResourceHandler::GetData(const Resource& resource, ResourceData& data)
+	LoadStatus ResourceHandler::GetData(const Resource& resource, ResourceDataVoid& data)
 	{
 		StartProfile;
-		if (auto findRe = entries.find(resource.GUID()); findRe.has_value())
+		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			auto& status = entries.get<Status>(findRe->second);
 			data = entries.get<Data>(findRe->second);
 			if (auto& f = entries.get<Future>(findRe->second); f.valid())
 			{
 				auto result = f.get();
-				result.status ^ LoadStatus::LOADING;
+				result.status = result.status ^ LoadStatus::LOADING;
 				if (result.status & LoadStatus::SUCCESS)
 					status = status ^ LoadStatus::NOT_LOADED;
 				status |= result.status;
@@ -96,13 +101,13 @@ namespace ResourceHandler
 	LoadStatus ResourceHandler::GetStatus(const Resource& resource)
 	{
 		StartProfile;
-		if (auto findRe = entries.find(resource.GUID()); findRe.has_value())
+		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			auto& status = entries.get<Status>(findRe->second);
 			if (auto& f = entries.get<Future>(findRe->second); f.valid())
 			{
 				auto result = f.get();
-				result.status ^ LoadStatus::LOADING;
+				result.status = result.status ^ LoadStatus::LOADING;
 				if (result.status & LoadStatus::SUCCESS)
 					status = status ^ LoadStatus::NOT_LOADED;
 				status |= result.status;
@@ -117,16 +122,16 @@ namespace ResourceHandler
 	{
 		StartProfile;
 		size_t index;
-		if (auto findRe = entries.find(resource.GUID()); findRe.has_value())
+		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			index = findRe->second;
 		}
 		else
 		{
-			index = entries.add(resource.GUID());
+			index = entries.add(resource.GUID() + resource.Type());
 			entries.get<Status>(index) = LoadStatus::NOT_LOADED;
 			entries.get<RefCount>(index) = 0;
-			entries.get<Data>(index) = ResourceData();
+			entries.get<Data>(index) = ResourceDataVoid();
 		}
 		if (resource.GetCheckInCount() == 0)
 		{
@@ -144,7 +149,7 @@ namespace ResourceHandler
 	void ResourceHandler::CheckOut(Resource& resource)
 	{
 		StartProfile;
-		if (auto findRe = entries.find(resource.GUID()); findRe.has_value())
+		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			size_t index = findRe->second;
 			if(resource.GetCheckInCount() == 1)
@@ -155,7 +160,7 @@ namespace ResourceHandler
 	uint32_t ResourceHandler::GetReferenceCount(const Resource& resource)const
 	{
 		StartProfile;
-		if (auto findRe = entries.find(resource.GUID()); findRe.has_value())
+		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			size_t index = findRe->second;
 			return entries.getConst<RefCount>(index);

@@ -21,9 +21,9 @@ namespace ResourceHandler
 		long FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept override;
 		long FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept override;
 		long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept override;
-		long Read(Utilz::GUID guid, Utilz::GUID type,const ResourceData& data) noexcept override;
+		long Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid& data) noexcept override;
 
-		long Create(const std::string&, const std::string& type, const ResourceData& data)noexcept override;
+		long Create(const std::string&, const std::string& type, const ResourceDataVoid& data)noexcept override;
 		long CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept override;
 		long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<void(std::fstream& file)>& function)noexcept override;
 		long Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;

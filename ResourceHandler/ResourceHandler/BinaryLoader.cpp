@@ -355,9 +355,11 @@ namespace ResourceHandler
 		file.open(filePath, m);
 		if (!file.is_open())
 		{
+			if (fs::exists(filePath))
+				return -1;
 			std::ofstream out(filePath, std::ios::binary);
 			if (!out.is_open())
-				return -1;
+				return -2;
 			fileHeader.endOfFiles = sizeof(fileHeader);
 			fileHeader.tailSize = 0;
 			fileHeader.numFiles = 0;
@@ -367,7 +369,7 @@ namespace ResourceHandler
 			out.close();
 			file.open(filePath, m);
 			if (!file.is_open())
-				return -2;
+				return -3;
 			return 0;
 		}
 
@@ -377,7 +379,7 @@ namespace ResourceHandler
 			file.close();
 			std::ofstream out(filePath, std::ios::binary);
 			if (!out.is_open())
-				return -1;
+				return -2;
 			fileHeader.endOfFiles = sizeof(fileHeader);
 			fileHeader.tailSize = 0;
 			fileHeader.numFiles = 0;
@@ -385,7 +387,7 @@ namespace ResourceHandler
 			out.close();
 			file.open(filePath, m);
 			if (!file.is_open())
-				return -2;
+				return -3;
 			return 0;
 		}
 
@@ -393,9 +395,9 @@ namespace ResourceHandler
 		file.read((char*)&fileHeader, sizeof(fileHeader));
 		
 		if (fileHeader.endOfFiles > totalFileSize)
-			return -3;
-		if (fileHeader.endOfFiles + fileHeader.tailSize > totalFileSize)
 			return -4;
+		if (fileHeader.endOfFiles + fileHeader.tailSize > totalFileSize)
+			return -5;
 
 		file.seekg(fileHeader.endOfFiles);
 		ReadTail();
@@ -464,7 +466,7 @@ namespace ResourceHandler
 		}
 		return -1;
 	}
-	long BinaryLoader::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceData & data) noexcept
+	long BinaryLoader::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid & data) noexcept
 	{
 		StartProfile;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
@@ -482,7 +484,7 @@ namespace ResourceHandler
 		}
 		return -2;
 	}
-	long BinaryLoader::Create(const std::string& guid, const std::string& type, const ResourceData & data)noexcept
+	long BinaryLoader::Create(const std::string& guid, const std::string& type, const ResourceDataVoid & data)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)

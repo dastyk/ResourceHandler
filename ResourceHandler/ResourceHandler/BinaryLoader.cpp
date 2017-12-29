@@ -74,7 +74,7 @@ namespace ResourceHandler
 	{
 	}
 
-	long BinaryLoader::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<void(std::fstream&file)>& function)noexcept
+	long BinaryLoader::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<bool(std::fstream&file)>& function)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)

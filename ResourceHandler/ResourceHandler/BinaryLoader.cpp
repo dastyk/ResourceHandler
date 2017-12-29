@@ -96,7 +96,8 @@ namespace ResourceHandler
 
 
 		file.seekp(fileHeader.endOfFiles);
-		function(file);
+		if (!function(file))
+			return -2;
 		uint64_t size = static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles;
 	
 

@@ -156,6 +156,7 @@ TEST(BinaryLoader, CreateFromCallback)
 		{
 			
 			file.write(file1Data, size);
+			return true;
 		};
 
 		auto re = bl->CreateFromCallback("File", "Test", lam);

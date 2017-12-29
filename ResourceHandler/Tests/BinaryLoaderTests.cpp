@@ -152,10 +152,10 @@ TEST(BinaryLoader, CreateFromCallback)
 		EXPECT_EQ(r, 0);
 		char file1Data[] = { "test" };
 		auto size = sizeof(file1Data);
-		auto lam = [&](std::fstream& file)
+		auto lam = [&](std::ostream* file)
 		{
 			
-			file.write(file1Data, size);
+			file->write(file1Data, size);
 			return true;
 		};
 

@@ -25,7 +25,7 @@ namespace ResourceHandler
 
 		long Create(const std::string&, const std::string& type, const ResourceDataVoid& data)noexcept override;
 		long CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept override;
-		long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::fstream&file)>& function)noexcept override;
+		long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::ostream* file)>& function)noexcept override;
 		long Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
 
 		long Defrag()noexcept override;

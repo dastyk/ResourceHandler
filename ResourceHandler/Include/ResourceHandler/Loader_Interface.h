@@ -45,7 +45,7 @@ namespace ResourceHandler
 
 		virtual long Create(const std::string& guid,const std::string& type, const ResourceDataVoid& data) noexcept = 0;
 		virtual long CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept = 0;
-		virtual long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::fstream&file)>& function)noexcept = 0;
+		virtual long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::ostream* file)>& function)noexcept = 0;
 		virtual long Destroy(Utilz::GUID, Utilz::GUID type) noexcept = 0;
 
 		virtual long Defrag()noexcept = 0;

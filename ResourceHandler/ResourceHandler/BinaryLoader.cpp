@@ -74,7 +74,7 @@ namespace ResourceHandler
 	{
 	}
 
-	long BinaryLoader::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<bool(std::fstream&file)>& function)noexcept
+	long BinaryLoader::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<bool(std::ostream* file)>& function)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -96,7 +96,7 @@ namespace ResourceHandler
 
 
 		file.seekp(fileHeader.endOfFiles);
-		if (!function(file))
+		if (!function(&file))
 			return -2;
 		uint64_t size = static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles;
 	

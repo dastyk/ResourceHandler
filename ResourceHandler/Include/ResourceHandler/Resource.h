@@ -17,24 +17,24 @@ namespace ResourceHandler
 		{
 			checkInCount = 0;
 		}
-		Resource::Resource(const Resource & other)noexcept
+		Resource(const Resource & other)noexcept
 		{
 			checkInCount = 0;
 			myGUID = other.myGUID;
 		}
-		Resource::Resource(Resource && other) noexcept
+		Resource(Resource && other) noexcept
 		{
 			checkInCount = other.checkInCount;
 			myGUID = other.myGUID;
 		}
 
-		Resource & Resource::operator=(const Resource & other)noexcept
+		Resource & operator=(const Resource & other)noexcept
 		{
 			checkInCount = 0;
 			myGUID = other.myGUID;
 			return *this;
 		}
-		Resource& Resource::operator=(Resource && other) noexcept
+		Resource& operator=(Resource && other) noexcept
 		{
 			checkInCount = other.checkInCount;
 			myGUID = other.myGUID;

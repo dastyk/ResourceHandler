@@ -54,7 +54,7 @@ namespace ResourceHandler
 		char buff[524288];
 		while (copied < size)
 		{
-			size_t toWrite = std::min(uint64_t(524288), size - copied);
+			size_t toWrite = size_t(std::min(uint64_t(524288), size - copied));
 			copied += toWrite;
 			in.seekg(readPos);
 			in.read(buff, toWrite);
@@ -374,7 +374,7 @@ namespace ResourceHandler
 			return 0;
 		}
 
-		size_t totalFileSize = file.tellg();
+		size_t totalFileSize = size_t(file.tellg());
 		if (totalFileSize < sizeof(fileHeader))
 		{
 			file.close();
@@ -543,7 +543,7 @@ namespace ResourceHandler
 		out.seekp(sizeof(fileHeader));
 		for (size_t i = 0; i < fileHeader.numFiles; i++)
 		{
-			size_t newLocation = out.tellp();
+			uint64_t newLocation = out.tellp();
 			CopyFile(file, out, entries.location[i], newLocation, entries.rawSize[i]);
 			entries.location[i] = newLocation;
 		}

@@ -14,7 +14,7 @@ namespace ResourceHandler
 		auto result = loader->GetSizeOfFile(guid, type, data.size);
 		if(result < 0)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED };
-		data.data = operator new(data.size);
+		data.data = operator new((size_t(data.size)));
 		result = loader->Read(guid, type, data);
 		if (result < 0)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED };

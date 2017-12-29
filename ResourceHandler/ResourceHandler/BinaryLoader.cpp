@@ -32,6 +32,7 @@ namespace ResourceHandler
 	template<class FILE, class TAIL>
 	void WriteTail(FILE& file, TAIL& entries, uint32_t numFiles)
 	{
+		StartProfile;
 		if (numFiles)
 		{
 			file.write((char*)entries.guid.data(),			sizeof(entries.guid[0])		* numFiles);
@@ -48,11 +49,12 @@ namespace ResourceHandler
 	template<class INFILE, class OUTFILE>
 	void CopyFile(INFILE& in, OUTFILE& out, uint64_t readPos, uint64_t writePos, uint64_t size)
 	{
+		StartProfile;
 		uint64_t copied = 0;
-		char buff[1048576];
+		char buff[524288];
 		while (copied < size)
 		{
-			size_t toWrite = std::min(uint64_t(1048576u), size - copied);
+			size_t toWrite = std::min(uint64_t(524288), size - copied);
 			copied += toWrite;
 			in.seekg(readPos);
 			in.read(buff, toWrite);
@@ -107,7 +109,6 @@ namespace ResourceHandler
 		entries.location.push_back(fileHeader.endOfFiles);
 		entries.guid_str.push_back(guid);
 		entries.type_str.push_back(type);
-		
 		fileHeader.endOfFiles = file.tellp();
 		fileHeader.numFiles++;
 
@@ -159,6 +160,7 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
 	{
+		StartProfile;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
 			auto& filesMap = typeIndexToFiles[findType->second];
@@ -179,6 +181,7 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::GetFiles(std::vector<File>& files) const noexcept
 	{
+		StartProfile;
 		files.reserve(fileHeader.numFiles);
 		for (uint32_t i = 0; i < fileHeader.numFiles; i++)
 		{
@@ -193,6 +196,7 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::GetFiles(FILE_C * files, uint32_t numfiles) const noexcept
 	{ 
+		StartProfile;
 		if (numfiles != fileHeader.numFiles)
 			return -1;
 
@@ -205,6 +209,10 @@ namespace ResourceHandler
 			f[i].type_str = entries.type_str[i].c_str();
 		}
 		return 0;
+	}
+	float BinaryLoader::GetFragmentationRatio() const noexcept
+	{
+		return (float)fileHeader.unusedSpace / (float)(fileHeader.endOfFiles - sizeof(fileHeader));
 	}
 	void BinaryLoader::AddFile(uint64_t size, void* data)
 	{
@@ -238,27 +246,40 @@ namespace ResourceHandler
 
 	void BinaryLoader::RemoveFile(uint32_t index)
 	{
-		size_t last = entries.guid.size() - 1;
+		StartProfile;
+		size_t last = fileHeader.numFiles - 1;
+		fileHeader.unusedSpace += entries.rawSize[index];
 		if (last != index)
 		{
-			if (index + 1 == last)
+			/*if (index == entries.newLastIndex[last])
 			{
 				CopyFile(file, file, entries.location[last], entries.location[index], entries.rawSize[last]);
 				fileHeader.endOfFiles -= entries.rawSize[index];
 				entries.location[last] = entries.location[index];
+				fileHeader.lastIndex = index;
 			}
 			else if(entries.rawSize[last] <= entries.rawSize[index])
 			{
 				CopyFile(file, file, entries.location[last], entries.location[index], entries.rawSize[last]);
 				fileHeader.endOfFiles -= entries.rawSize[last];
 				entries.location[last] = entries.location[index];
+				fileHeader.lastIndex = entries.newLastIndex[last];
+				if(entries.rawSize[index] > entries.rawSize[last])
+					fileHeader.unusedSpace += entries.rawSize[index] - entries.rawSize[last];
 			}
-
+			else
+			{
+				fileHeader.lastIndex = index;
+				entries.newLastIndex[index] = entries.newLastIndex[last];
+				fileHeader.unusedSpace += entries.rawSize[index];
+			}*/
 			entries.guid[index] = entries.guid[last];
 			entries.type[index] = entries.type[last];
 			entries.rawSize[index] = entries.rawSize[last];
 			entries.size[index] = entries.size[last];
 			entries.location[index] = entries.location[last];	
+			entries.guid_str[index] = entries.guid_str[last];
+			entries.type_str[index] = entries.type_str[last];
 
 			auto& files = typeIndexToFiles[typeToIndex[entries.type[index]]];
 			files[entries.guid[index]] = index;
@@ -269,6 +290,9 @@ namespace ResourceHandler
 		entries.rawSize.pop_back();
 		entries.size.pop_back();
 		entries.location.pop_back();
+		entries.guid_str.pop_back();
+		entries.type_str.pop_back();
+	
 		if (fileHeader.numFiles-- == 1)
 			fileHeader.endOfFiles = sizeof(fileHeader);
 
@@ -289,6 +313,7 @@ namespace ResourceHandler
 
 	void BinaryLoader::ReadTail()
 	{
+		StartProfile;
 		if (fileHeader.numFiles)
 		{
 			entries.guid.resize(fileHeader.numFiles);
@@ -336,6 +361,8 @@ namespace ResourceHandler
 			fileHeader.endOfFiles = sizeof(fileHeader);
 			fileHeader.tailSize = 0;
 			fileHeader.numFiles = 0;
+			fileHeader.version = version;
+			fileHeader.unusedSpace = 0;
 			out.write((char*)&fileHeader, sizeof(fileHeader));
 			out.close();
 			file.open(filePath, m);
@@ -386,6 +413,7 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
 	{
+		StartProfile;
 		for (auto& files : typeIndexToFiles)
 		{
 			if (auto find = files.find(guid); find != files.end())
@@ -398,6 +426,7 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept
 	{
+		StartProfile;
 		for (auto& files : typeIndexToFiles)
 		{
 			if (auto find = files.find(guid); find != files.end())
@@ -494,7 +523,7 @@ namespace ResourceHandler
 		{
 			auto& files = typeIndexToFiles[findType->second];
 			if (const auto findEntry = files.find(guid); findEntry != files.end())
-			{			
+			{		
 				RemoveFile(findEntry->second);
 				files.erase(guid);
 				return 0;
@@ -519,6 +548,8 @@ namespace ResourceHandler
 		fileHeader.endOfFiles = out.tellp();
 		WriteTail(out, entries, fileHeader.numFiles);
 		out.seekp(0);
+		fileHeader.unusedSpace = 0;
+		fileHeader.version = version;
 		out.write((char*)&fileHeader, sizeof(fileHeader));
 
 		out.close();
@@ -530,6 +561,7 @@ namespace ResourceHandler
 		if (mode == Mode::EDIT)
 			m |= std::ios::out;
 		file.open(filePath, m);
+		
 		return 0;
 	}
 	uint32_t BinaryLoader::GetNumberOfFiles()const noexcept

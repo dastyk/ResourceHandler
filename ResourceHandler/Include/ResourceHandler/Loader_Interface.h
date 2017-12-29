@@ -57,6 +57,7 @@ namespace ResourceHandler
 		virtual uint32_t GetNumberOfFiles()const noexcept = 0;
 		virtual uint32_t GetNumberOfTypes()const noexcept = 0;
 		virtual uint64_t GetTotalSizeOfAllFiles()const noexcept = 0;
+		virtual float GetFragmentationRatio()const noexcept = 0;
 	protected:
 		Loader_Interface() {};
 	};
@@ -85,6 +86,7 @@ DECLDIR_RH_C long GetSizeOfFileS_C(ResourceHandler::Loader_Interface*, const cha
 DECLDIR_RH_C uint32_t GetNumberOfFiles_C(ResourceHandler::Loader_Interface*);
 DECLDIR_RH_C uint32_t GetNumberOfTypes_C(ResourceHandler::Loader_Interface*);
 DECLDIR_RH_C uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface*);
+DECLDIR_RH_C float GetFragmentationRatio_C(ResourceHandler::Loader_Interface*);
 
 
 

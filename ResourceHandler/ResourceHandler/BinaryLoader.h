@@ -10,6 +10,8 @@ namespace ResourceHandler
 	class BinaryLoader : public Loader_Interface
 	{
 	public:
+		static const uint32_t version = 0;
+
 		BinaryLoader()noexcept;
 		~BinaryLoader()noexcept;
 
@@ -35,15 +37,20 @@ namespace ResourceHandler
 		uint32_t GetNumberOfFiles()const noexcept override;
 		uint32_t GetNumberOfTypes()const noexcept override;
 		uint64_t GetTotalSizeOfAllFiles()const noexcept override;
+		float GetFragmentationRatio()const noexcept override;
+
 	private:
+		
 		const char* filePath;
 		std::fstream file;
 		Mode mode;
 		struct FileHeader
 		{
+			uint32_t version;
 			uint32_t tailSize;
 			uint64_t endOfFiles;
 			uint32_t numFiles;
+			uint64_t unusedSpace;
 		}fileHeader;
 		
 		void AddFile(uint64_t size, void* data);

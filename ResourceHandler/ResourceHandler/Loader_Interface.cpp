@@ -94,6 +94,10 @@ DECLDIR_RH_C uint64_t GetTotalSizeOfAllFiles_C(ResourceHandler::Loader_Interface
 {
 	return l->GetTotalSizeOfAllFiles();
 }
+DECLDIR_RH_C float GetFragmentationRatio_C(ResourceHandler::Loader_Interface * l)
+{
+	return l->GetFragmentationRatio();
+}
 #include <objbase.h>
 
 DECLDIR_RH_C long GetFiles_C(ResourceHandler::Loader_Interface * l, ResourceHandler::FILE_C* files, uint32_t numFiles)

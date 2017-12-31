@@ -3,7 +3,7 @@
 #include <optional>
 #include <filesystem>
 #include <fstream>
-
+#include <Utilz\StringReadWrite.h>
 namespace fs = std::experimental::filesystem;
 #ifdef _WIN32
 #include <Windows.h>
@@ -13,22 +13,6 @@ namespace fs = std::experimental::filesystem;
 
 namespace ResourceHandler
 {
-	template<class FILE>
-	void writeString(FILE& out, const std::string& str)
-	{
-		uint32_t size = static_cast<uint32_t>(str.size());
-		out.write((char*)&size, sizeof(size));
-		out.write(str.c_str(), size);
-	}
-	template<class FILE>
-	void readString(FILE& in, std::string& str)
-	{
-		uint32_t size = 0;
-		in.read((char*)&size, sizeof(size));
-		char buffer[512];
-		in.read(buffer, size);
-		str = std::string(buffer, size);
-	}
 	template<class FILE, class TAIL>
 	void WriteTail(FILE& file, TAIL& entries, uint32_t numFiles)
 	{
@@ -41,9 +25,9 @@ namespace ResourceHandler
 			file.write((char*)entries.size.data(),			sizeof(entries.size[0])		* numFiles);
 			file.write((char*)entries.location.data(),		sizeof(entries.location[0]) * numFiles);
 			for (auto& s : entries.guid_str)
-				writeString(file, s);
+				Utilz::writeString(&file, s);
 			for (auto& t : entries.type_str)
-				writeString(file, t);
+				Utilz::writeString(&file, t);
 		}
 	}
 	template<class INFILE, class OUTFILE>
@@ -332,9 +316,9 @@ namespace ResourceHandler
 			file.read((char*)entries.location.data(),	sizeof(entries.location[0]) * fileHeader.numFiles);
 
 			for (auto& f : entries.guid_str)
-				readString(file, f);
+				Utilz::readString(&file, f);
 			for (auto& t : entries.type_str)
-				readString(file, t);
+				Utilz::readString(&file, t);
 			for (uint32_t i = 0; i < fileHeader.numFiles; i++)
 			{
 				if (auto findType = typeToIndex.find(entries.type[i]); findType == typeToIndex.end())

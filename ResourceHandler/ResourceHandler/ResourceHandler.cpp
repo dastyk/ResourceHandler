@@ -1,5 +1,7 @@
 #include "ResourceHandler.h"
 #include <Profiler.h>
+#include "SecretPointer.h"
+ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
 	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, Loader_Interface* loader, ResourcePassThrough* passThrough)
@@ -36,6 +38,7 @@ namespace ResourceHandler
 	{
 		_ASSERT(loader); 
 		_ASSERT(threadPool);
+		resourceHandler = this;
 	}
 
 
@@ -54,7 +57,7 @@ namespace ResourceHandler
 		passThroughs[type].passThrough = passThrough;
 		return 0;
 	}
-	void ResourceHandler::LoadResource(Resource& resource)
+	void ResourceHandler::LoadResource(const Resource& resource)
 	{
 		StartProfile;
 		size_t index;
@@ -75,8 +78,6 @@ namespace ResourceHandler
 			entries.get<Status>()[index] |= LoadStatus::LOADING;
 			entries.get<Future>()[index] = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr));
 		}
-
-		resource = this;
 	}
 	LoadStatus ResourceHandler::GetData(const Resource& resource, ResourceDataVoid& data)
 	{
@@ -98,27 +99,17 @@ namespace ResourceHandler
 		}
 		return LoadStatus::NOT_FOUND;
 	}
-	LoadStatus ResourceHandler::GetStatus(const Resource& resource)
+	LoadStatus ResourceHandler::PeekStatus(const Resource& resource)const
 	{
 		StartProfile;
 		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
-			auto& status = entries.get<Status>(findRe->second);
-			if (auto& f = entries.get<Future>(findRe->second); f.valid())
-			{
-				auto result = f.get();
-				result.status = result.status ^ LoadStatus::LOADING;
-				if (result.status & LoadStatus::SUCCESS)
-					status = status ^ LoadStatus::NOT_LOADED;
-				status |= result.status;
-				entries.get<Data>(findRe->second) = result.data;
-			}		
-			return status;
+			return entries.getConst<Status>(findRe->second);
 		}
 			
-		return LoadStatus::NOT_FOUND;
+		return LoadStatus::NOT_FOUND |LoadStatus::NOT_LOADED | LoadStatus::FAILED;
 	}
-	void ResourceHandler::CheckIn(Resource& resource)
+	void ResourceHandler::CheckIn(const Resource& resource)
 	{
 		StartProfile;
 		size_t index;
@@ -133,20 +124,17 @@ namespace ResourceHandler
 			entries.get<RefCount>(index) = 0;
 			entries.get<Data>(index) = ResourceDataVoid();
 		}
-		if (resource.GetCheckInCount() == 0)
-		{
-			resource = this;
-			entries.get<RefCount>(index)++;
-		}
-			
-		++resource;
+
+		entries.get<RefCount>(index)++;
+
+
 		if (entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING))
 		{
 			entries.get<Status>(index) |= LoadStatus::LOADING;
 			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr));
 		}
 	}
-	void ResourceHandler::CheckOut(Resource& resource)
+	void ResourceHandler::CheckOut(const Resource& resource)
 	{
 		StartProfile;
 		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
@@ -154,7 +142,6 @@ namespace ResourceHandler
 			size_t index = findRe->second;
 			if(resource.GetCheckInCount() == 1)
 				entries.get<RefCount>(index)--;
-			--resource;
 		}
 	}
 	uint32_t ResourceHandler::GetReferenceCount(const Resource& resource)const

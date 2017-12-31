@@ -8,12 +8,11 @@
 #include "../DLLExport.h"
 namespace ResourceHandler
 {
-	class ResourceHandler_Interface;
 	class Resource
 	{
 	public:		
 		Resource(Utilz::GUID guid, Utilz::GUID type) : myGUID(guid), myType(type), checkInCount(0) {}
-		void Reset()
+		inline void Reset()
 		{
 			checkInCount = 0;
 		}
@@ -40,7 +39,7 @@ namespace ResourceHandler
 			myGUID = other.myGUID;
 			return *this;
 		}
-		DECLDIR_RH ~Resource();
+	
 		inline uint32_t GetCheckInCount()const
 		{
 			return checkInCount;
@@ -53,9 +52,14 @@ namespace ResourceHandler
 		{
 			return myType;
 		}
-		void operator=(ResourceHandler_Interface* rh);
-		Resource& operator++();
-		Resource& operator--();
+
+		DECLDIR_RH ~Resource();
+		DECLDIR_RH void Load();
+		DECLDIR_RH void CheckIn();
+		DECLDIR_RH void CheckOut();
+		DECLDIR_RH uint32_t GetReferenceCount()const;
+		DECLDIR_RH LoadStatus GetData(ResourceDataVoid& data);
+		DECLDIR_RH LoadStatus PeekStatus()const;
 	private:
 		Utilz::GUID myGUID;
 		Utilz::GUID myType;

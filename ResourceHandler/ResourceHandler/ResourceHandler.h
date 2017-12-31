@@ -26,15 +26,17 @@ namespace ResourceHandler
 		ResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
 		~ResourceHandler();
 		long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) override;
-		void LoadResource(Resource& resource) override;
+	
+	private:
+		void LoadResource(const Resource& resource) override;
 		LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) override;
-		LoadStatus GetStatus(const Resource& resource) override;
-		void CheckIn(Resource& resource) override;
-		void CheckOut(Resource& resource) override;
+		LoadStatus PeekStatus(const Resource& resource)const override;
+		void CheckIn(const Resource& resource) override;
+		void CheckOut(const Resource& resource) override;
 		uint32_t GetReferenceCount(const Resource& resource)const override;
 
-	private:
-	
+
+
 		Loader_Interface * loader;
 		Utilz::ThreadPool* threadPool;
 

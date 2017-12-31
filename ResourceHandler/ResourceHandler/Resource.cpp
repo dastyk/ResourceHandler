@@ -1,6 +1,7 @@
 #include <ResourceHandler\Resource.h>
 #include <ResourceHandler\ResourceHandler_Interface.h>
-static ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
+#include "SecretPointer.h"
+
 namespace ResourceHandler
 {
 	//Resource::Resource(Utilz::GUID guid, ResourceHandler_Interface* resourceHandler)
@@ -19,22 +20,39 @@ namespace ResourceHandler
 			
 	}
 
-	void Resource::operator=(ResourceHandler_Interface * rh)
+	DECLDIR_RH void Resource::Load()
 	{
-		resourceHandler = rh;
+		resourceHandler->LoadResource(*this);
 	}
 
-	Resource & Resource::operator++()
+	DECLDIR_RH void Resource::CheckIn()
 	{
-		checkInCount++;
-		return *this;
+		if (++checkInCount == 1)
+			resourceHandler->CheckIn(*this);
 	}
 
-	Resource & Resource::operator--()
+	DECLDIR_RH void Resource::CheckOut()
 	{
-		checkInCount--;
-		return *this;
+		if (--checkInCount == 0)
+			resourceHandler->CheckOut(*this);
 	}
+
+	DECLDIR_RH uint32_t Resource::GetReferenceCount() const
+	{
+		return resourceHandler->GetReferenceCount(*this);
+	}
+
+	DECLDIR_RH LoadStatus Resource::GetData(ResourceDataVoid & data)
+	{
+		return resourceHandler->GetData(*this, data);
+	}
+
+	DECLDIR_RH LoadStatus Resource::PeekStatus() const
+	{
+		return resourceHandler->PeekStatus(*this);
+	}
+
+
 
 /*
 	LoadStatus Resource::PeekStatus()

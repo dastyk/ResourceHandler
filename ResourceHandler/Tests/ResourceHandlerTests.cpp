@@ -43,24 +43,23 @@ TEST(ResourceHandler, BasicLoad)
 			EXPECT_TRUE(rh);
 			{
 				ResourceHandler::Resource re("Comp1", "Comp");
-				rh->LoadResource(re);
+				re.Load();
 				EXPECT_EQ(re.GetCheckInCount(), 0);
-				EXPECT_EQ(rh->GetReferenceCount(re), 0);
-				rh->CheckIn(re);
+				EXPECT_EQ(re.GetReferenceCount(), 0);
+				re.CheckIn();
 				EXPECT_EQ(re.GetCheckInCount(), 1);
-				EXPECT_EQ(rh->GetReferenceCount(re), 1);
-				rh->CheckIn(re);
+				EXPECT_EQ(re.GetReferenceCount(), 1);
+				re.CheckIn();
 				EXPECT_EQ(re.GetCheckInCount(), 2);
-				EXPECT_EQ(rh->GetReferenceCount(re), 1);
-				EXPECT_TRUE(rh->GetStatus(re) & ResourceHandler::LoadStatus::LOADED);
+				EXPECT_EQ(re.GetReferenceCount(), 1);
 				ResourceData<Component> comp;
-				EXPECT_TRUE(rh->GetData(re, comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
+				EXPECT_TRUE(re.GetData(comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
 				Component c2{ 1,1,4 };
 				EXPECT_EQ(comp.Get(), c2);
 			}
 			ResourceHandler::Resource re("Comp1", "Comp");
 			EXPECT_EQ(re.GetCheckInCount(), 0);
-			EXPECT_EQ(rh->GetReferenceCount(re), 0);
+			EXPECT_EQ(re.GetReferenceCount(), 0);
 
 			DestroyLoader(bl);
 		}

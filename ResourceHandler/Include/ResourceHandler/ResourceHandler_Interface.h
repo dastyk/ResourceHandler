@@ -39,15 +39,16 @@ namespace ResourceHandler
 
 		virtual ~ResourceHandler_Interface() {};
 		virtual long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) = 0;
-		virtual	void LoadResource(Resource& resource) = 0;
-		virtual LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) = 0;
-		virtual LoadStatus GetStatus(const Resource& resource) = 0;
-		virtual void CheckIn(Resource& resource) = 0;
-		virtual void CheckOut(Resource& resource) = 0;
-		virtual uint32_t GetReferenceCount(const Resource& resource)const = 0;
+	
 	protected:
 		ResourceHandler_Interface() {};
 
+		virtual	void LoadResource(const Resource& resource) = 0;
+		virtual LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) = 0;
+		virtual LoadStatus PeekStatus(const Resource& resource)const = 0;
+		virtual void CheckIn(const Resource& resource) = 0;
+		virtual void CheckOut(const Resource& resource) = 0;
+		virtual uint32_t GetReferenceCount(const Resource& resource)const = 0;
 	};
 
 

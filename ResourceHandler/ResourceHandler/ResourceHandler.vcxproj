@@ -157,6 +157,7 @@
     <ClInclude Include="..\Include\ResourceHandler\ResourceHandler_Interface.h" />
     <ClInclude Include="BinaryLoader.h" />
     <ClInclude Include="ResourceHandler.h" />
+    <ClInclude Include="SecretPointer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryLoader.cpp" />

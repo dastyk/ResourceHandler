@@ -97,7 +97,7 @@ namespace ResourceHandler
 			}
 			return status;
 		}
-		return LoadStatus::NOT_FOUND;
+		return LoadStatus::NOT_FOUND | LoadStatus::NOT_LOADED | LoadStatus::FAILED;
 	}
 	LoadStatus ResourceHandler::PeekStatus(const Resource& resource)const
 	{

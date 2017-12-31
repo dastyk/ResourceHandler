@@ -140,8 +140,7 @@ namespace ResourceHandler
 		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			size_t index = findRe->second;
-			if(resource.GetCheckInCount() == 1)
-				entries.get<RefCount>(index)--;
+			entries.get<RefCount>(index)--;
 		}
 	}
 	uint32_t ResourceHandler::GetReferenceCount(const Resource& resource)const

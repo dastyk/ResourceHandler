@@ -51,8 +51,10 @@ namespace ResourceHandler
 		virtual uint32_t GetReferenceCount(const Resource& resource)const = 0;
 	};
 
-
-	DECLDIR_RH_C ResourceHandler_Interface* CreateResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
+	
 }
-
+DECLDIR_RH_C void DestroyThreadPool(Utilz::ThreadPool* tp);
+DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* tp);
+DECLDIR_RH_C Utilz::ThreadPool* CreateThreadPool(uint32_t numThreads);
+DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::Loader_Interface* loader, Utilz::ThreadPool* threadPool);
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

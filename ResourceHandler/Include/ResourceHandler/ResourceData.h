@@ -10,11 +10,11 @@ struct ResourceDataVoid
 template<class T>
 struct ResourceData
 {
-	ResourceDataVoid& GetVoid()
+	inline ResourceDataVoid& GetVoid()
 	{
 		return data;
 	}
-	const T& Get()const
+	inline const T& Get()const
 	{
 		return *(T*)data.data;
 	}
@@ -24,11 +24,11 @@ private:
 template<>
 struct ResourceData<char*>
 {
-	ResourceDataVoid& GetVoid()
+	inline ResourceDataVoid& GetVoid()
 	{
 		return data;
 	}
-	char* Get()const
+	inline char* Get()const
 	{
 		return (char*)data.data;
 	}

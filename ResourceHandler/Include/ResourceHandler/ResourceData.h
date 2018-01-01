@@ -21,6 +21,20 @@ struct ResourceData
 private:
 	ResourceDataVoid data;
 };
+template<>
+struct ResourceData<char*>
+{
+	ResourceDataVoid& GetVoid()
+	{
+		return data;
+	}
+	char* Get()const
+	{
+		return (char*)data.data;
+	}
+private:
+	ResourceDataVoid data;
+};
 
 
 

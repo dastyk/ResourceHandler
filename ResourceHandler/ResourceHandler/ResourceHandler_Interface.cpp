@@ -8,7 +8,7 @@ DECLDIR_RH_C void DestroyThreadPool(Utilz::ThreadPool * tp)
 
 DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface * rh)
 {
-	delete tp;
+	delete rh;
 }
 
 DECLDIR_RH_C Utilz::ThreadPool * CreateThreadPool(uint32_t numThreads)

@@ -96,6 +96,6 @@ DECLDIR_RH_C long GetFiles_C(ResourceHandler::Loader_Interface* l,
 	ResourceHandler::FILE_C* files,
 	uint32_t  numFiles);
 
-DECLDIR_RH_C uint32_t GetNumberOfFilesOfType(ResourceHandler::Loader_Interface*l, const char* type);
-DECLDIR_RH_C long GetFilesOfType(ResourceHandler::Loader_Interface* l, const char* type, ResourceHandler::FILE_C* files, uint32_t numFiles);
+DECLDIR_RH_C uint32_t GetNumberOfFilesOfType_C(ResourceHandler::Loader_Interface*l, const char* type);
+DECLDIR_RH_C long GetFilesOfType_C(ResourceHandler::Loader_Interface* l, const char* type, ResourceHandler::FILE_C* files, uint32_t numFiles);
 #endif

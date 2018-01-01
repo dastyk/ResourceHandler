@@ -54,7 +54,7 @@ namespace ResourceHandler
 	
 }
 DECLDIR_RH_C void DestroyThreadPool(Utilz::ThreadPool* tp);
-DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* tp);
+DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* rh);
 DECLDIR_RH_C Utilz::ThreadPool* CreateThreadPool(uint32_t numThreads);
 DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::Loader_Interface* loader, Utilz::ThreadPool* threadPool);
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

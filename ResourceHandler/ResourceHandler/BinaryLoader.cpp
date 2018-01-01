@@ -58,6 +58,27 @@ namespace ResourceHandler
 	{
 	}
 
+	long BinaryLoader::GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept
+	{
+		if (auto find = typeToIndex.find(type); find == typeToIndex.end())
+			return -1;
+		else
+		{
+			if (numFiles != uint32_t(typeIndexToFiles[find->second].size()))
+				return -2;
+			uint32_t i = 0;
+			for (auto& f : typeIndexToFiles[find->second])
+			{
+				files[i].guid = entries.guid[f.second].id;
+				files[i].type = entries.type[f.second].id;
+				files[i].guid_str = entries.guid_str[f.second].c_str();
+				files[i].type_str = entries.type_str[f.second].c_str();
+				++i;
+			}
+			return 0;
+		}
+	}
+
 	long BinaryLoader::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<bool(std::ostream* file)>& function)noexcept
 	{
 		StartProfile;
@@ -198,6 +219,15 @@ namespace ResourceHandler
 	float BinaryLoader::GetFragmentationRatio() const noexcept
 	{
 		return (float)fileHeader.unusedSpace / (float)(fileHeader.endOfFiles - sizeof(fileHeader));
+	}
+	uint32_t BinaryLoader::GetNumberOfFilesOfType(Utilz::GUID type) const noexcept
+	{
+		if (auto find = typeToIndex.find(type); find == typeToIndex.end())
+			return 0;
+		else
+		{
+			return uint32_t(typeIndexToFiles[find->second].size());
+		}
 	}
 	void BinaryLoader::AddFile(uint64_t size, void* data)
 	{

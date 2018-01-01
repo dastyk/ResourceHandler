@@ -51,11 +51,13 @@ namespace ResourceHandler
 		virtual long Defrag()noexcept = 0;
 
 		virtual long GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept = 0;
+		virtual long GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept = 0;
 		virtual long GetFiles(std::vector<File>& files)const noexcept = 0;
 		virtual long GetFiles(FILE_C* files, uint32_t numfiles)const noexcept = 0;
 		virtual long GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept = 0;
 		virtual uint32_t GetNumberOfFiles()const noexcept = 0;
 		virtual uint32_t GetNumberOfTypes()const noexcept = 0;
+		virtual uint32_t GetNumberOfFilesOfType(Utilz::GUID type)const noexcept = 0;
 		virtual uint64_t GetTotalSizeOfAllFiles()const noexcept = 0;
 		virtual float GetFragmentationRatio()const noexcept = 0;
 	protected:
@@ -93,4 +95,7 @@ DECLDIR_RH_C float GetFragmentationRatio_C(ResourceHandler::Loader_Interface*);
 DECLDIR_RH_C long GetFiles_C(ResourceHandler::Loader_Interface* l,
 	ResourceHandler::FILE_C* files,
 	uint32_t  numFiles);
+
+DECLDIR_RH_C uint32_t GetNumberOfFilesOfType(ResourceHandler::Loader_Interface*l, const char* type);
+DECLDIR_RH_C long GetFilesOfType(ResourceHandler::Loader_Interface* l, const char* type, ResourceHandler::FILE_C* files, uint32_t numFiles);
 #endif

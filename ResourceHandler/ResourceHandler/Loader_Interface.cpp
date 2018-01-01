@@ -98,9 +98,17 @@ DECLDIR_RH_C float GetFragmentationRatio_C(ResourceHandler::Loader_Interface * l
 {
 	return l->GetFragmentationRatio();
 }
-#include <objbase.h>
-
 DECLDIR_RH_C long GetFiles_C(ResourceHandler::Loader_Interface * l, ResourceHandler::FILE_C* files, uint32_t numFiles)
 {
 	return l->GetFiles(files, numFiles);
+}
+
+DECLDIR_RH_C uint32_t GetNumberOfFilesOfType(ResourceHandler::Loader_Interface * l, const char * type)
+{
+	return l->GetNumberOfFilesOfType(std::string(type));
+}
+
+DECLDIR_RH_C long GetFilesOfType(ResourceHandler::Loader_Interface * l, const char * type, ResourceHandler::FILE_C * files, uint32_t numFiles)
+{
+	return l->GetFilesOfType(std::string(type), files, numFiles);
 }

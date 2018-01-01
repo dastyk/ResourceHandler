@@ -73,7 +73,7 @@ TEST(BinaryLoader, CreateDestroyTwo) {
 		EXPECT_EQ(r, 0);
 		r = CreateS_C(bl, "File2", "Test", file2Data, size2);
 		EXPECT_EQ(r, 1);
-		EXPECT_EQ(GetNumberOfFilesOfType(bl, "Test"), 2);
+		EXPECT_EQ(GetNumberOfFilesOfType_C(bl, "Test"), 2);
 
 		char newfile2Data[sizeof(file2Data)];
 		uint64_t newsize2 = 0;
@@ -126,8 +126,8 @@ TEST(BinaryLoader, CreateFromFile)
 		EXPECT_EQ(re, 0);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
-		EXPECT_EQ(GetNumberOfFilesOfType(bl, "Test"), 1);
-		EXPECT_EQ(GetNumberOfFilesOfType(bl, "Korv"), 0);
+		EXPECT_EQ(GetNumberOfFilesOfType_C(bl, "Test"), 1);
+		EXPECT_EQ(GetNumberOfFilesOfType_C(bl, "Korv"), 0);
 		char newfile1Data[sizeof(file1Data)];
 		uint64_t newsize = 0;
 		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);

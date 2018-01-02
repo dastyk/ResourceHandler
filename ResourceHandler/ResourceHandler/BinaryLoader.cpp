@@ -65,6 +65,8 @@ namespace ResourceHandler
 	{
 	}
 
+
+
 	long BinaryLoader::GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept
 	{
 		if (auto find = typeToIndex.find(type); find == typeToIndex.end())
@@ -551,20 +553,24 @@ namespace ResourceHandler
 				return -3;
 			else
 			{
-				if (data.size <= entries.size[findFile->second])
+				if (data.size == entries.size[findFile->second])
 				{
 					CopyFile((char*)data.data, &file, 0, entries.location[findFile->second], data.size);
-					if (data.size < entries.size[findFile->second])
-					{
-						fileHeader.unusedSpace += entries.size[findFile->second] - data.size;
-						entries.size[findFile->second] = data.size;
 
-						WriteTail(file, entries, fileHeader.numFiles);
-						fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
-						file.seekp(0);
-						file.write((char*)&fileHeader, sizeof(fileHeader));
-					}
 					
+				}
+				else if (data.size < entries.size[findFile->second])
+				{
+					CopyFile((char*)data.data, &file, 0, entries.location[findFile->second], data.size);
+
+					fileHeader.unusedSpace += entries.size[findFile->second] - data.size;
+					entries.size[findFile->second] = data.size;
+					entries.rawSize[findFile->second] = data.size;
+
+					WriteTail(file, entries, fileHeader.numFiles);
+					fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
+					file.seekp(0);
+					file.write((char*)&fileHeader, sizeof(fileHeader));
 				}
 				else
 				{
@@ -577,7 +583,62 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
+	long BinaryLoader::WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
+	{
+		StartProfile;
+		if (mode != Mode::EDIT)
+			return -1;
+		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
+			return -2;
+		else
+		{
+			if (auto findFile = typeIndexToFiles[findType->second].find(guid); findFile == typeIndexToFiles[findType->second].end())
+				return -3;
+			else
+			{
+				if (size == entries.size[findFile->second])
+				{
+					file.seekp(entries.location[findFile->second]);
+					if (!function(&file))
+						return -4;
+					uint64_t asize = static_cast<uint64_t>(file.tellp()) - entries.location[findFile->second];
+					if (size != asize)
+						return -5;
+					
 
+				}
+				else if (size < entries.size[findFile->second])
+				{
+					file.seekp(entries.location[findFile->second]);
+					if (!function(&file))
+						return -4;
+					uint64_t asize = static_cast<uint64_t>(file.tellp()) - entries.location[findFile->second];
+					if (size != asize)
+						return -5;
+
+
+					fileHeader.unusedSpace += entries.size[findFile->second] - size;
+					entries.size[findFile->second] = size;
+					entries.rawSize[findFile->second] = size;
+
+					file.seekp(fileHeader.endOfFiles);
+
+					WriteTail(file, entries, fileHeader.numFiles);
+					fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
+					file.seekp(0);
+					file.write((char*)&fileHeader, sizeof(fileHeader));
+				}
+				else
+				{
+					auto namestr = entries.guid_str[findFile->second];
+					auto typestr = entries.type_str[findFile->second];
+					Destroy(guid, type);
+					CreateFromCallback(namestr, typestr, function);
+				}
+			}
+		}
+		return 0;
+	}
 	long BinaryLoader::Destroy(Utilz::GUID guid, Utilz::GUID type)noexcept
 	{
 		StartProfile;

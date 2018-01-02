@@ -28,7 +28,8 @@ namespace ResourceHandler
 		long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::ostream* file)>& function)noexcept override;
 		
 		long Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid& data)noexcept override;
-		
+		long WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream* file)>& function)noexcept override;
+
 		long Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
 
 		long Defrag()noexcept override;

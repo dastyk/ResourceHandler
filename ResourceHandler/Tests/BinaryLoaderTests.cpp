@@ -310,6 +310,89 @@ TEST(BinaryLoader, CreateAndWrite) {
 
 	fs::remove("cd.dat", err);
 }
+TEST(BinaryLoader, CreateAndWriteFromCallback)
+{
+	std::error_code err;
+	fs::remove("cd.dat", err);
+	{
+		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		EXPECT_TRUE(bl);
+
+		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
+		EXPECT_EQ(r, 0);
+		char file1Data[] = { "test" };
+		auto size = sizeof(file1Data);
+		auto lam = [&](std::ostream* file)
+		{
+
+			file->write(file1Data, size);
+			return true;
+		};
+
+		auto re = bl->CreateFromCallback("File", "Test", lam);
+		EXPECT_EQ(re, 0);
+		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
+		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
+
+		char newfile1Data[sizeof(file1Data)];
+		uint64_t newsize = 0;
+		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
+		EXPECT_EQ(newsize, size);
+		r = ReadS_C(bl, "File", "Test", newfile1Data, newsize);
+		EXPECT_EQ(r, 0);
+		EXPECT_STREQ(newfile1Data, file1Data);
+
+		char file1Data2[] = { "tes" };
+		auto size2 = sizeof(file1Data2);
+		auto lam2 = [&](std::ostream* file)
+		{
+
+			file->write(file1Data2, size2);
+			return true;
+		};
+
+
+		 re = bl->WriteFromCallback("File", "Test", size2, lam2);
+		EXPECT_EQ(re, 0);
+		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
+		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
+
+		char newfile1Data2[sizeof(file1Data2)];
+		 newsize = 0;
+		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
+		EXPECT_EQ(newsize, size2);
+		r = ReadS_C(bl, "File", "Test", newfile1Data2, newsize);
+		EXPECT_EQ(r, 0);
+		EXPECT_STREQ(newfile1Data2, file1Data2);
+
+		char file1Data22[] = { "test123" };
+		auto size22 = sizeof(file1Data22);
+		auto lam22 = [&](std::ostream* file)
+		{
+
+			file->write(file1Data22, size22);
+			return true;
+		};
+
+
+		 re = bl->WriteFromCallback("File", "Test", size22, lam22);
+		EXPECT_EQ(re, 0);
+		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
+		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
+
+		char newfile1Data22[sizeof(file1Data22)];
+		 newsize = 0;
+		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
+		EXPECT_EQ(newsize, size22);
+		r = ReadS_C(bl, "File", "Test", newfile1Data22, newsize);
+		EXPECT_EQ(r, 0);
+		EXPECT_STREQ(newfile1Data22, file1Data22);
+
+		DestroyLoader(bl);
+	}
+
+	fs::remove("cd.dat", err);
+}
 TEST(GUID, std)
 {
 	std::string str = "asasdasd";

@@ -243,7 +243,73 @@ TEST(BinaryLoader, Defrag)
 
 	fs::remove("cd.dat", err);
 }
+TEST(BinaryLoader, CreateAndWrite) {
 
+	std::error_code err;
+	fs::remove("cd.dat", err);
+	{
+		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		EXPECT_TRUE(bl);
+
+		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
+		EXPECT_EQ(r, 0);
+
+		char file1Data[] = { "test" };
+		auto size = sizeof(file1Data);
+		r = CreateS_C(bl, "File1", "Test", file1Data, size);
+		EXPECT_EQ(r, 0);
+		r = CreateS_C(bl, "File1", "Test", file1Data, size);
+		EXPECT_EQ(r, 1);
+
+		char newfile1Data[sizeof(file1Data)];
+		uint64_t newsize = 0;
+		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
+		EXPECT_EQ(newsize, size);
+		r = ReadS_C(bl, "File1", "Test", newfile1Data, newsize);
+		EXPECT_EQ(r, 0);
+		EXPECT_STREQ(newfile1Data, file1Data);
+
+		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
+
+
+		char file1DataS[] = { "asd" };
+		auto sizeS = sizeof(file1DataS);
+		r = WriteS_C(bl, "File1", "Test", file1DataS, sizeS);
+		EXPECT_EQ(r, 0);
+
+		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
+
+
+		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
+		EXPECT_EQ(newsize, sizeS);
+		r = ReadS_C(bl, "File1", "Test", newfile1Data, newsize);
+		EXPECT_EQ(r, 0);
+		EXPECT_STREQ(newfile1Data, file1DataS);
+
+		char file1DataL[] = { "File12" };
+		auto sizeL = sizeof(file1DataL);
+		r = WriteS_C(bl, "File1", "Test", file1DataL, sizeL);
+		EXPECT_EQ(r, 0);
+
+		
+		char newfile1DataL[sizeof(file1DataL)];
+		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
+		EXPECT_EQ(newsize, sizeL);
+		r = ReadS_C(bl, "File1", "Test", newfile1DataL, newsize);
+		EXPECT_EQ(r, 0);
+		EXPECT_STREQ(newfile1DataL, file1DataL);
+
+		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
+
+		r = DestroyS_C(bl, "File1", "Test");
+		EXPECT_EQ(r, 0);
+		EXPECT_EQ(GetNumberOfFiles_C(bl), 0);
+
+		DestroyLoader(bl);
+	}
+
+	fs::remove("cd.dat", err);
+}
 TEST(GUID, std)
 {
 	std::string str = "asasdasd";

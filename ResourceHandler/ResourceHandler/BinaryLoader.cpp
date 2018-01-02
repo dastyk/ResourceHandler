@@ -30,8 +30,8 @@ namespace ResourceHandler
 				Utilz::writeString(&file, t);
 		}
 	}
-	template<class INFILE, class OUTFILE>
-	void CopyFile(INFILE& in, OUTFILE& out, uint64_t readPos, uint64_t writePos, uint64_t size)
+
+	void CopyFile(std::istream* in, std::ostream* out, uint64_t readPos, uint64_t writePos, uint64_t size)
 	{
 		StartProfile;
 		uint64_t copied = 0;
@@ -40,13 +40,20 @@ namespace ResourceHandler
 		{
 			size_t toWrite = size_t(std::min(uint64_t(524288), size - copied));
 			copied += toWrite;
-			in.seekg(readPos);
-			in.read(buff, toWrite);
-			out.seekp(writePos);
-			out.write(buff, toWrite);
+			in->seekg(readPos);
+			in->read(buff, toWrite);
+			out->seekp(writePos);
+			out->write(buff, toWrite);
 			writePos += toWrite;
 			readPos += toWrite;
 		}
+
+	}
+	void CopyFile(char* data, std::ostream* out, uint64_t readPos, uint64_t writePos, uint64_t size)
+	{
+		StartProfile;
+		out->seekp(writePos);
+		out->write(&data[readPos], size);
 
 	}
 	BinaryLoader::BinaryLoader()noexcept
@@ -248,7 +255,7 @@ namespace ResourceHandler
 	{
 		StartProfile;
 		file.seekp(fileHeader.endOfFiles);
-		CopyFile(in, file, 0, fileHeader.endOfFiles, size);
+		CopyFile(&in, &file, 0, fileHeader.endOfFiles, size);
 
 		fileHeader.endOfFiles = file.tellp();
 		fileHeader.numFiles++;
@@ -530,6 +537,47 @@ namespace ResourceHandler
 		AddFile(data.size, data.data);
 		return 0;
 	}
+
+	long BinaryLoader::Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid & data)noexcept
+	{
+		StartProfile;
+		if (mode != Mode::EDIT)
+			return -1;
+		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
+			return -2;
+		else
+		{
+			if (auto findFile = typeIndexToFiles[findType->second].find(guid); findFile == typeIndexToFiles[findType->second].end())
+				return -3;
+			else
+			{
+				if (data.size <= entries.size[findFile->second])
+				{
+					CopyFile((char*)data.data, &file, 0, entries.location[findFile->second], data.size);
+					if (data.size < entries.size[findFile->second])
+					{
+						fileHeader.unusedSpace += entries.size[findFile->second] - data.size;
+						entries.size[findFile->second] = data.size;
+
+						WriteTail(file, entries, fileHeader.numFiles);
+						fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
+						file.seekp(0);
+						file.write((char*)&fileHeader, sizeof(fileHeader));
+					}
+					
+				}
+				else
+				{
+					auto namestr = entries.guid_str[findFile->second];
+					auto typestr = entries.type_str[findFile->second];
+					Destroy(guid, type);
+					Create(namestr, typestr, data);
+				}
+			}
+		}
+		return 0;
+	}
+
 	long BinaryLoader::Destroy(Utilz::GUID guid, Utilz::GUID type)noexcept
 	{
 		StartProfile;
@@ -558,7 +606,7 @@ namespace ResourceHandler
 		for (size_t i = 0; i < fileHeader.numFiles; i++)
 		{
 			uint64_t newLocation = out.tellp();
-			CopyFile(file, out, entries.location[i], newLocation, entries.rawSize[i]);
+			CopyFile(&file, &out, entries.location[i], newLocation, entries.rawSize[i]);
 			entries.location[i] = newLocation;
 		}
 

@@ -60,6 +60,11 @@ DECLDIR_RH_C long ReadS_C(ResourceHandler::Loader_Interface * l, const char * gu
 	return l->Read(std::string(guid), std::string(type), { data, size });
 }
 
+DECLDIR_RH_C long WriteS_C(ResourceHandler::Loader_Interface *l, const char * guid, const char * type, void * data, uint64_t size)
+{
+	return l->Write(std::string(guid), std::string(type), { data, size });
+}
+
 DECLDIR_RH_C long DestroyS_C(ResourceHandler::Loader_Interface *l, const char * guid, const char * type)
 {
 	return l->Destroy(std::string(guid), std::string(type));

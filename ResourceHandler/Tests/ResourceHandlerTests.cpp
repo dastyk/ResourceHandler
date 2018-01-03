@@ -43,7 +43,6 @@ TEST(ResourceHandler, BasicLoad)
 			EXPECT_TRUE(rh);
 			{
 				ResourceHandler::Resource re("Comp1", "Comp");
-				re.Load();
 				EXPECT_EQ(re.GetCheckInCount(), 0);
 				EXPECT_EQ(re.GetReferenceCount(), 0);
 				re.CheckIn();

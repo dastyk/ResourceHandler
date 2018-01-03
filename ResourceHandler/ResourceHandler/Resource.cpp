@@ -15,11 +15,6 @@ namespace ResourceHandler
 			
 	}
 
-	DECLDIR_RH void Resource::Load()
-	{
-		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
-		resourceHandler->LoadResource(*this);
-	}
 
 	DECLDIR_RH void Resource::CheckIn()
 	{
@@ -53,6 +48,29 @@ namespace ResourceHandler
 	{
 		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
 		return resourceHandler->PeekStatus(*this);
+	}
+
+	DECLDIR_RH void Resource::Reset()
+	{
+		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
+		checkInCount = 0;
+		resourceHandler->LoadResource(*this);
+	}
+
+	DECLDIR_RH void Resource::Reset( Resource resources[], uint32_t num)
+	{
+		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
+		for (size_t i = 0; i < num; i++)
+		{
+			resources[i].checkInCount = 0;
+			resourceHandler->LoadResource(resources[i]);
+		}
+	}
+
+	DECLDIR_RH void Resource::Invalidate() const
+	{
+		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
+		resourceHandler->Invalidate(*this);
 	}
 
 }

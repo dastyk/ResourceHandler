@@ -4,33 +4,33 @@
 ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
-	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, Loader_Interface* loader, ResourcePassThrough* passThrough)
+	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, Loader_Interface* loader, ResourcePassThrough* passThrough, LoadStatus extraFlag)
 	{
 		StartProfile;
 		long exist = loader->Exist(guid, type);
 		if (exist == 0)
-			return { LoadStatus::NOT_FOUND | LoadStatus::FAILED };
+			return { LoadStatus::NOT_FOUND | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 
 		ResourceDataVoid data;
 		auto result = loader->GetSizeOfFile(guid, type, data.size);
 		if(result < 0)
-			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED };
+			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 		data.data = operator new((size_t(data.size)));
 		result = loader->Read(guid, type, data);
 		if (result < 0)
-			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED };
+			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 		if (passThrough)
 		{
 			//result = passThrough->passThrough();
 			operator delete(data.data);
 			if(result < 0)
-				return { LoadStatus::PASS_THROUGH_FAILED | LoadStatus::FAILED };
+				return { LoadStatus::PASS_THROUGH_FAILED | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 		}
 
-		return { LoadStatus::SUCCESS | LoadStatus::LOADED, data };
+		return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data };
 	}
 
 	ResourceHandler::ResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool)
@@ -73,10 +73,15 @@ namespace ResourceHandler
 			entries.get<RefCount>(index) = 0;
 			entries.get<Data>(index) = ResourceDataVoid();
 		}
-		if (entries.get<Status>()[index] & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING))
+		if (entries.get<Status>(index) & LoadStatus::INVALIDATED)
 		{
-			entries.get<Status>()[index] |= LoadStatus::LOADING;
-			entries.get<Future>()[index] = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr));
+			entries.get<Status>(index) |= LoadStatus::LOADING;
+			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
+		}
+		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))
+		{
+			entries.get<Status>(index) |= LoadStatus::LOADING;
+			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
 		}
 	}
 	LoadStatus ResourceHandler::GetData(const Resource& resource, ResourceDataVoid& data)
@@ -89,10 +94,14 @@ namespace ResourceHandler
 			if (auto& f = entries.get<Future>(findRe->second); f.valid())
 			{
 				auto result = f.get();
-				result.status = result.status ^ LoadStatus::LOADING;
-				if (result.status & LoadStatus::SUCCESS)
-					status = status ^ LoadStatus::NOT_LOADED;
-				status |= result.status;
+				if (result.status & LoadStatus::INVALIDATED)
+					status = result.status ^ LoadStatus::INVALIDATED;
+				else if (status & LoadStatus::INVALIDATED)
+					status = result.status | LoadStatus::INVALIDATED;
+				else
+					status = result.status;
+				
+				
 				data = entries.get<Data>(findRe->second) = result.data;
 			}
 			return status;
@@ -128,11 +137,17 @@ namespace ResourceHandler
 		entries.get<RefCount>(index)++;
 
 
-		if (entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING))
+		if(entries.get<Status>(index) & LoadStatus::INVALIDATED)
 		{
 			entries.get<Status>(index) |= LoadStatus::LOADING;
-			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr));
+			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
 		}
+		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))
+		{
+			entries.get<Status>(index) |= LoadStatus::LOADING;
+			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
+		}
+		
 	}
 	void ResourceHandler::CheckOut(const Resource& resource)
 	{
@@ -152,5 +167,13 @@ namespace ResourceHandler
 			return entries.getConst<RefCount>(index);
 		}
 		return  0;
+	}
+	void ResourceHandler::Invalidate(const Resource & resource)
+	{
+		StartProfile;
+		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
+		{
+			entries.get<EntryNames::Status>(findRe->second) |= LoadStatus::INVALIDATED;
+		}
 	}
 }

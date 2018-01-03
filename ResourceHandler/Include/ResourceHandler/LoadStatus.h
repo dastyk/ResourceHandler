@@ -7,6 +7,7 @@ namespace ResourceHandler
 {
 	enum class LoadStatus
 	{
+		NONE				=		0 << 0,
 		SUCCESS				=		1 << 0,
 		NOT_FOUND			=		1 << 1,
 		PASS_THROUGH_FAILED	=		1 << 2,
@@ -14,7 +15,8 @@ namespace ResourceHandler
 		COULD_NOT_LOAD		=		1 << 4,
 		LOADED				=		1 << 5,
 		NOT_LOADED			=		1 << 6,
-		LOADING				=		1 << 7
+		LOADING				=		1 << 7,
+		INVALIDATED			=		1 << 8
 	};
 
 

@@ -34,7 +34,7 @@ namespace ResourceHandler
 		void CheckIn(const Resource& resource) override;
 		void CheckOut(const Resource& resource) override;
 		uint32_t GetReferenceCount(const Resource& resource)const override;
-
+		void Invalidate(const Resource& resource)override;
 
 
 		Loader_Interface * loader;

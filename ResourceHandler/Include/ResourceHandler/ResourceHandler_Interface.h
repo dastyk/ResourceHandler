@@ -49,6 +49,7 @@ namespace ResourceHandler
 		virtual void CheckIn(const Resource& resource) = 0;
 		virtual void CheckOut(const Resource& resource) = 0;
 		virtual uint32_t GetReferenceCount(const Resource& resource)const = 0;
+		virtual void Invalidate(const Resource& resource) = 0;
 	};
 
 	

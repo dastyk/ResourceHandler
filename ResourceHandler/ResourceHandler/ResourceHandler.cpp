@@ -57,7 +57,7 @@ namespace ResourceHandler
 		passThroughs[type].passThrough = passThrough;
 		return 0;
 	}
-	void ResourceHandler::LoadResource(const Resource& resource, bool invalid = false)
+	void ResourceHandler::LoadResource(const Resource& resource, bool invalid)
 	{
 		StartProfile;
 		size_t index;

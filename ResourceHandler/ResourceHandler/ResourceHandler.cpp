@@ -91,6 +91,8 @@ namespace ResourceHandler
 		{
 			auto& status = entries.get<Status>(findRe->second);
 			data = entries.get<Data>(findRe->second);
+
+			redo:
 			if (auto& f = entries.get<Future>(findRe->second); f.valid())
 			{
 				auto result = f.get();
@@ -104,6 +106,14 @@ namespace ResourceHandler
 				
 				data = entries.get<Data>(findRe->second) = result.data;
 			}
+
+			if (status & LoadStatus::INVALIDATED)
+			{
+				entries.get<Status>(findRe->second) |= LoadStatus::LOADING;
+				entries.get<Future>(findRe->second) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
+				goto redo;
+			}
+
 			return status;
 		}
 		return LoadStatus::NOT_FOUND | LoadStatus::NOT_LOADED | LoadStatus::FAILED;

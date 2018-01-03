@@ -1,4 +1,4 @@
-#include "BinaryLoader.h"
+#include "BinaryFileSystem.h"
 #include <Profiler.h>
 #include <optional>
 #include <filesystem>
@@ -86,18 +86,18 @@ namespace ResourceHandler
 		out->write(&data[readPos], size);
 
 	}
-	BinaryLoader::BinaryLoader()noexcept
+	BinaryFileSystem::BinaryFileSystem()noexcept
 	{
 	}
 
 
-	BinaryLoader::~BinaryLoader()noexcept
+	BinaryFileSystem::~BinaryFileSystem()noexcept
 	{
 	}
 
 
 	
-	long BinaryLoader::GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept
+	long BinaryFileSystem::GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept
 	{
 		Locker lg(lock, mode);
 		if (auto find = typeToIndex.find(type); find == typeToIndex.end())
@@ -119,7 +119,7 @@ namespace ResourceHandler
 		}
 	}
 
-	long BinaryLoader::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<bool(std::ostream* file)>& function)noexcept
+	long BinaryFileSystem::CreateFromCallback(const std::string & guid, const std::string & type, const std::function<bool(std::ostream* file)>& function)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -167,7 +167,7 @@ namespace ResourceHandler
 		return 0;
 	}
 
-	long BinaryLoader::CreateFromFile(const char * filePath,const std::string& guid, const std::string & type)noexcept
+	long BinaryFileSystem::CreateFromFile(const char * filePath,const std::string& guid, const std::string & type)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -207,7 +207,7 @@ namespace ResourceHandler
 		AddFile(size, fileIn);
 		return 0;
 	}
-	long BinaryLoader::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
+	long BinaryFileSystem::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -229,7 +229,7 @@ namespace ResourceHandler
 		}
 		return -1;
 	}
-	long BinaryLoader::GetFiles(std::vector<File>& files) const noexcept
+	long BinaryFileSystem::GetFiles(std::vector<File>& files) const noexcept
 	{
 		StartProfile;
 
@@ -246,7 +246,7 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
-	long BinaryLoader::GetFiles(FILE_C * files, uint32_t numfiles) const noexcept
+	long BinaryFileSystem::GetFiles(FILE_C * files, uint32_t numfiles) const noexcept
 	{ 
 		StartProfile;
 		Locker lg(lock, mode);
@@ -263,12 +263,12 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
-	float BinaryLoader::GetFragmentationRatio() const noexcept
+	float BinaryFileSystem::GetFragmentationRatio() const noexcept
 	{
 		Locker lg(lock, mode);
 		return (float)fileHeader.unusedSpace / (float)(fileHeader.endOfFiles - sizeof(fileHeader));
 	}
-	uint32_t BinaryLoader::GetNumberOfFilesOfType(Utilz::GUID type) const noexcept
+	uint32_t BinaryFileSystem::GetNumberOfFilesOfType(Utilz::GUID type) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -279,7 +279,7 @@ namespace ResourceHandler
 			return uint32_t(typeIndexToFiles[find->second].size());
 		}
 	}
-	long BinaryLoader::GetFile(FILE_C & files, Utilz::GUID guid, Utilz::GUID type) const noexcept
+	long BinaryFileSystem::GetFile(FILE_C & files, Utilz::GUID guid, Utilz::GUID type) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -299,7 +299,7 @@ namespace ResourceHandler
 			}
 		}
 	}
-	void BinaryLoader::AddFile(uint64_t size, void* data)
+	void BinaryFileSystem::AddFile(uint64_t size, void* data)
 	{
 		StartProfile;
 		file.seekp(fileHeader.endOfFiles);
@@ -314,7 +314,7 @@ namespace ResourceHandler
 		file.write((char*)&fileHeader, sizeof(fileHeader));
 	}
 
-	void BinaryLoader::AddFile(uint64_t size, std::fstream & in)
+	void BinaryFileSystem::AddFile(uint64_t size, std::fstream & in)
 	{
 		StartProfile;
 		file.seekp(fileHeader.endOfFiles);
@@ -329,7 +329,7 @@ namespace ResourceHandler
 		file.write((char*)&fileHeader, sizeof(fileHeader));
 	}
 
-	void BinaryLoader::RemoveFile(uint32_t index)
+	void BinaryFileSystem::RemoveFile(uint32_t index)
 	{
 		StartProfile;
 		size_t last = fileHeader.numFiles - 1;
@@ -396,7 +396,7 @@ namespace ResourceHandler
 	}
 
 
-	void BinaryLoader::ReadTail()
+	void BinaryFileSystem::ReadTail()
 	{
 		StartProfile;
 		if (fileHeader.numFiles)
@@ -429,7 +429,7 @@ namespace ResourceHandler
 		}
 	}
 
-	long BinaryLoader::Init(const char* filePath, Mode mode)noexcept
+	long BinaryFileSystem::Init(const char* filePath, Mode mode)noexcept
 	{
 		StartProfile;
 		this->filePath = filePath;
@@ -490,7 +490,7 @@ namespace ResourceHandler
 		
 		return 0;
 	}
-	long BinaryLoader::Shutdown()noexcept
+	long BinaryFileSystem::Shutdown()noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -500,7 +500,7 @@ namespace ResourceHandler
 
 		return 0;
 	}
-	long BinaryLoader::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
+	long BinaryFileSystem::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -514,7 +514,7 @@ namespace ResourceHandler
 		}
 		return -1;
 	}
-	long BinaryLoader::FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept
+	long BinaryFileSystem::FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -530,7 +530,7 @@ namespace ResourceHandler
 		return -1;
 	}
 	
-	long BinaryLoader::Exist(Utilz::GUID guid, Utilz::GUID type) const noexcept
+	long BinaryFileSystem::Exist(Utilz::GUID guid, Utilz::GUID type) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -542,7 +542,7 @@ namespace ResourceHandler
 		}			
 		return 0;
 	}
-	long BinaryLoader::GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size) const noexcept
+	long BinaryFileSystem::GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -557,7 +557,7 @@ namespace ResourceHandler
 		}
 		return -1;
 	}
-	long BinaryLoader::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid & data) noexcept
+	long BinaryFileSystem::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid & data) noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -576,7 +576,7 @@ namespace ResourceHandler
 		}
 		return -2;
 	}
-	long BinaryLoader::Create(const std::string& guid, const std::string& type, const ResourceDataVoid & data)noexcept
+	long BinaryFileSystem::Create(const std::string& guid, const std::string& type, const ResourceDataVoid & data)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -609,7 +609,7 @@ namespace ResourceHandler
 		return 0;
 	}
 
-	long BinaryLoader::Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid & data)noexcept
+	long BinaryFileSystem::Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid & data)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -653,7 +653,7 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
-	long BinaryLoader::WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
+	long BinaryFileSystem::WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -710,7 +710,7 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
-	long BinaryLoader::Destroy(Utilz::GUID guid, Utilz::GUID type)noexcept
+	long BinaryFileSystem::Destroy(Utilz::GUID guid, Utilz::GUID type)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -729,7 +729,7 @@ namespace ResourceHandler
 		}
 		return 1;
 	}
-	long BinaryLoader::Defrag()noexcept
+	long BinaryFileSystem::Defrag()noexcept
 	{
 		if (mode != Mode::EDIT)
 			return -1;
@@ -764,17 +764,17 @@ namespace ResourceHandler
 		
 		return 0;
 	}
-	uint32_t BinaryLoader::GetNumberOfFiles()const noexcept
+	uint32_t BinaryFileSystem::GetNumberOfFiles()const noexcept
 	{
 		Locker lg(lock, mode);
 		return fileHeader.numFiles;
 	}
-	uint32_t BinaryLoader::GetNumberOfTypes()const noexcept
+	uint32_t BinaryFileSystem::GetNumberOfTypes()const noexcept
 	{
 		Locker lg(lock, mode);
 		return static_cast<uint32_t>(typeToIndex.size());
 	}
-	uint64_t BinaryLoader::GetTotalSizeOfAllFiles()const noexcept
+	uint64_t BinaryFileSystem::GetTotalSizeOfAllFiles()const noexcept
 	{
 		Locker lg(lock, mode);
 		return fileHeader.endOfFiles - sizeof(fileHeader);

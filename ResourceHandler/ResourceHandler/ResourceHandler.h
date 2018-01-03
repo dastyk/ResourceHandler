@@ -23,7 +23,7 @@ namespace ResourceHandler
 	{
 		friend class Resource;
 	public:
-		ResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool);
+		ResourceHandler(FileSystem_Interface* loader, Utilz::ThreadPool* threadPool);
 		~ResourceHandler();
 		long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) override;
 	
@@ -37,7 +37,7 @@ namespace ResourceHandler
 		void Invalidate(const Resource& resource)override;
 
 
-		Loader_Interface * loader;
+		FileSystem_Interface * loader;
 		Utilz::ThreadPool* threadPool;
 
 

@@ -2,10 +2,10 @@
 #include <GUID.h>
 #include "../Include/Utilz/ThreadPool.h"
 #include <filesystem>
-#include "../Include/ResourceHandler/Loader_Interface.h"
+#include "../Include/ResourceHandler/FileSystem_Interface.h"
 #include <fstream>
 namespace fs = std::experimental::filesystem;
-TEST(BinaryLoader, CreateDestroy) {
+TEST(BinaryFileSystem, CreateDestroy) {
   
 	std::error_code err;
 	fs::remove("cd.dat", err);
@@ -41,7 +41,7 @@ TEST(BinaryLoader, CreateDestroy) {
 	
 	fs::remove("cd.dat", err);
 }
-TEST(BinaryLoader, CreateDestroyTwo) {
+TEST(BinaryFileSystem, CreateDestroyTwo) {
 
 	std::error_code err;
 	fs::remove("cd.dat", err);
@@ -103,7 +103,7 @@ TEST(BinaryLoader, CreateDestroyTwo) {
 
 	fs::remove("cd.dat", err);
 }
-TEST(BinaryLoader, CreateFromFile)
+TEST(BinaryFileSystem, CreateFromFile)
 {
 	std::error_code err;
 	fs::remove("cd.dat", err);
@@ -142,7 +142,7 @@ TEST(BinaryLoader, CreateFromFile)
 
 	fs::remove("cd.dat", err);
 }
-TEST(BinaryLoader, CreateFromCallback)
+TEST(BinaryFileSystem, CreateFromCallback)
 {
 	std::error_code err;
 	fs::remove("cd.dat", err);
@@ -180,7 +180,7 @@ TEST(BinaryLoader, CreateFromCallback)
 
 	fs::remove("cd.dat", err);
 }
-TEST(BinaryLoader, Defrag)
+TEST(BinaryFileSystem, Defrag)
 {
 	std::error_code err;
 	fs::remove("cd.dat", err);
@@ -243,7 +243,7 @@ TEST(BinaryLoader, Defrag)
 
 	fs::remove("cd.dat", err);
 }
-TEST(BinaryLoader, CreateAndWrite) {
+TEST(BinaryFileSystem, CreateAndWrite) {
 
 	std::error_code err;
 	fs::remove("cd.dat", err);
@@ -310,7 +310,7 @@ TEST(BinaryLoader, CreateAndWrite) {
 
 	fs::remove("cd.dat", err);
 }
-TEST(BinaryLoader, CreateAndWriteFromCallback)
+TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 {
 	std::error_code err;
 	fs::remove("cd.dat", err);

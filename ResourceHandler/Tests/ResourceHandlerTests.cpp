@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <filesystem>
-#include "../Include/ResourceHandler/Loader_Interface.h"
+#include "../Include/ResourceHandler/FileSystem_Interface.h"
 #include "../Include/ResourceHandler/ResourceHandler_Interface.h"
 namespace fs = std::experimental::filesystem;
 TEST(ResourceHandler, BasicLoad)

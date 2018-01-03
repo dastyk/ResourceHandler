@@ -3,18 +3,18 @@
 #include <unordered_map>
 #include <fstream>
 
-#include <ResourceHandler\Loader_Interface.h>
+#include <ResourceHandler\FileSystem_Interface.h>
 #include <mutex>
 
 namespace ResourceHandler
 {
-	class BinaryLoader : public Loader_Interface
+	class BinaryFileSystem : public FileSystem_Interface
 	{
 	public:
 		static const uint32_t version = 0;
 
-		BinaryLoader()noexcept;
-		~BinaryLoader()noexcept;
+		BinaryFileSystem()noexcept;
+		~BinaryFileSystem()noexcept;
 
 		long Init(const char* filePath, Mode mode)noexcept override;
 		long Shutdown()noexcept override;

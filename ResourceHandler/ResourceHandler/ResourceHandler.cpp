@@ -4,7 +4,7 @@
 ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
-	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, Loader_Interface* loader, ResourcePassThrough* passThrough, LoadStatus extraFlag)
+	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, FileSystem_Interface* loader, ResourcePassThrough* passThrough, LoadStatus extraFlag)
 	{
 		StartProfile;
 		long exist = loader->Exist(guid, type);
@@ -33,7 +33,7 @@ namespace ResourceHandler
 		return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data };
 	}
 
-	ResourceHandler::ResourceHandler(Loader_Interface* loader, Utilz::ThreadPool* threadPool)
+	ResourceHandler::ResourceHandler(FileSystem_Interface* loader, Utilz::ThreadPool* threadPool)
 		: loader(loader) , threadPool(threadPool)
 	{
 		_ASSERT(loader); 

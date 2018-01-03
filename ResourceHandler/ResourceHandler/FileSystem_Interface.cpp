@@ -1,10 +1,10 @@
 #include <ResourceHandler\FileSystem_Interface.h>
 #include "BinaryFileSystem.h"
-DECLDIR_RH_C ResourceHandler::FileSystem_Interface * CreateLoader(ResourceHandler::LoaderType t)
+DECLDIR_RH_C ResourceHandler::FileSystem_Interface * CreateFileSystem(ResourceHandler::FileSystemType t)
 {
 	switch (t)
 	{
-	case ResourceHandler::LoaderType::Binary:
+	case ResourceHandler::FileSystemType::Binary:
 		return new ResourceHandler::BinaryFileSystem();
 		break;
 	default:

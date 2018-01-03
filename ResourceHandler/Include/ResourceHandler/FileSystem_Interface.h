@@ -11,6 +11,11 @@
 
 namespace ResourceHandler
 {
+	enum class FileSystemType : uint32_t
+	{
+		Binary
+	};
+
 	enum class Mode
 	{
 		EDIT,
@@ -69,14 +74,10 @@ namespace ResourceHandler
 		FileSystem_Interface() {};
 	};
 
-	enum class LoaderType : uint32_t
-	{
-		Binary
-	};
 
 }
 
-DECLDIR_RH_C ResourceHandler::FileSystem_Interface* CreateLoader(ResourceHandler::LoaderType);
+DECLDIR_RH_C ResourceHandler::FileSystem_Interface* CreateFileSystem(ResourceHandler::FileSystemType);
 DECLDIR_RH_C long DestroyLoader(ResourceHandler::FileSystem_Interface*);
 DECLDIR_RH_C long InitLoader_C(ResourceHandler::FileSystem_Interface*,const char* filePath, ResourceHandler::Mode);
 DECLDIR_RH_C long Read_C(ResourceHandler::FileSystem_Interface*, uint32_t guid, uint32_t type, void* data, uint64_t size);

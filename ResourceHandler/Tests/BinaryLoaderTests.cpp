@@ -10,7 +10,7 @@ TEST(BinaryFileSystem, CreateDestroy) {
 	std::error_code err;
 	fs::remove("cd.dat", err);
 	{
-		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
@@ -46,7 +46,7 @@ TEST(BinaryFileSystem, CreateDestroyTwo) {
 	std::error_code err;
 	fs::remove("cd.dat", err);
 	{
-		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
@@ -108,7 +108,7 @@ TEST(BinaryFileSystem, CreateFromFile)
 	std::error_code err;
 	fs::remove("cd.dat", err);
 	{
-		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
@@ -147,7 +147,7 @@ TEST(BinaryFileSystem, CreateFromCallback)
 	std::error_code err;
 	fs::remove("cd.dat", err);
 	{
-		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
@@ -185,7 +185,7 @@ TEST(BinaryFileSystem, Defrag)
 	std::error_code err;
 	fs::remove("cd.dat", err);
 	{
-		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 		EXPECT_TRUE(bl);
 		int count = 100;
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
@@ -248,7 +248,7 @@ TEST(BinaryFileSystem, CreateAndWrite) {
 	std::error_code err;
 	fs::remove("cd.dat", err);
 	{
-		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
@@ -315,7 +315,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 	std::error_code err;
 	fs::remove("cd.dat", err);
 	{
-		auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);

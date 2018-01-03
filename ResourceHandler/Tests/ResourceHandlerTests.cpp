@@ -17,7 +17,7 @@ TEST(ResourceHandler, BasicLoad)
 			}
 		};
 		{
-			auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+			auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
@@ -33,7 +33,7 @@ TEST(ResourceHandler, BasicLoad)
 
 
 		{
-			auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+			auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
@@ -85,7 +85,7 @@ TEST(ResourceHandler, Invalidate)
 			}
 		};
 		{
-			auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+			auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);
@@ -101,7 +101,7 @@ TEST(ResourceHandler, Invalidate)
 
 
 		{
-			auto bl = CreateLoader(ResourceHandler::LoaderType::Binary);
+			auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);

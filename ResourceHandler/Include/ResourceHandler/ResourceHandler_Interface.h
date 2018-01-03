@@ -4,7 +4,7 @@
 #include <functional>
 
 #include <GUID.h>
-#include <Utilz\ThreadPool.h>
+//#include <Utilz\ThreadPool.h>
 
 #include "Resource.h"
 #include "FileSystem_Interface.h"
@@ -22,9 +22,13 @@ namespace std
 		return std::unique_ptr<T, std::function<void(T*)>>(ptr, deleter);
 	}
 }
-
+namespace Utilz
+{
+	class ThreadPool;
+}
 namespace ResourceHandler
 {
+	
 	enum class MemoryType
 	{
 		RAM,

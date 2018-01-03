@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "../Include/ResourceHandler/FileSystem_Interface.h"
 #include "../Include/ResourceHandler/ResourceHandler_Interface.h"
+#include <Utilz\ThreadPool.h>
 namespace fs = std::experimental::filesystem;
 TEST(ResourceHandler, BasicLoad)
 {

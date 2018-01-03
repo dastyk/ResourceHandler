@@ -5,7 +5,7 @@
 
 #include <ResourceHandler\ResourceHandler_Interface.h> 
 #include <Utilz\Sofa.h>
-
+#include <Utilz\ThreadPool.h>
 namespace ResourceHandler 
 {
 	struct ResourcePassThrough

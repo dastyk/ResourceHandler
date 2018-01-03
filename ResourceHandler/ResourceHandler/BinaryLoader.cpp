@@ -238,6 +238,24 @@ namespace ResourceHandler
 			return uint32_t(typeIndexToFiles[find->second].size());
 		}
 	}
+	long BinaryLoader::GetFile(FILE_C & files, Utilz::GUID guid, Utilz::GUID type) const noexcept
+	{
+		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
+			return -1;
+		else
+		{
+			if (auto findFile = typeIndexToFiles[findType->second].find(guid); findFile == typeIndexToFiles[findType->second].end())
+				return -2;
+			else
+			{
+				files.guid = entries.guid[findFile->second].id;
+				files.type = entries.type[findFile->second].id;
+				files.guid_str = entries.guid_str[findFile->second].c_str();
+				files.type_str = entries.type_str[findFile->second].c_str();
+				return 0;
+			}
+		}
+	}
 	void BinaryLoader::AddFile(uint64_t size, void* data)
 	{
 		StartProfile;

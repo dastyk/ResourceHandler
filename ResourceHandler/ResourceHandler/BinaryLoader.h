@@ -38,6 +38,7 @@ namespace ResourceHandler
 		long GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept override;
 		long GetFiles(std::vector<File>& files)const noexcept override;
 		long GetFiles(FILE_C* files, uint32_t numfiles)const noexcept override;
+		long GetFile(FILE_C& files, Utilz::GUID guid, Utilz::GUID type)const noexcept override;
 		long GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept override;
 		uint32_t GetNumberOfFiles()const noexcept override;
 		uint32_t GetNumberOfTypes()const noexcept override;

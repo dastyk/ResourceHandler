@@ -58,6 +58,7 @@ namespace ResourceHandler
 		virtual long GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept = 0;
 		virtual long GetFiles(std::vector<File>& files)const noexcept = 0;
 		virtual long GetFiles(FILE_C* files, uint32_t numfiles)const noexcept = 0;
+		virtual long GetFile(FILE_C& files, Utilz::GUID guid, Utilz::GUID type)const noexcept = 0;
 		virtual long GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept = 0;
 		virtual uint32_t GetNumberOfFiles()const noexcept = 0;
 		virtual uint32_t GetNumberOfTypes()const noexcept = 0;
@@ -101,6 +102,10 @@ DECLDIR_RH_C long GetFiles_C(ResourceHandler::Loader_Interface* l,
 	ResourceHandler::FILE_C* files,
 	uint32_t  numFiles);
 
+DECLDIR_RH_C long GetFile_C(ResourceHandler::Loader_Interface* l,
+	ResourceHandler::FILE_C* file,
+	uint32_t guid,
+	uint32_t type);
 DECLDIR_RH_C uint32_t GetNumberOfFilesOfType_C(ResourceHandler::Loader_Interface*l, const char* type);
 DECLDIR_RH_C long GetFilesOfType_C(ResourceHandler::Loader_Interface* l, const char* type, ResourceHandler::FILE_C* files, uint32_t numFiles);
 #endif

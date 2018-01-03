@@ -108,6 +108,11 @@ DECLDIR_RH_C long GetFiles_C(ResourceHandler::Loader_Interface * l, ResourceHand
 	return l->GetFiles(files, numFiles);
 }
 
+DECLDIR_RH_C long GetFile_C(ResourceHandler::Loader_Interface * l, ResourceHandler::FILE_C * file, uint32_t guid, uint32_t type)
+{
+	return l->GetFile(*file, guid, type);
+}
+
 DECLDIR_RH_C uint32_t GetNumberOfFilesOfType_C(ResourceHandler::Loader_Interface * l, const char * type)
 {
 	return l->GetNumberOfFilesOfType(std::string(type));

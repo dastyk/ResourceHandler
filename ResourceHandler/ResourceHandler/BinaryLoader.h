@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include <ResourceHandler\Loader_Interface.h>
+#include <mutex>
 
 namespace ResourceHandler
 {
@@ -47,7 +48,7 @@ namespace ResourceHandler
 		float GetFragmentationRatio()const noexcept override;
 
 	private:
-		
+		mutable std::recursive_mutex lock;
 		const char* filePath;
 		std::fstream file;
 		Mode mode;

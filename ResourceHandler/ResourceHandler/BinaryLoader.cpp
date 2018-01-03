@@ -13,6 +13,36 @@ namespace fs = std::experimental::filesystem;
 
 namespace ResourceHandler
 {
+	struct Locker
+	{
+		std::recursive_mutex & mtx;
+		Mode mode;
+		bool locked = false;
+		Locker(std::recursive_mutex& mtx, Mode mode) : mtx(mtx), mode(mode)
+		{
+			if (mode == Mode::EDIT)
+			{
+				locked = true;
+				mtx.lock();
+			}
+
+		}
+		inline void Lock()
+		{
+			if (!locked)
+			{
+				locked = true;
+				mtx.lock();
+
+			}
+
+		}
+		~Locker()
+		{
+			if (locked)
+				mtx.unlock();
+		}
+	};
 	template<class FILE, class TAIL>
 	void WriteTail(FILE& file, TAIL& entries, uint32_t numFiles)
 	{
@@ -66,9 +96,10 @@ namespace ResourceHandler
 	}
 
 
-
+	
 	long BinaryLoader::GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept
 	{
+		Locker lg(lock, mode);
 		if (auto find = typeToIndex.find(type); find == typeToIndex.end())
 			return -1;
 		else
@@ -93,6 +124,8 @@ namespace ResourceHandler
 		StartProfile;
 		if (mode != Mode::EDIT)
 			return -1;
+
+		Locker lg(lock, mode);
 		size_t index;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
@@ -139,6 +172,7 @@ namespace ResourceHandler
 		StartProfile;
 		if (mode != Mode::EDIT)
 			return -1;
+		Locker lg(lock, mode);
 		size_t index;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
@@ -176,6 +210,7 @@ namespace ResourceHandler
 	long BinaryLoader::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
 	{
 		StartProfile;
+		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
 			auto& filesMap = typeIndexToFiles[findType->second];
@@ -192,11 +227,13 @@ namespace ResourceHandler
 			}
 			return 0;
 		}
-		return 0;
+		return -1;
 	}
 	long BinaryLoader::GetFiles(std::vector<File>& files) const noexcept
 	{
 		StartProfile;
+
+		Locker lg(lock, mode);
 		files.reserve(fileHeader.numFiles);
 		for (uint32_t i = 0; i < fileHeader.numFiles; i++)
 		{
@@ -212,6 +249,7 @@ namespace ResourceHandler
 	long BinaryLoader::GetFiles(FILE_C * files, uint32_t numfiles) const noexcept
 	{ 
 		StartProfile;
+		Locker lg(lock, mode);
 		if (numfiles != fileHeader.numFiles)
 			return -1;
 
@@ -227,10 +265,13 @@ namespace ResourceHandler
 	}
 	float BinaryLoader::GetFragmentationRatio() const noexcept
 	{
+		Locker lg(lock, mode);
 		return (float)fileHeader.unusedSpace / (float)(fileHeader.endOfFiles - sizeof(fileHeader));
 	}
 	uint32_t BinaryLoader::GetNumberOfFilesOfType(Utilz::GUID type) const noexcept
 	{
+		StartProfile;
+		Locker lg(lock, mode);
 		if (auto find = typeToIndex.find(type); find == typeToIndex.end())
 			return 0;
 		else
@@ -240,6 +281,8 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::GetFile(FILE_C & files, Utilz::GUID guid, Utilz::GUID type) const noexcept
 	{
+		StartProfile;
+		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
 			return -1;
 		else
@@ -394,6 +437,7 @@ namespace ResourceHandler
 		auto m = std::ios::in | std::ios::binary | std::ios::ate;
 		if (mode == Mode::EDIT)
 			m |= std::ios::out;
+		Locker lg(lock, mode);
 		file.open(filePath, m);
 		if (!file.is_open())
 		{
@@ -449,6 +493,7 @@ namespace ResourceHandler
 	long BinaryLoader::Shutdown()noexcept
 	{
 		StartProfile;
+		Locker lg(lock, mode);
 		file.close();
 		typeIndexToFiles.clear();
 		typeToIndex.clear();
@@ -458,6 +503,7 @@ namespace ResourceHandler
 	long BinaryLoader::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
 	{
 		StartProfile;
+		Locker lg(lock, mode);
 		for (auto& files : typeIndexToFiles)
 		{
 			if (auto find = files.find(guid); find != files.end())
@@ -471,6 +517,7 @@ namespace ResourceHandler
 	long BinaryLoader::FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept
 	{
 		StartProfile;
+		Locker lg(lock, mode);
 		for (auto& files : typeIndexToFiles)
 		{
 			if (auto find = files.find(guid); find != files.end())
@@ -486,6 +533,7 @@ namespace ResourceHandler
 	long BinaryLoader::Exist(Utilz::GUID guid, Utilz::GUID type) const noexcept
 	{
 		StartProfile;
+		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
 			auto& files = typeIndexToFiles[findType->second];
@@ -497,6 +545,7 @@ namespace ResourceHandler
 	long BinaryLoader::GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size) const noexcept
 	{
 		StartProfile;
+		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
 			auto& files = typeIndexToFiles[findType->second];
@@ -511,6 +560,7 @@ namespace ResourceHandler
 	long BinaryLoader::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid & data) noexcept
 	{
 		StartProfile;
+		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
 			auto& files = typeIndexToFiles[findType->second];
@@ -518,7 +568,7 @@ namespace ResourceHandler
 			{
 				if (data.size > entries.size[findEntry->second])
 					return -1;
-
+				lg.Lock();
 				file.seekg(entries.location[findEntry->second]);
 				file.read((char*)data.data, data.size);
 				return 0;
@@ -531,6 +581,7 @@ namespace ResourceHandler
 		StartProfile;
 		if (mode != Mode::EDIT)
 			return -1;
+		Locker lg(lock, mode);
 		size_t index;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
@@ -563,6 +614,7 @@ namespace ResourceHandler
 		StartProfile;
 		if (mode != Mode::EDIT)
 			return -1;
+		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
 			return -2;
 		else
@@ -606,6 +658,7 @@ namespace ResourceHandler
 		StartProfile;
 		if (mode != Mode::EDIT)
 			return -1;
+		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
 			return -2;
 		else
@@ -663,6 +716,7 @@ namespace ResourceHandler
 		if (mode != Mode::EDIT)
 			return -1;
 
+		Locker lg(lock, mode);
 		if (const auto findType = typeToIndex.find(type); findType != typeToIndex.end())
 		{
 			auto& files = typeIndexToFiles[findType->second];
@@ -677,9 +731,13 @@ namespace ResourceHandler
 	}
 	long BinaryLoader::Defrag()noexcept
 	{
+		if (mode != Mode::EDIT)
+			return -1;
+		StartProfile;
+		Locker lg(lock, mode);
 		std::ofstream out("data.temp", std::ios::binary | std::ios::trunc);
 		if (!out.is_open())
-			return -1;
+			return -2;
 
 		out.seekp(sizeof(fileHeader));
 		for (size_t i = 0; i < fileHeader.numFiles; i++)
@@ -701,23 +759,24 @@ namespace ResourceHandler
 		fs::remove(filePath);
 		fs::rename("data.temp", filePath);
 		fs::remove("data.temp");
-		auto m = std::ios::in | std::ios::binary | std::ios::ate;
-		if (mode == Mode::EDIT)
-			m |= std::ios::out;
+		auto m = std::ios::in | std::ios::binary | std::ios::ate | std::ios::out;
 		file.open(filePath, m);
 		
 		return 0;
 	}
 	uint32_t BinaryLoader::GetNumberOfFiles()const noexcept
 	{
+		Locker lg(lock, mode);
 		return fileHeader.numFiles;
 	}
 	uint32_t BinaryLoader::GetNumberOfTypes()const noexcept
 	{
+		Locker lg(lock, mode);
 		return static_cast<uint32_t>(typeToIndex.size());
 	}
 	uint64_t BinaryLoader::GetTotalSizeOfAllFiles()const noexcept
 	{
+		Locker lg(lock, mode);
 		return fileHeader.endOfFiles - sizeof(fileHeader);
 	}
 }

@@ -16,7 +16,8 @@ namespace ResourceHandler
 		LOADED				=		1 << 5,
 		NOT_LOADED			=		1 << 6,
 		LOADING				=		1 << 7,
-		INVALIDATED			=		1 << 8
+		INVALIDATED			=		1 << 8,
+		VALIDATING			=		1 << 9
 	};
 
 

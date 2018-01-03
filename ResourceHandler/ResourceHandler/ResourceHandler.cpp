@@ -76,6 +76,7 @@ namespace ResourceHandler
 		if (entries.get<Status>(index) & LoadStatus::INVALIDATED || invalid)
 		{
 			entries.get<Status>(index) |= LoadStatus::LOADING;
+			entries.get<Status>(index) = (entries.get<Status>(index) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
 			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
 		}
 		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))
@@ -100,16 +101,22 @@ namespace ResourceHandler
 					status = result.status ^ LoadStatus::INVALIDATED;
 				else if (status & LoadStatus::INVALIDATED)
 					status = result.status | LoadStatus::INVALIDATED;
+				else if (status & LoadStatus::VALIDATING)
+					status = result.status | LoadStatus::VALIDATING;
 				else
 					status = result.status;
 				
 				
-				data = entries.get<Data>(findRe->second) = result.data;
+				auto& ddata = entries.get<Data>(findRe->second);
+				if (ddata.data != nullptr)
+					operator delete(ddata.data);
+				data = ddata = result.data;
 			}
 
 			if (status & LoadStatus::INVALIDATED)
 			{
 				entries.get<Status>(findRe->second) |= LoadStatus::LOADING;
+				entries.get<Status>(findRe->second) = (entries.get<Status>(findRe->second) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
 				entries.get<Future>(findRe->second) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
 				goto redo;
 			}
@@ -147,9 +154,10 @@ namespace ResourceHandler
 		entries.get<RefCount>(index)++;
 
 
-		if(entries.get<Status>(index) & LoadStatus::INVALIDATED)
+		if (entries.get<Status>(index) & LoadStatus::INVALIDATED)
 		{
 			entries.get<Status>(index) |= LoadStatus::LOADING;
+			entries.get<Status>(index) = (entries.get<Status>(index) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
 			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
 		}
 		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))

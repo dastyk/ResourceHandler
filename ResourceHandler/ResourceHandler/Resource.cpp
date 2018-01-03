@@ -4,7 +4,17 @@
 
 namespace ResourceHandler
 {
+	Resource::Resource(Utilz::GUID guid, Utilz::GUID type) : myGUID(guid), myType(type), checkInCount(0) 
+	{
+		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
+		resourceHandler->LoadResource(*this);
+	}
+	Resource::Resource(Utilz::GUID guid, Utilz::GUID type, bool createAsInvalid) : myGUID(guid), myType(type), checkInCount(0)
+	{
+		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
+		resourceHandler->LoadResource(*this, createAsInvalid);
 
+	}
 	Resource::~Resource()
 	{
 		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");

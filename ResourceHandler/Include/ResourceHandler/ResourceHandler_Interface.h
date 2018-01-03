@@ -43,7 +43,7 @@ namespace ResourceHandler
 	protected:
 		ResourceHandler_Interface() {};
 
-		virtual	void LoadResource(const Resource& resource) = 0;
+		virtual	void LoadResource(const Resource& resource, bool invalid = false) = 0;
 		virtual LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) = 0;
 		virtual LoadStatus PeekStatus(const Resource& resource)const = 0;
 		virtual void CheckIn(const Resource& resource) = 0;

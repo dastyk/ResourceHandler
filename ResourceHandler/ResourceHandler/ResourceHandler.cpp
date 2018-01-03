@@ -57,7 +57,7 @@ namespace ResourceHandler
 		passThroughs[type].passThrough = passThrough;
 		return 0;
 	}
-	void ResourceHandler::LoadResource(const Resource& resource)
+	void ResourceHandler::LoadResource(const Resource& resource, bool invalid = false)
 	{
 		StartProfile;
 		size_t index;
@@ -73,7 +73,7 @@ namespace ResourceHandler
 			entries.get<RefCount>(index) = 0;
 			entries.get<Data>(index) = ResourceDataVoid();
 		}
-		if (entries.get<Status>(index) & LoadStatus::INVALIDATED)
+		if (entries.get<Status>(index) & LoadStatus::INVALIDATED || invalid)
 		{
 			entries.get<Status>(index) |= LoadStatus::LOADING;
 			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));

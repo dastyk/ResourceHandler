@@ -11,8 +11,7 @@ namespace ResourceHandler
 	class Resource
 	{
 	public:		
-		Resource(Utilz::GUID guid, Utilz::GUID type) : myGUID(guid), myType(type), checkInCount(0) {}
-
+		
 		Resource(const Resource & other)noexcept
 		{
 			checkInCount = 0;
@@ -49,7 +48,9 @@ namespace ResourceHandler
 		{
 			return myType;
 		}
-
+		
+		DECLDIR_RH Resource(Utilz::GUID guid, Utilz::GUID type);
+		DECLDIR_RH Resource(Utilz::GUID guid, Utilz::GUID type, bool createAsInvalid);
 		DECLDIR_RH ~Resource();
 		DECLDIR_RH void CheckIn();
 		DECLDIR_RH void CheckOut();

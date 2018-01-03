@@ -28,7 +28,7 @@ namespace ResourceHandler
 		long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) override;
 	
 	private:
-		void LoadResource(const Resource& resource) override;
+		void LoadResource(const Resource& resource, bool invalid = false) override;
 		LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) override;
 		LoadStatus PeekStatus(const Resource& resource)const override;
 		void CheckIn(const Resource& resource) override;

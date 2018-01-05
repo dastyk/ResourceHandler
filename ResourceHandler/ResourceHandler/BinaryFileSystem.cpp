@@ -658,7 +658,7 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
-#include <Windows.h>
+
 	long BinaryFileSystem::WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
 	{
 		StartProfile;
@@ -763,7 +763,6 @@ namespace ResourceHandler
 		file.close();
 		fs::remove(filePath);
 		fs::rename("data.temp", filePath);
-		fs::remove("data.temp");
 		auto m = std::ios::in | std::ios::binary | std::ios::ate | std::ios::out;
 		file.open(filePath, m);
 		

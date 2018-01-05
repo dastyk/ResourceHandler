@@ -16,31 +16,31 @@ namespace ResourceHandler
 		BinaryFileSystem()noexcept;
 		~BinaryFileSystem()noexcept;
 
-		long Init(const char* filePath, Mode mode)noexcept override;
-		long Shutdown()noexcept override;
+		FILE_ERROR Init(const char* filePath, Mode mode)noexcept override;
+		FILE_ERROR Shutdown()noexcept override;
 
-		long FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept override;
-		long FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept override;
-		long Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept override;
-		long Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid& data) noexcept override;
+		FILE_ERROR FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept override;
+		FILE_ERROR FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept override;
+		bool       Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept override;
+		FILE_ERROR Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid& data) noexcept override;
 
-		long Create(const std::string&, const std::string& type, const ResourceDataVoid& data)noexcept override;
-		long CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept override;
-		long CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::ostream* file)>& function)noexcept override;
+		FILE_ERROR Create(const std::string&, const std::string& type, const ResourceDataVoid& data)noexcept override;
+		FILE_ERROR CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept override;
+		FILE_ERROR CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::ostream* file)>& function)noexcept override;
 		
-		long Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid& data)noexcept override;
-		long WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream* file)>& function)noexcept override;
+		FILE_ERROR Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid& data)noexcept override;
+		FILE_ERROR WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream* file)>& function)noexcept override;
 
-		long Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
+		FILE_ERROR Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
 
-		long Defrag()noexcept override;
+		FILE_ERROR Defrag()noexcept override;
 
-		long GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept override;
-		long GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept override;
-		long GetFiles(std::vector<File>& files)const noexcept override;
-		long GetFiles(FILE_C* files, uint32_t numfiles)const noexcept override;
-		long GetFile(FILE_C& files, Utilz::GUID guid, Utilz::GUID type)const noexcept override;
-		long GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept override;
+		FILE_ERROR GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept override;
+		FILE_ERROR GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept override;
+		FILE_ERROR GetFiles(std::vector<File>& files)const noexcept override;
+		FILE_ERROR GetFiles(FILE_C* files, uint32_t numfiles)const noexcept override;
+		FILE_ERROR GetFile(FILE_C& files, Utilz::GUID guid, Utilz::GUID type)const noexcept override;
+		FILE_ERROR GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept override;
 		uint32_t GetNumberOfFiles()const noexcept override;
 		uint32_t GetNumberOfTypes()const noexcept override;
 		uint32_t GetNumberOfFilesOfType(Utilz::GUID type)const noexcept override;

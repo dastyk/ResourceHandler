@@ -4,6 +4,7 @@
 #include "../Include/ResourceHandler/ResourceHandler_Interface.h"
 #include <Utilz\ThreadPool.h>
 namespace fs = std::experimental::filesystem;
+
 TEST(ResourceHandler, BasicLoad)
 {
 	{
@@ -22,12 +23,12 @@ TEST(ResourceHandler, BasicLoad)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r, 0);
+			EXPECT_EQ(r.errornr, 0);
 
 			Component asd{ 1,1,4 };
 			auto size = sizeof(asd);
 			r = CreateS_C(bl, "Comp1", "Comp", &asd, size);
-			EXPECT_EQ(r, 0);
+			EXPECT_EQ(r.errornr, 0);
 
 			DestroyLoader(bl);
 		}
@@ -38,7 +39,7 @@ TEST(ResourceHandler, BasicLoad)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r, 0);
+			EXPECT_EQ(r.errornr, 0);
 			Utilz::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
@@ -90,12 +91,12 @@ TEST(ResourceHandler, Invalidate)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r, 0);
+			EXPECT_EQ(r.errornr, 0);
 
 			Component asd{ 1,1,4 };
 			auto size = sizeof(asd);
 			r = CreateS_C(bl, "Comp1", "Comp", &asd, size);
-			EXPECT_EQ(r, 0);
+			EXPECT_EQ(r.errornr, 0);
 
 			DestroyLoader(bl);
 		}
@@ -106,7 +107,7 @@ TEST(ResourceHandler, Invalidate)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r, 0);
+			EXPECT_EQ(r.errornr, 0);
 			Utilz::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);

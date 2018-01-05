@@ -1,31 +1,31 @@
 #include "ResourceHandler.h"
 #include <Profiler.h>
 #include "SecretPointer.h"
+#include <File_Error.h>
 ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
 	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, FileSystem_Interface* loader, ResourcePassThrough* passThrough, LoadStatus extraFlag)
 	{
 		StartProfile;
-		long exist = loader->Exist(guid, type);
-		if (exist == 0)
+		if (!loader->Exist(guid, type))
 			return { LoadStatus::NOT_FOUND | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 
 		ResourceDataVoid data;
 		auto result = loader->GetSizeOfFile(guid, type, data.size);
-		if(result < 0)
+		if(result.errornr < 0)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 		data.data = operator new((size_t(data.size)));
 		result = loader->Read(guid, type, data);
-		if (result < 0)
+		if (result.errornr < 0)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 		if (passThrough)
 		{
 			//result = passThrough->passThrough();
 			operator delete(data.data);
-			if(result < 0)
+			if(result.errornr < 0)
 				return { LoadStatus::PASS_THROUGH_FAILED | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 		}

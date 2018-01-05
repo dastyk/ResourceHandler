@@ -703,7 +703,6 @@ namespace ResourceHandler
 					fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
 					file.seekp(0);
 					file.write((char*)&fileHeader, sizeof(fileHeader));
-					);
 				}
 				else
 				{

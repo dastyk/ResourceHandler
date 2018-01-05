@@ -266,7 +266,10 @@ namespace ResourceHandler
 	float BinaryFileSystem::GetFragmentationRatio() const noexcept
 	{
 		Locker lg(lock, mode);
-		return (float)fileHeader.unusedSpace / (float)(fileHeader.endOfFiles - sizeof(fileHeader));
+		if (fileHeader.endOfFiles - sizeof(fileHeader) > 0)
+			return (float)fileHeader.unusedSpace / (float)(fileHeader.endOfFiles - sizeof(fileHeader));
+		else
+			return 0.0f;
 	}
 	uint32_t BinaryFileSystem::GetNumberOfFilesOfType(Utilz::GUID type) const noexcept
 	{
@@ -637,6 +640,8 @@ namespace ResourceHandler
 					entries.size[findFile->second] = data.size;
 					entries.rawSize[findFile->second] = data.size;
 
+					file.seekp(fileHeader.endOfFiles);
+
 					WriteTail(file, entries, fileHeader.numFiles);
 					fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
 					file.seekp(0);
@@ -653,6 +658,7 @@ namespace ResourceHandler
 		}
 		return 0;
 	}
+#include <Windows.h>
 	long BinaryFileSystem::WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
 	{
 		StartProfile;
@@ -676,7 +682,6 @@ namespace ResourceHandler
 					if (size != asize)
 						return -5;
 					
-
 				}
 				else if (size < entries.size[findFile->second])
 				{
@@ -698,6 +703,7 @@ namespace ResourceHandler
 					fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
 					file.seekp(0);
 					file.write((char*)&fileHeader, sizeof(fileHeader));
+					);
 				}
 				else
 				{

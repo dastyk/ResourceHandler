@@ -479,3 +479,73 @@ TEST(ThreadPool, Various)
 		EXPECT_TRUE(x.Do(&tp));
 	}
 }
+
+
+TEST(BinaryFileSystem, WritingSame) {
+
+	std::error_code err;
+	fs::remove("cd.dat", err);
+	{
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
+		EXPECT_TRUE(bl);
+
+		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
+		EXPECT_EQ(r, 0);
+		{
+			char file1Data[] = { "test" };
+			auto size = sizeof(file1Data);
+			r = CreateS_C(bl, "File1", "Test", file1Data, size);
+			EXPECT_EQ(r, 0);
+
+			auto tf = bl->GetTotalSizeOfAllFiles();
+			auto rat = bl->GetFragmentationRatio();
+
+			EXPECT_EQ(tf, 5);
+			EXPECT_FLOAT_EQ(rat, 0.0f);
+
+			for (int i = 0; i < 1000; i++)
+			{
+				r = WriteS_C(bl, "File1", "Test", file1Data, size);
+				EXPECT_EQ(r, 0);
+
+				tf = bl->GetTotalSizeOfAllFiles();
+				rat = bl->GetFragmentationRatio();
+				EXPECT_EQ(tf, 5);
+				EXPECT_FLOAT_EQ(rat, 0.0f);
+			}
+		}
+
+		{
+			char file1Data[] = { "test" };
+			auto size = sizeof(file1Data);
+			auto lam = [&](std::ostream* file)
+			{
+
+				file->write(file1Data, size);
+				return true;
+			};
+
+			auto re = bl->CreateFromCallback("File", "Test", lam);
+			EXPECT_EQ(re, 0);
+			auto tf = bl->GetTotalSizeOfAllFiles();
+			auto rat = bl->GetFragmentationRatio();
+
+			EXPECT_EQ(tf, 10);
+			EXPECT_FLOAT_EQ(rat, 0.0f);
+
+			for (int i = 0; i < 1000; i++)
+			{
+				r = bl->WriteFromCallback( "File1", "Test", 5, lam);
+				EXPECT_EQ(r, 0);
+
+				tf = bl->GetTotalSizeOfAllFiles();
+				rat = bl->GetFragmentationRatio();
+				EXPECT_EQ(tf, 10);
+				EXPECT_FLOAT_EQ(rat, 0.0f);
+			}
+		}
+		DestroyLoader(bl);
+	}
+
+	fs::remove("cd.dat", err);
+}

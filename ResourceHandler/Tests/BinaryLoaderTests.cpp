@@ -191,11 +191,6 @@ TEST(BinaryFileSystem, Defrag)
 		int count = 100;
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
 		EXPECT_EQ(r.errornr, 0);
-		Utilz::GUID f444 = "105";
-		Utilz::GUID f606 = "131";
-		std::string test = "Int";
-		Utilz::GUID testG = test;
-		Utilz::GUID testC("Int");
 
 		for (int i = 0; i < count; i++)
 		{
@@ -239,6 +234,34 @@ TEST(BinaryFileSystem, Defrag)
 		EXPECT_EQ(r.errornr, 0);
 		EXPECT_EQ(GetTotalSizeOfAllFiles_C(bl), sizeof(TestS) * count);
 		EXPECT_EQ(GetFragmentationRatio_C(bl), 0.0f);
+		DestroyLoader(bl);
+	}
+
+	fs::remove("cd.dat", err);
+}
+TEST(BinaryFileSystem, Defrag2)
+{
+	std::error_code err;
+	fs::remove("cd.dat", err);
+	{
+		auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
+		EXPECT_TRUE(bl);
+
+		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
+		EXPECT_EQ(r.errornr, 0);
+
+		int i = 05;
+		auto str = "File";
+		r = bl->Create(str, "Int", { &i, sizeof(i) });
+		EXPECT_EQ(r.errornr, 0);
+
+		r = bl->Defrag();
+		EXPECT_EQ(r.errornr, 0);
+
+
+		EXPECT_TRUE(fs::exists("cd.dat"));
+		EXPECT_FALSE(fs::exists("data.temp"));
+
 		DestroyLoader(bl);
 	}
 

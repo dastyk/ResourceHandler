@@ -756,9 +756,17 @@ namespace ResourceHandler
 		std::error_code err;
 		if(!fs::remove(filePath, err))
 			RETURN_ERROR("Could not remove system file", err.value());
+		if (fs::exists(filePath))
+			RETURN_ERROR_C("File still exists");
+		if (!fs::exists("data.temp"))
+			RETURN_ERROR_C("Temp file does not exist");
 		fs::rename("data.temp", filePath, err);
 		if (err)
 			RETURN_ERROR("Could not rename temporary defrag file", err.value());
+		if (fs::exists("data.temp"))
+			RETURN_ERROR_C("Temp file still exists");
+		if (!fs::exists(filePath))
+			RETURN_ERROR_C("File does not exist");
 		auto m = std::ios::in | std::ios::binary | std::ios::ate | std::ios::out;
 		file.open(filePath, m);
 		if (!file.is_open())

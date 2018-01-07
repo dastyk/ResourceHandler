@@ -7,6 +7,8 @@
 namespace fs = std::experimental::filesystem;
 #ifdef _WIN32
 #include <Windows.h>
+#include <Shlwapi.h>
+#pragma comment(lib, "Shlwapi.lib")
 #undef min
 #undef CopyFile
 #endif
@@ -393,7 +395,7 @@ namespace ResourceHandler
 		file.write((char*)&fileHeader, sizeof(fileHeader));
 
 #ifdef _WIN32
-		HANDLE file = CreateFile(filePath, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE file = CreateFile(filePath.c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		SetFilePointer(file, LONG(fileHeader.endOfFiles + fileHeader.tailSize), 0, FILE_BEGIN);
 		SetEndOfFile(file);
 #endif
@@ -722,12 +724,15 @@ namespace ResourceHandler
 		}
 		RETURN_ERROR_C("File not found");
 	}
+
 	FILE_ERROR BinaryFileSystem::Defrag()noexcept
 	{
 		if (mode != Mode::EDIT)
 			RETURN_ERROR_C("FileSystem not in edit mode");
 		StartProfile;
 		Locker lg(lock, mode);
+
+
 		std::ofstream out("data.temp", std::ios::binary | std::ios::trunc);
 		if (!out.is_open())
 			RETURN_ERROR_C("Could not open temporary defrag file");
@@ -753,20 +758,18 @@ namespace ResourceHandler
 			RETURN_ERROR_C("Could not close system file");
 		if (out.is_open())
 			RETURN_ERROR_C("Could not close temporary defrag file");
+	
+
 		std::error_code err;
-		if(!fs::remove(filePath, err))
-			RETURN_ERROR("Could not remove system file", err.value());
-		if (fs::exists(filePath))
-			RETURN_ERROR_C("File still exists");
-		if (!fs::exists("data.temp"))
-			RETURN_ERROR_C("Temp file does not exist");
+		fs::remove("data.temp2", err);
+		fs::rename(filePath, "data.temp2", err);
+		if (err)
+			RETURN_ERROR_C("Could not rename system file");
 		fs::rename("data.temp", filePath, err);
 		if (err)
-			RETURN_ERROR("Could not rename temporary defrag file", err.value());
-		if (fs::exists("data.temp"))
-			RETURN_ERROR_C("Temp file still exists");
-		if (!fs::exists(filePath))
-			RETURN_ERROR_C("File does not exist");
+			RETURN_ERROR_C("Could not rename temp file");
+		fs::remove("data.temp2", err);
+
 		auto m = std::ios::in | std::ios::binary | std::ios::ate | std::ios::out;
 		file.open(filePath, m);
 		if (!file.is_open())

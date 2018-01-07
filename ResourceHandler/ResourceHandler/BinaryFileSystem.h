@@ -49,7 +49,7 @@ namespace ResourceHandler
 
 	private:
 		mutable std::recursive_mutex lock;
-		const char* filePath;
+		std::string filePath;
 		std::fstream file;
 		Mode mode;
 		struct FileHeader

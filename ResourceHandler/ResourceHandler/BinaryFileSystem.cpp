@@ -104,11 +104,11 @@ namespace ResourceHandler
 		StartProfile;
 		Locker lg(lock, mode);
 		if (auto find = typeToIndex.find(type); find == typeToIndex.end())
-			RETURN_ERROR_C("Could not find type");
+			RETURN_FILE_ERROR_C("Could not find type");
 		else
 		{
 			if (numFiles > uint32_t(typeIndexToFiles[find->second].size()))
-				RETURN_ERROR_C("Array size out of bounds");
+				RETURN_FILE_ERROR_C("Array size out of bounds");
 			uint32_t i = 0;
 			for (auto& f : typeIndexToFiles[find->second])
 			{
@@ -118,7 +118,7 @@ namespace ResourceHandler
 				files[i].type_str = entries.type_str[f.second].c_str();
 				++i;
 			}
-			RETURN_SUCCESS;
+			RETURN_FILE_SUCCESS;
 		}
 	}
 
@@ -126,7 +126,7 @@ namespace ResourceHandler
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
-			RETURN_ERROR_C("FileSystem not in edit mode");
+			RETURN_FILE_ERROR_C("FileSystem not in edit mode");
 
 		Locker lg(lock, mode);
 		size_t index;
@@ -135,7 +135,7 @@ namespace ResourceHandler
 			index = findType->second;
 			auto& files = typeIndexToFiles[index];
 			if (auto findEntry = files.find(guid); findEntry != files.end())
-				RETURN_ERROR("File already exists", 1);
+				RETURN_FILE_ERROR("File already exists", 1);
 		}
 		else
 		{
@@ -147,7 +147,7 @@ namespace ResourceHandler
 
 		file.seekp(fileHeader.endOfFiles);
 		if (!function(&file))
-			RETURN_ERROR_C("Write callback failed");
+			RETURN_FILE_ERROR_C("Write callback failed");
 		uint64_t size = static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles;
 	
 
@@ -167,14 +167,14 @@ namespace ResourceHandler
 		fileHeader.tailSize = static_cast<uint32_t>(static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles);
 		file.seekp(0);
 		file.write((char*)&fileHeader, sizeof(fileHeader));
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 
 	FILE_ERROR BinaryFileSystem::CreateFromFile(const char * filePath,const std::string& guid, const std::string & type)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
-			RETURN_ERROR_C("FileSystem not in edit mode");
+			RETURN_FILE_ERROR_C("FileSystem not in edit mode");
 		Locker lg(lock, mode);
 		size_t index;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
@@ -182,7 +182,7 @@ namespace ResourceHandler
 			index = findType->second;
 			auto& files = typeIndexToFiles[index];
 			if (auto findEntry = files.find(guid); findEntry != files.end())
-				RETURN_ERROR("File already exists", 1);
+				RETURN_FILE_ERROR("File already exists", 1);
 		}
 		else
 		{
@@ -193,7 +193,7 @@ namespace ResourceHandler
 
 		std::fstream fileIn (filePath, std::ios::binary | std::ios::ate | std::ios::in);
 		if (!fileIn.is_open())
-			RETURN_ERROR_C("Could not open input file");
+			RETURN_FILE_ERROR_C("Could not open input file");
 
 		uint64_t size = static_cast<uint64_t>(fileIn.tellg());
 		auto& files = typeIndexToFiles[index];
@@ -208,7 +208,7 @@ namespace ResourceHandler
 
 		fileIn.seekg(0);
 		AddFile(size, fileIn);
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 	FILE_ERROR BinaryFileSystem::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
 	{
@@ -228,9 +228,9 @@ namespace ResourceHandler
 						entries.type_str[f.second]
 					});
 			}
-			RETURN_SUCCESS;
+			RETURN_FILE_SUCCESS;
 		}
-		RETURN_ERROR_C("No files found");
+		RETURN_FILE_ERROR_C("No files found");
 	}
 	FILE_ERROR BinaryFileSystem::GetFiles(std::vector<File>& files) const noexcept
 	{
@@ -247,14 +247,14 @@ namespace ResourceHandler
 				entries.type_str[i]
 				});
 		}
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 	FILE_ERROR BinaryFileSystem::GetFiles(FILE_C * files, uint32_t numfiles) const noexcept
 	{ 
 		StartProfile;
 		Locker lg(lock, mode);
 		if (numfiles > fileHeader.numFiles)
-			RETURN_ERROR_C("Array out of bound");
+			RETURN_FILE_ERROR_C("Array out of bound");
 
 		auto& f = files;
 		for (uint32_t i = 0; i < fileHeader.numFiles; i++)
@@ -264,7 +264,7 @@ namespace ResourceHandler
 			f[i].guid_str = entries.guid_str[i].c_str();
 			f[i].type_str = entries.type_str[i].c_str();
 		}
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 	float BinaryFileSystem::GetFragmentationRatio() const noexcept
 	{
@@ -290,18 +290,18 @@ namespace ResourceHandler
 		StartProfile;
 		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
-			RETURN_ERROR_C("Type not found");
+			RETURN_FILE_ERROR_C("Type not found");
 		else
 		{
 			if (auto findFile = typeIndexToFiles[findType->second].find(guid); findFile == typeIndexToFiles[findType->second].end())
-				RETURN_ERROR_C("File not found");
+				RETURN_FILE_ERROR_C("File not found");
 			else
 			{
 				files.guid = entries.guid[findFile->second].id;
 				files.type = entries.type[findFile->second].id;
 				files.guid_str = entries.guid_str[findFile->second].c_str();
 				files.type_str = entries.type_str[findFile->second].c_str();
-				RETURN_SUCCESS;
+				RETURN_FILE_SUCCESS;
 			}
 		}
 	}
@@ -448,10 +448,10 @@ namespace ResourceHandler
 		if (!file.is_open())
 		{
 			if (fs::exists(filePath))
-				RETURN_ERROR_C("SystemFile could not be accessed");
+				RETURN_FILE_ERROR_C("SystemFile could not be accessed");
 			std::ofstream out(filePath, std::ios::binary);
 			if (!out.is_open())
-				RETURN_ERROR_C("Could not create SystemFile");
+				RETURN_FILE_ERROR_C("Could not create SystemFile");
 			fileHeader.endOfFiles = sizeof(fileHeader);
 			fileHeader.tailSize = 0;
 			fileHeader.numFiles = 0;
@@ -461,26 +461,26 @@ namespace ResourceHandler
 			out.close();
 			file.open(filePath, m);
 			if (!file.is_open())
-				RETURN_ERROR_C("Could not read new SystemFile");
-			RETURN_SUCCESS;
+				RETURN_FILE_ERROR_C("Could not read new SystemFile");
+			RETURN_FILE_SUCCESS;
 		}
 
 		size_t totalFileSize = size_t(file.tellg());
 		if (totalFileSize < sizeof(fileHeader))
-			RETURN_ERROR_C("The SystemFile is corrupted");
+			RETURN_FILE_ERROR_C("The SystemFile is corrupted");
 
 		file.seekg(0);
 		file.read((char*)&fileHeader, sizeof(fileHeader));
 		
 		if (fileHeader.endOfFiles > totalFileSize)
-			RETURN_ERROR_C("The SystemFile is corrupted");
+			RETURN_FILE_ERROR_C("The SystemFile is corrupted");
 		if (fileHeader.endOfFiles + fileHeader.tailSize > totalFileSize)
-			RETURN_ERROR_C("The System File is corrupted");
+			RETURN_FILE_ERROR_C("The System File is corrupted");
 
 		file.seekg(fileHeader.endOfFiles);
 		ReadTail();
 		
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 	FILE_ERROR BinaryFileSystem::Shutdown()noexcept
 	{
@@ -490,7 +490,7 @@ namespace ResourceHandler
 		typeIndexToFiles.clear();
 		typeToIndex.clear();
 
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 	FILE_ERROR BinaryFileSystem::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
 	{
@@ -501,10 +501,10 @@ namespace ResourceHandler
 			if (auto find = files.find(guid); find != files.end())
 			{
 				type = entries.type[find->second];
-				RETURN_SUCCESS;
+				RETURN_FILE_SUCCESS;
 			}
 		}
-		RETURN_ERROR_C("Type not found");
+		RETURN_FILE_ERROR_C("Type not found");
 	}
 	FILE_ERROR BinaryFileSystem::FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept
 	{
@@ -516,10 +516,10 @@ namespace ResourceHandler
 			{
 				name = entries.guid[find->second];
 				type = entries.type[find->second];
-				RETURN_SUCCESS;
+				RETURN_FILE_SUCCESS;
 			}
 		}
-		RETURN_ERROR_C("File not found");
+		RETURN_FILE_ERROR_C("File not found");
 	}
 	
 	bool BinaryFileSystem::Exist(Utilz::GUID guid, Utilz::GUID type) const noexcept
@@ -544,10 +544,10 @@ namespace ResourceHandler
 			if (auto findEntry = files.find(guid); findEntry != files.end())
 			{
 				size = entries.size[findEntry->second];
-				RETURN_SUCCESS;
+				RETURN_FILE_SUCCESS;
 			}
 		}
-		RETURN_ERROR_C("File not found");
+		RETURN_FILE_ERROR_C("File not found");
 	}
 	FILE_ERROR BinaryFileSystem::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid & data) noexcept
 	{
@@ -559,20 +559,20 @@ namespace ResourceHandler
 			if (auto findEntry = files.find(guid); findEntry != files.end())
 			{
 				if (data.size > entries.size[findEntry->second])
-					RETURN_ERROR_C("Data size out of bound");
+					RETURN_FILE_ERROR_C("Data size out of bound");
 				lg.Lock();
 				file.seekg(entries.location[findEntry->second]);
 				file.read((char*)data.data, data.size);
-				RETURN_SUCCESS;
+				RETURN_FILE_SUCCESS;
 			}
 		}
-		RETURN_ERROR_C("File not found");
+		RETURN_FILE_ERROR_C("File not found");
 	}
 	FILE_ERROR BinaryFileSystem::Create(const std::string& guid, const std::string& type, const ResourceDataVoid & data)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
-			RETURN_ERROR_C("FileSystem not in edit mode");
+			RETURN_FILE_ERROR_C("FileSystem not in edit mode");
 		Locker lg(lock, mode);
 		size_t index;
 		if (auto findType = typeToIndex.find(type); findType != typeToIndex.end())
@@ -580,7 +580,7 @@ namespace ResourceHandler
 			index = findType->second;
 			auto& files = typeIndexToFiles[index];
 			if (auto findEntry = files.find(guid); findEntry != files.end())
-				RETURN_ERROR("File already exists", 1);
+				RETURN_FILE_ERROR("File already exists", 1);
 		}
 		else
 		{
@@ -598,21 +598,21 @@ namespace ResourceHandler
 		entries.guid_str.push_back(guid);
 		entries.type_str.push_back(type);
 		AddFile(data.size, data.data);
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 
 	FILE_ERROR BinaryFileSystem::Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid & data)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
-			RETURN_ERROR_C("FileSystem not in edit mode");
+			RETURN_FILE_ERROR_C("FileSystem not in edit mode");
 		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
-			RETURN_ERROR_C("Type not found");
+			RETURN_FILE_ERROR_C("Type not found");
 		else
 		{
 			if (auto findFile = typeIndexToFiles[findType->second].find(guid); findFile == typeIndexToFiles[findType->second].end())
-				RETURN_ERROR_C("File not found");
+				RETURN_FILE_ERROR_C("File not found");
 			else
 			{
 				if (data.size == entries.size[findFile->second])
@@ -645,41 +645,41 @@ namespace ResourceHandler
 				}
 			}
 		}
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 
 	FILE_ERROR BinaryFileSystem::WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
-			RETURN_ERROR_C("FileSystem not in edit mode");
+			RETURN_FILE_ERROR_C("FileSystem not in edit mode");
 		Locker lg(lock, mode);
 		if (auto findType = typeToIndex.find(type); findType == typeToIndex.end())
-			RETURN_ERROR_C("Type not found");
+			RETURN_FILE_ERROR_C("Type not found");
 		else
 		{
 			if (auto findFile = typeIndexToFiles[findType->second].find(guid); findFile == typeIndexToFiles[findType->second].end())
-				RETURN_ERROR_C("File not found");
+				RETURN_FILE_ERROR_C("File not found");
 			else
 			{
 				if (size == entries.size[findFile->second])
 				{
 					file.seekp(entries.location[findFile->second]);
 					if (!function(&file))
-						RETURN_ERROR_C("Error in write callback");
+						RETURN_FILE_ERROR_C("Error in write callback");
 					uint64_t asize = static_cast<uint64_t>(file.tellp()) - entries.location[findFile->second];
 					if (size != asize)
-						RETURN_ERROR_C("CRITICAL: The write callback wrote to much and has likely corrupted another file");
+						RETURN_FILE_ERROR_C("CRITICAL: The write callback wrote to much and has likely corrupted another file");
 					
 				}
 				else if (size < entries.size[findFile->second])
 				{
 					file.seekp(entries.location[findFile->second]);
 					if (!function(&file))
-						RETURN_ERROR_C("Error in write callback");
+						RETURN_FILE_ERROR_C("Error in write callback");
 					uint64_t asize = static_cast<uint64_t>(file.tellp()) - entries.location[findFile->second];
 					if (size != asize)
-						RETURN_ERROR_C("CRITICAL: The write callback wrote to much and has likely corrupted another file");
+						RETURN_FILE_ERROR_C("CRITICAL: The write callback wrote to much and has likely corrupted another file");
 
 
 
@@ -703,13 +703,13 @@ namespace ResourceHandler
 				}
 			}
 		}
-		RETURN_SUCCESS;
+		RETURN_FILE_SUCCESS;
 	}
 	FILE_ERROR BinaryFileSystem::Destroy(Utilz::GUID guid, Utilz::GUID type)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
-			RETURN_ERROR_C("FileSystem not in edit mode");
+			RETURN_FILE_ERROR_C("FileSystem not in edit mode");
 
 		Locker lg(lock, mode);
 		if (const auto findType = typeToIndex.find(type); findType != typeToIndex.end())
@@ -719,23 +719,23 @@ namespace ResourceHandler
 			{		
 				RemoveFile(findEntry->second);
 				files.erase(guid);
-				RETURN_SUCCESS;
+				RETURN_FILE_SUCCESS;
 			}
 		}
-		RETURN_ERROR_C("File not found");
+		RETURN_FILE_ERROR_C("File not found");
 	}
 
 	FILE_ERROR BinaryFileSystem::Defrag()noexcept
 	{
 		if (mode != Mode::EDIT)
-			RETURN_ERROR_C("FileSystem not in edit mode");
+			RETURN_FILE_ERROR_C("FileSystem not in edit mode");
 		StartProfile;
 		Locker lg(lock, mode);
 
 
 		std::ofstream out("data.temp", std::ios::binary | std::ios::trunc);
 		if (!out.is_open())
-			RETURN_ERROR_C("Could not open temporary defrag file");
+			RETURN_FILE_ERROR_C("Could not open temporary defrag file");
 
 		out.seekp(sizeof(fileHeader));
 		for (size_t i = 0; i < fileHeader.numFiles; i++)
@@ -755,26 +755,26 @@ namespace ResourceHandler
 		out.close();
 		file.close();
 		if (file.is_open())
-			RETURN_ERROR_C("Could not close system file");
+			RETURN_FILE_ERROR_C("Could not close system file");
 		if (out.is_open())
-			RETURN_ERROR_C("Could not close temporary defrag file");
+			RETURN_FILE_ERROR_C("Could not close temporary defrag file");
 	
 
 		std::error_code err;
 		fs::remove("data.temp2", err);
 		fs::rename(filePath, "data.temp2", err);
 		if (err)
-			RETURN_ERROR_C("Could not rename system file");
+			RETURN_FILE_ERROR_C("Could not rename system file");
 		fs::rename("data.temp", filePath, err);
 		if (err)
-			RETURN_ERROR_C("Could not rename temp file");
+			RETURN_FILE_ERROR_C("Could not rename temp file");
 		fs::remove("data.temp2", err);
 
 		auto m = std::ios::in | std::ios::binary | std::ios::ate | std::ios::out;
 		file.open(filePath, m);
 		if (!file.is_open())
-			RETURN_ERROR_C("Could not open new system file");
-		RETURN_SUCCESS;
+			RETURN_FILE_ERROR_C("Could not open new system file");
+		RETURN_FILE_SUCCESS;
 	}
 	uint32_t BinaryFileSystem::GetNumberOfFiles()const noexcept
 	{

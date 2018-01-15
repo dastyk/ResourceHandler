@@ -53,6 +53,7 @@
     <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include/</IncludePath>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\ResourceHandler\ResourceData.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

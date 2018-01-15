@@ -154,7 +154,6 @@
     <ClInclude Include="..\Include\ResourceHandler\FileSystem_Interface.h" />
     <ClInclude Include="..\Include\ResourceHandler\LoadStatus.h" />
     <ClInclude Include="..\Include\ResourceHandler\Resource.h" />
-    <ClInclude Include="..\Include\ResourceHandler\ResourceData.h" />
     <ClInclude Include="..\Include\ResourceHandler\ResourceHandler_Interface.h" />
     <ClInclude Include="BinaryFileSystem.h" />
     <ClInclude Include="ResourceHandler.h" />

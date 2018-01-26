@@ -31,7 +31,7 @@ namespace ResourceHandler
 	typedef int32_t(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize);
 	typedef int32_t(__cdecl *Passthrough_Destroy_PROC)(uint32_t guid, void* data, uint64_t size);
 
-	enum class MemoryType
+	enum class MemoryType : uint8_t
 	{
 		RAM,
 		VRAM
@@ -43,12 +43,7 @@ namespace ResourceHandler
 		Passthrough_Parse_PROC Parse;
 		Passthrough_Destroy_PROC Destroy;
 	};
-	struct Passthrough_LoadInfo
-	{
-		MemoryType memoryType;
-		uint64_t size;
-		char* code;
-	};
+
 	class ResourceHandler_Interface
 	{
 		friend class Resource;

@@ -10,6 +10,12 @@
 #include <map>
 namespace ResourceHandler 
 {
+	struct Passthrough_LoadInfo
+	{
+		MemoryType memoryType;
+		uint64_t size;
+		char* code;
+	};
 	struct Passthrough_Windows : public Passthrough_Info
 	{
 		Passthrough_Windows(const std::string& name) : name(name)

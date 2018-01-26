@@ -55,16 +55,21 @@ namespace ResourceHandler
 				ResourceDataVoid,
 				LoadStatus,
 				std::future<LoadJob>,
-				uint32_t>
+				uint32_t,
+				Passthrough_Info*>
 			entries;
 
-		enum EntryNames : uint32_t
+		struct EntryNames
 		{
-			Key,
-			Data,
-			Status,
-			Future,
-			RefCount
+			enum EntryNames_ : uint32_t
+			{
+				Key,
+				Data,
+				Status,
+				Future,
+				RefCount,
+				Passthrough
+			};
 		};
 	};
 }

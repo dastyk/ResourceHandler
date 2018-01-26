@@ -54,7 +54,10 @@ namespace ResourceHandler
 	ResourceHandler_::~ResourceHandler_()
 	{
 		for (size_t i = 0; i < entries.size(); i++)
-			operator delete(entries.get<Data>()[i].data);
+			if (entries.get<EntryNames::Passthrough>(i))
+				entries.get<EntryNames::Passthrough>(i)->Destroy(entries.get<EntryNames::Key>()[i], entries.get<EntryNames::Data>()[i].data, entries.get<EntryNames::Data>()[i].size);
+			else
+				operator delete(entries.get<EntryNames::Data>()[i].data);
 	}
 	FILE_ERROR ResourceHandler_::Initialize()
 	{
@@ -76,24 +79,24 @@ namespace ResourceHandler
 		else
 		{
 			index = entries.add(finalGUID);
-			entries.get<Status>(index) = LoadStatus::NOT_LOADED;
-			entries.get<RefCount>(index) = 0;
-			entries.get<Data>(index) = ResourceDataVoid();
+			entries.get<EntryNames::Status>(index) = LoadStatus::NOT_LOADED;
+			entries.get<EntryNames::RefCount>(index) = 0;
+			entries.get<EntryNames::Data>(index) = ResourceDataVoid();
 		}
-		if (entries.get<Status>(index) & LoadStatus::INVALIDATED || invalid)
+		if (entries.get<EntryNames::Status>(index) & LoadStatus::INVALIDATED || invalid)
 		{
-			entries.get<Status>(index) |= LoadStatus::LOADING;
-			entries.get<Status>(index) = (entries.get<Status>(index) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
-			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
+			entries.get<EntryNames::Status>(index) |= LoadStatus::LOADING;
+			entries.get<EntryNames::Status>(index) = (entries.get<EntryNames::Status>(index) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
+			entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
 		}
-		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))
+		else if ((entries.get<EntryNames::Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<EntryNames::Status>()[index] & LoadStatus::LOADING)))
 		{
-			entries.get<Status>(index) |= LoadStatus::LOADING;
+			entries.get<EntryNames::Status>(index) |= LoadStatus::LOADING;
 
 			if (auto findPT = passthroughs.find(resource.GUID()); findPT != passthroughs.end())
-				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, &findPT->second, LoadStatus::NONE));
+				entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, &findPT->second, LoadStatus::NONE));
 			else
-				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
+				entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
 		}
 	}
 	LoadStatus ResourceHandler_::GetData(const Resource& resource, ResourceDataVoid& data)
@@ -101,11 +104,11 @@ namespace ResourceHandler
 		StartProfile;
 		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
-			auto& status = entries.get<Status>(findRe->second);
-			data = entries.get<Data>(findRe->second);
+			auto& status = entries.get<EntryNames::Status>(findRe->second);
+			data = entries.get<EntryNames::Data>(findRe->second);
 
 			redo:
-			if (auto& f = entries.get<Future>(findRe->second); f.valid())
+			if (auto& f = entries.get<EntryNames::Future>(findRe->second); f.valid())
 			{
 				auto result = f.get();
 				if (result.status & LoadStatus::INVALIDATED)
@@ -118,7 +121,7 @@ namespace ResourceHandler
 					status = result.status;
 				
 				
-				auto& ddata = entries.get<Data>(findRe->second);
+				auto& ddata = entries.get<EntryNames::Data>(findRe->second);
 				if (ddata.data != nullptr)
 					operator delete(ddata.data);
 				data = ddata = result.data;
@@ -126,9 +129,9 @@ namespace ResourceHandler
 
 			if (status & LoadStatus::INVALIDATED)
 			{
-				entries.get<Status>(findRe->second) |= LoadStatus::LOADING;
-				entries.get<Status>(findRe->second) = (entries.get<Status>(findRe->second) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
-				entries.get<Future>(findRe->second) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
+				entries.get<EntryNames::Status>(findRe->second) |= LoadStatus::LOADING;
+				entries.get<EntryNames::Status>(findRe->second) = (entries.get<EntryNames::Status>(findRe->second) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
+				entries.get<EntryNames::Future>(findRe->second) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
 				goto redo;
 			}
 
@@ -141,7 +144,7 @@ namespace ResourceHandler
 		StartProfile;
 		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
-			return entries.getConst<Status>(findRe->second);
+			return entries.getConst<EntryNames::Status>(findRe->second);
 		}
 			
 		return LoadStatus::NOT_FOUND |LoadStatus::NOT_LOADED | LoadStatus::FAILED;
@@ -157,27 +160,27 @@ namespace ResourceHandler
 		else
 		{
 			index = entries.add(resource.GUID() + resource.Type());
-			entries.get<Status>(index) = LoadStatus::NOT_LOADED;
-			entries.get<RefCount>(index) = 0;
-			entries.get<Data>(index) = ResourceDataVoid();
+			entries.get<EntryNames::Status>(index) = LoadStatus::NOT_LOADED;
+			entries.get<EntryNames::RefCount>(index) = 0;
+			entries.get<EntryNames::Data>(index) = ResourceDataVoid();
 		}
 
-		entries.get<RefCount>(index)++;
+		entries.get<EntryNames::RefCount>(index)++;
 
 
-		if (entries.get<Status>(index) & LoadStatus::INVALIDATED)
+		if (entries.get<EntryNames:: Status>(index) & LoadStatus::INVALIDATED)
 		{
-			entries.get<Status>(index) |= LoadStatus::LOADING;
-			entries.get<Status>(index) = (entries.get<Status>(index) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
-			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
+			entries.get<EntryNames::Status>(index) |= LoadStatus::LOADING;
+			entries.get<EntryNames::Status>(index) = (entries.get<EntryNames::Status>(index) ^ LoadStatus::INVALIDATED) | LoadStatus::VALIDATING;
+			entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::INVALIDATED));
 		}
-		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))
+		else if ((entries.get<EntryNames::Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<EntryNames::Status>()[index] & LoadStatus::LOADING)))
 		{
-			entries.get<Status>(index) |= LoadStatus::LOADING;
+			entries.get<EntryNames::Status>(index) |= LoadStatus::LOADING;
 			if (auto findPT = passthroughs.find(resource.GUID()); findPT != passthroughs.end())
-				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, &findPT->second, LoadStatus::NONE));
+				entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, &findPT->second, LoadStatus::NONE));
 			else
-				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
+				entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
 		}
 		
 	}
@@ -187,7 +190,7 @@ namespace ResourceHandler
 		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			size_t index = findRe->second;
-			entries.get<RefCount>(index)--;
+			entries.get<EntryNames::RefCount>(index)--;
 		}
 	}
 	uint32_t ResourceHandler_::GetReferenceCount(const Resource& resource)const
@@ -196,7 +199,7 @@ namespace ResourceHandler
 		if (auto findRe = entries.find(resource.GUID() + resource.Type()); findRe.has_value())
 		{
 			size_t index = findRe->second;
-			return entries.getConst<RefCount>(index);
+			return entries.getConst<EntryNames::RefCount>(index);
 		}
 		return  0;
 	}

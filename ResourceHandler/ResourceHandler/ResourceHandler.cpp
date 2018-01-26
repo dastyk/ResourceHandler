@@ -12,7 +12,7 @@ namespace fs = std::experimental::filesystem;
 ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
-	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, FileSystem_Interface* loader, ResourcePassThrough* passThrough, LoadStatus extraFlag)
+	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, FileSystem_Interface* loader, const Passthrough_Info* passThrough, LoadStatus extraFlag)
 	{
 		StartProfile;
 		if (!loader->Exist(guid, type))
@@ -217,35 +217,35 @@ namespace ResourceHandler
 		loader->GetFilesOfType("Passthrough", pt);
 		for (auto& passT : pt)
 		{
-			Passthrough_Info pti(passT.guid_str + ".pat");
+			Passthrough_Windows pti(passT.guid_str + ".pat");
 			if (!fs::exists(pti.name))
 			{
-				ResourceDataVoid data;
+				ResourceData<Passthrough_LoadInfo> data;
 				PASS_IF_FILE_ERROR(loader->Read(passT.guid, passT.type, data));
 				
-				
+			
 				std::ofstream file(pti.name, std::ios::trunc);
 				if (!file.is_open())
 					RETURN_FILE_ERROR_C("Could not open passthrough file");
-				file.write((char*)data.data, data.size);
+				file.write(data->code, data->size);
 				file.close();
 
-				
+				pti.memoryType = data->memoryType;
 			}
 
 			pti.lib = LoadLibrary(pti.name.c_str());
 			if (pti.lib == NULL)
 				RETURN_FILE_ERROR_C("Could not load passthrough library");
 			
-			pti.Parse = (Passthrough_Info::Parse_PROC)GetProcAddress(pti.lib, "Parse");
+			pti.Parse = (Passthrough_Parse_PROC)GetProcAddress(pti.lib, "Parse");
 			if(pti.Parse == NULL)
 				RETURN_FILE_ERROR_C("Could not load Parse function from passthrough library");
 			
-			pti.Destroy = (Passthrough_Info::Destroy_PROC)GetProcAddress(pti.lib, "Destroy");
+			pti.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(pti.lib, "Destroy");
 			if (pti.Destroy == NULL)
 				RETURN_FILE_ERROR_C("Could not load Destroy function from passthrough library");
 		
-			passThroughs.emplace(passT.guid, pti);
+			passthroughs.emplace(passT.guid, pti);
 
 		}
 

@@ -7,13 +7,16 @@
 #include <Utilz\Sofa.h>
 #include <Utilz\ThreadPool.h>
 #include <windows.h> 
-
+#include <map>
 namespace ResourceHandler 
 {
-	struct ResourcePassThrough
+	struct Passthrough_Windows : public Passthrough_Info
 	{
-		ResourceHandler_Interface::PassThroughCallback passThrough;
-		MemoryType memoryType;
+		Passthrough_Windows(const std::string& name) : name(name)
+		{}
+		std::string name;
+		HINSTANCE lib;
+
 	};
 	struct LoadJob
 	{
@@ -44,18 +47,8 @@ namespace ResourceHandler
 
 		FileSystem_Interface * loader;
 		Utilz::ThreadPool* threadPool;
-		struct Passthrough_Info
-		{
-			Passthrough_Info(const std::string& name) : name(name)
-				{}
-			typedef int32_t(__cdecl *Parse_PROC)(uint32_t guid, void* data, uint64_t size);
-			typedef int32_t(__cdecl *Destroy_PROC)(uint32_t guid, void* data, uint64_t size);
-			Parse_PROC Parse;
-			Destroy_PROC Destroy;
-			std::string name;
-			HINSTANCE lib;
-		};
-		std::map<Utilz::GUID, Passthrough_Info, Utilz::GUID::Compare> passthroughs;
+
+		std::map<Utilz::GUID, Passthrough_Windows, Utilz::GUID::Compare> passthroughs;
 
 		Utilz::Sofa<
 				Utilz::GUID, Utilz::GUID::Hasher,
@@ -73,9 +66,6 @@ namespace ResourceHandler
 			Future,
 			RefCount
 		};
-
-	
-		std::unordered_map<Utilz::GUID, ResourcePassThrough, Utilz::GUID::Hasher> passThroughs;
 	};
 }
 #endif //_RESOURCE_HANDLER_RESOURCE_HANDLER_H_

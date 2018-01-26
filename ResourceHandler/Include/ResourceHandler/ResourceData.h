@@ -10,6 +10,7 @@ struct ResourceDataVoid
 template<class T>
 struct ResourceData
 {
+	inline operator ResourceDataVoid& ()const { return data; }
 	inline ResourceDataVoid& GetVoid()
 	{
 		return data;
@@ -17,6 +18,10 @@ struct ResourceData
 	inline const T& Get()const
 	{
 		return *(T*)data.data;
+	}
+	const T* operator->()const
+	{
+		return (T*)data.data;
 	}
 private:
 	ResourceDataVoid data;

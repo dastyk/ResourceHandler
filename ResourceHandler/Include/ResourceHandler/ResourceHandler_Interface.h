@@ -28,18 +28,32 @@ namespace Utilz
 }
 namespace ResourceHandler
 {
-	
+	typedef int32_t(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size);
+	typedef int32_t(__cdecl *Passthrough_Destroy_PROC)(uint32_t guid, void* data, uint64_t size);
+
 	enum class MemoryType
 	{
 		RAM,
 		VRAM
 	};
 
+	struct Passthrough_Info
+	{
+		MemoryType memoryType;
+		Passthrough_Parse_PROC Parse;
+		Passthrough_Destroy_PROC Destroy;
+	};
+	struct Passthrough_LoadInfo
+	{
+		MemoryType memoryType;
+		uint64_t size;
+		char* code;
+	};
 	class ResourceHandler_Interface
 	{
 		friend class Resource;
 	public:
-		using PassThroughCallback = std::function<void()>;
+	
 
 		virtual ~ResourceHandler_Interface() {};
 	//	virtual long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) = 0;

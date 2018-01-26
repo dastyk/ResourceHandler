@@ -6,6 +6,8 @@
 #include <ResourceHandler\ResourceHandler_Interface.h> 
 #include <Utilz\Sofa.h>
 #include <Utilz\ThreadPool.h>
+#include <windows.h> 
+
 namespace ResourceHandler 
 {
 	struct ResourcePassThrough
@@ -19,14 +21,16 @@ namespace ResourceHandler
 		ResourceDataVoid data;
 	};
 
-	class ResourceHandler : public ResourceHandler_Interface
+	class ResourceHandler_ : public ResourceHandler_Interface
 	{
 		friend class Resource;
 	public:
-		ResourceHandler(FileSystem_Interface* loader, Utilz::ThreadPool* threadPool);
-		~ResourceHandler();
-		long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) override;
+		ResourceHandler_(FileSystem_Interface* loader, Utilz::ThreadPool* threadPool);
+		~ResourceHandler_();
+	//	long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) override;
 	
+		FILE_ERROR Initialize() override;
+		void Shutdown() override;
 	private:
 		void LoadResource(const Resource& resource, bool invalid = false) override;
 		LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) override;
@@ -36,10 +40,22 @@ namespace ResourceHandler
 		uint32_t GetReferenceCount(const Resource& resource)const override;
 		void Invalidate(const Resource& resource)override;
 
+		FILE_ERROR  CreatePassthroughs();
 
 		FileSystem_Interface * loader;
 		Utilz::ThreadPool* threadPool;
-
+		struct Passthrough_Info
+		{
+			Passthrough_Info(const std::string& name) : name(name)
+				{}
+			typedef int32_t(__cdecl *Parse_PROC)(uint32_t guid, void* data, uint64_t size);
+			typedef int32_t(__cdecl *Destroy_PROC)(uint32_t guid, void* data, uint64_t size);
+			Parse_PROC Parse;
+			Destroy_PROC Destroy;
+			std::string name;
+			HINSTANCE lib;
+		};
+		std::map<Utilz::GUID, Passthrough_Info, Utilz::GUID::Compare> passthroughs;
 
 		Utilz::Sofa<
 				Utilz::GUID, Utilz::GUID::Hasher,

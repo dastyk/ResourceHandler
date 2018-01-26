@@ -42,8 +42,10 @@ namespace ResourceHandler
 		using PassThroughCallback = std::function<void()>;
 
 		virtual ~ResourceHandler_Interface() {};
-		virtual long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) = 0;
+	//	virtual long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) = 0;
 	
+		virtual FILE_ERROR Initialize() = 0;
+		virtual void Shutdown() = 0;
 	protected:
 		ResourceHandler_Interface() {};
 

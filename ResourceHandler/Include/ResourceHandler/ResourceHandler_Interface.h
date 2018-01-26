@@ -28,7 +28,7 @@ namespace Utilz
 }
 namespace ResourceHandler
 {
-	typedef int32_t(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size);
+	typedef int32_t(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize);
 	typedef int32_t(__cdecl *Passthrough_Destroy_PROC)(uint32_t guid, void* data, uint64_t size);
 
 	enum class MemoryType

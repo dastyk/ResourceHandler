@@ -12,7 +12,7 @@ namespace fs = std::experimental::filesystem;
 ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
-	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, FileSystem_Interface* loader, const Passthrough_Info* passThrough, LoadStatus extraFlag)
+	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, FileSystem_Interface* loader, const Passthrough_Info* passthrough, LoadStatus extraFlag)
 	{
 		StartProfile;
 		if (!loader->Exist(guid, type))
@@ -28,13 +28,15 @@ namespace ResourceHandler
 		if (result.errornr < 0)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
-		if (passThrough)
+		if (passthrough)
 		{
-			//result = passThrough->passThrough();
-			operator delete(data.data);
-			if(result.errornr < 0)
+			ResourceDataVoid parsedData;
+			auto parseResult = passthrough->Parse(guid, data.data, data.size, &parsedData.data, &parsedData.size);
+			if (parseResult < 0)
 				return { LoadStatus::PASS_THROUGH_FAILED | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
+			operator delete(data.data);
+			data = parsedData;
 		}
 
 		return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data };
@@ -61,16 +63,7 @@ namespace ResourceHandler
 	void ResourceHandler_::Shutdown()
 	{
 	}
-	//long ResourceHandler_::CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough)
-	//{
-	//	StartProfile;
-	//	if (auto find = passThroughs.find(type); find != passThroughs.end())
-	//		return -1;
-
-	//	passThroughs[type].memoryType = memoryType;
-	//	passThroughs[type].passThrough = passThrough;
-	//	return 0;
-	//}
+	
 	void ResourceHandler_::LoadResource(const Resource& resource, bool invalid)
 	{
 		StartProfile;
@@ -96,7 +89,11 @@ namespace ResourceHandler
 		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))
 		{
 			entries.get<Status>(index) |= LoadStatus::LOADING;
-			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
+
+			if (auto findPT = passthroughs.find(resource.GUID()); findPT != passthroughs.end())
+				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, &findPT->second, LoadStatus::NONE));
+			else
+				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
 		}
 	}
 	LoadStatus ResourceHandler_::GetData(const Resource& resource, ResourceDataVoid& data)
@@ -177,7 +174,10 @@ namespace ResourceHandler
 		else if ((entries.get<Status>(index) & LoadStatus::NOT_LOADED && !(entries.get<Status>()[index] & LoadStatus::LOADING)))
 		{
 			entries.get<Status>(index) |= LoadStatus::LOADING;
-			entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
+			if (auto findPT = passthroughs.find(resource.GUID()); findPT != passthroughs.end())
+				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, &findPT->second, LoadStatus::NONE));
+			else
+				entries.get<Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
 		}
 		
 	}

@@ -63,6 +63,7 @@ TEST(ResourceHandler, BasicLoad)
 			EXPECT_EQ(re.GetReferenceCount(), 0);
 			ResourceData<Component> comp;
 			EXPECT_TRUE(re.GetData(comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
+			DestroyResourceHandler(rh);
 			DestroyLoader(bl);
 		}
 
@@ -126,9 +127,80 @@ TEST(ResourceHandler, Invalidate)
 			Component c2{ 1,3,4 };
 			EXPECT_TRUE(re.GetData(comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
 			EXPECT_EQ(comp.Get(), c2);
+			DestroyResourceHandler(rh);
 			DestroyLoader(bl);
 		}
 
 		fs::remove("data2.dat", err);
 	}
+
+
+}
+#include <fstream>
+
+TEST(ResourceHandler, PasstroughTest)
+{
+	{
+		std::error_code err;
+		fs::remove("data.dat", err);
+		fs::remove("Comp.pat", err);
+		{
+			auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
+			EXPECT_TRUE(bl);
+
+			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
+			EXPECT_EQ(r.errornr, 0);
+
+			uint32_t testInt = 1;
+			r = CreateS_C(bl, "Comp1", "Comp", &testInt, sizeof(testInt));
+			EXPECT_EQ(r.errornr, 0);
+
+			std::ifstream pt("TestPassthrough.dll", std::ios::ate | std::ios::binary);
+			EXPECT_TRUE(pt.is_open());
+			ResourceHandler::Passthrough_LoadInfo pti;
+			pti.memoryType = ResourceHandler::MemoryType::RAM;
+			pti.size = pt.tellg();
+			pti.code = new char[pti.size];
+			pt.seekg(0);
+			pt.read(pti.code, pti.size);
+			r = bl->CreateFromCallback("Comp", "Passthrough", [&](std::ostream* file) {
+				file->write((char*)&pti, sizeof(pti) - sizeof(pti.code));
+				file->write(pti.code, pti.size);
+				return true;
+			});
+			EXPECT_EQ(r.errornr, 0);
+
+			DestroyLoader(bl);
+		}
+
+
+		{
+			auto bl = CreateFileSystem(ResourceHandler::FileSystemType::Binary);
+			EXPECT_TRUE(bl);
+
+			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
+			EXPECT_EQ(r.errornr, 0);
+			Utilz::ThreadPool tp(4);
+			auto rh = CreateResourceHandler(bl, &tp);
+			EXPECT_TRUE(rh);
+			
+			r = rh->Initialize();
+			EXPECT_EQ(r.errornr, 0);
+
+			ResourceHandler::Resource re ("Comp1", "Comp");
+			ResourceData<uint32_t> comp;
+			auto status = re.GetData(comp.GetVoid());
+			EXPECT_TRUE(status & ResourceHandler::LoadStatus::LOADED);
+
+			EXPECT_EQ(*comp, 2);
+
+			DestroyResourceHandler(rh);
+			DestroyLoader(bl);
+		}
+
+		fs::remove("Comp.pat", err);
+		fs::remove("data.dat", err);
+
+	}
+
 }

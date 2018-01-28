@@ -70,6 +70,9 @@
     <ProjectReference Include="..\ResourceHandler\ResourceHandler.vcxproj">
       <Project>{d4cccf45-cbb6-406f-8b19-53666ae769b2}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\TestPassthrough\TestPassthrough.vcxproj">
+      <Project>{cb582dc5-46ef-4a97-8b5c-0b41bdd87fb9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

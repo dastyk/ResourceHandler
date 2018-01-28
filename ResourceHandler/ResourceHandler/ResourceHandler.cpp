@@ -58,6 +58,7 @@ namespace ResourceHandler
 				entries.get<EntryNames::Passthrough>(i)->Destroy(entries.get<EntryNames::Key>()[i], entries.get<EntryNames::Data>()[i].data, entries.get<EntryNames::Data>()[i].size);
 			else
 				operator delete(entries.get<EntryNames::Data>()[i].data);
+		resourceHandler = nullptr;
 	}
 	FILE_ERROR ResourceHandler_::Initialize()
 	{
@@ -93,7 +94,7 @@ namespace ResourceHandler
 		{
 			entries.get<EntryNames::Status>(index) |= LoadStatus::LOADING;
 
-			if (auto findPT = passthroughs.find(resource.GUID()); findPT != passthroughs.end())
+			if (auto findPT = passthroughs.find(resource.Type()); findPT != passthroughs.end())
 				entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, &findPT->second, LoadStatus::NONE));
 			else
 				entries.get<EntryNames::Future>(index) = std::move(threadPool->Enqueue(Load, resource.GUID(), resource.Type(), loader, nullptr, LoadStatus::NONE));
@@ -224,16 +225,22 @@ namespace ResourceHandler
 			if (!fs::exists(pti.name))
 			{
 				ResourceData<Passthrough_LoadInfo> data;
+				PASS_IF_FILE_ERROR(loader->GetSizeOfFile(passT.guid, passT.type, data.GetVoid().size));	
+				data.GetVoid().data = operator new((size_t(data.GetVoid().size)));
 				PASS_IF_FILE_ERROR(loader->Read(passT.guid, passT.type, data));
 				
 			
-				std::ofstream file(pti.name, std::ios::trunc);
+				std::ofstream file(pti.name, std::ios::trunc | std::ios::binary);
 				if (!file.is_open())
 					RETURN_FILE_ERROR_C("Could not open passthrough file");
-				file.write(data->code, data->size);
-				file.close();
 
+				auto pp = data.GetExtra();
+
+				file.write(pp, data->size);
+				file.close();
 				pti.memoryType = data->memoryType;
+				operator delete(data.GetVoid().data);
+
 			}
 
 			pti.lib = LoadLibrary(pti.name.c_str());

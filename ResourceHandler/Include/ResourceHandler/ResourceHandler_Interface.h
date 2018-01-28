@@ -43,7 +43,12 @@ namespace ResourceHandler
 		Passthrough_Parse_PROC Parse;
 		Passthrough_Destroy_PROC Destroy;
 	};
-
+	struct Passthrough_LoadInfo
+	{
+		MemoryType memoryType;
+		uint64_t size;
+		char* code;
+	};
 	class ResourceHandler_Interface
 	{
 		friend class Resource;

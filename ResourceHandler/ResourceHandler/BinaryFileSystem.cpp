@@ -148,9 +148,9 @@ namespace ResourceHandler
 		file.seekp(fileHeader.endOfFiles);
 		if (!function(&file))
 			RETURN_FILE_ERROR_C("Write callback failed");
+	
 		uint64_t size = static_cast<uint64_t>(file.tellp()) - fileHeader.endOfFiles;
 	
-
 		auto& files = typeIndexToFiles[index];
 		files[guid] = static_cast<uint32_t>(entries.guid.size());
 		entries.guid.push_back(guid);
@@ -427,8 +427,14 @@ namespace ResourceHandler
 				Utilz::readString(&file, t);
 			for (uint32_t i = 0; i < fileHeader.numFiles; i++)
 			{
+				
 				if (auto findType = typeToIndex.find(entries.type[i]); findType == typeToIndex.end())
+				{
+					uint32_t index = uint32_t(typeIndexToFiles.size());
 					typeIndexToFiles.push_back({});
+					typeToIndex[entries.type[i]] = index;
+				}
+					
 				auto& files = typeIndexToFiles[typeToIndex[entries.type[i]]];
 				files[entries.guid[i]] = i;
 			}

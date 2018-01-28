@@ -17,8 +17,8 @@ namespace ResourceHandler
 	}
 	Resource::~Resource()
 	{
-		_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
-		if (checkInCount)
+	//	_ASSERT_EXPR(resourceHandler, L"A Resource handler has not been created.");
+		if (resourceHandler && checkInCount)
 		{
 			resourceHandler->CheckOut(*this);
 		}

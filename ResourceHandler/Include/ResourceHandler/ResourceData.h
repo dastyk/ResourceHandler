@@ -23,6 +23,14 @@ struct ResourceData
 	{
 		return (T*)data.data;
 	}
+	const T& operator*()const
+	{
+		return *(T*)data.data;
+	}
+	const char* GetExtra()const
+	{
+		return (char*)data.data + sizeof(T) - sizeof(char*);
+	}
 private:
 	ResourceDataVoid data;
 };

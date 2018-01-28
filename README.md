@@ -11,6 +11,7 @@ To load a resource first create a resource handler then create a resource.
 - [x] Checking in a resource tells the resource handler that the resource is needed right now and will prioritize it.
 - [x] The one creating the resource does not need to have a pointer to the resource handler, this is "under the hood"
 - [x] Resource invalidation feature, which invalidates a resource. This is needed if the resource's file in the filesystem has changed.(Currently pretty shit)
+- [x] Adding Resource passthroughs by storing a DLL(and some more meta info) in the filesystem with the type 'Passthrough', the name should be that of the type to associate the passthrough with.
 # Dependencis
 * CompileTimeGUID
 * Profiler

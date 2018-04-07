@@ -20,3 +20,25 @@ DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface * CreateResourceHandler(
 {
 	return new ResourceHandler::ResourceHandler_(loader, threadPool);
 }
+
+DECLDIR_RH_C ResourceHandler::File_Error CreateType(ResourceHandler::ResourceHandler_Interface * rh, const char * type, ResourceHandler::MemoryType memoryType, const char * passthrough)
+{
+	ResourceHandler::Type_LoadInfo info;
+	info.memoryType = memoryType;
+
+	if (passthrough && std::string(passthrough) != "")
+	{
+		std::ifstream pt(passthrough, std::ios::ate | std::ios::binary);
+		ResourceHandler::Type_LoadInfo pti;
+
+		pti.passthrough.librarySize = pt.tellg();
+		pti.passthrough.library = new char[pti.passthrough.librarySize];
+		pt.seekg(0);
+		pt.read(pti.passthrough.library, pti.passthrough.librarySize);
+	}
+	
+	auto r = rh->CreateType(type, info, true);
+	if (info.passthrough.library)
+		delete[] info.passthrough.library;
+	return r;
+}

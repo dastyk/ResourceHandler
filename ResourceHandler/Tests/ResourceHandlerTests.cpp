@@ -150,6 +150,12 @@ TEST(ResourceHandler, PasstroughTest)
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
+			Utilz::ThreadPool tp(4);
+			auto rh = CreateResourceHandler(bl, &tp);
+			EXPECT_TRUE(rh);
+
+			r = rh->Initialize();
+			EXPECT_EQ(r.errornr, 0);
 
 			uint32_t testInt = 1;
 			r = CreateS_C(bl, "Comp1", "Comp", &testInt, sizeof(testInt));
@@ -157,19 +163,17 @@ TEST(ResourceHandler, PasstroughTest)
 
 			std::ifstream pt("TestPassthrough.dll", std::ios::ate | std::ios::binary);
 			EXPECT_TRUE(pt.is_open());
-			ResourceHandler::Passthrough_LoadInfo pti;
+			ResourceHandler::Type_LoadInfo pti;
 			pti.memoryType = ResourceHandler::MemoryType::RAM;
-			pti.size = pt.tellg();
-			pti.code = new char[pti.size];
+			pti.passthrough.librarySize = pt.tellg();
+			pti.passthrough.library = new char[pti.passthrough.librarySize];
 			pt.seekg(0);
-			pt.read(pti.code, pti.size);
-			r = bl->CreateFromCallback("Comp", "Passthrough", [&](std::ostream* file) {
-				file->write((char*)&pti, sizeof(pti) - sizeof(pti.code));
-				file->write(pti.code, pti.size);
-				return true;
-			});
+			pt.read(pti.passthrough.library, pti.passthrough.librarySize);
+			r = rh->CreateType("Comp", pti);
 			EXPECT_EQ(r.errornr, 0);
 
+			delete[] pti.passthrough.library;
+			DestroyResourceHandler(rh);
 			DestroyLoader(bl);
 		}
 

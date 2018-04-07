@@ -39,15 +39,23 @@ namespace ResourceHandler
 
 	struct Passthrough_Info
 	{
-		MemoryType memoryType;
 		Passthrough_Parse_PROC Parse;
 		Passthrough_Destroy_PROC Destroy;
 	};
+	struct Type_Info
+	{
+		MemoryType memoryType = MemoryType::RAM;
+		Passthrough_Info* passthrough = nullptr;
+	};
 	struct Passthrough_LoadInfo
 	{
-		MemoryType memoryType;
-		uint64_t size;
-		char* code;
+		uint64_t librarySize = 0;
+		char* library = nullptr;
+	};
+	struct Type_LoadInfo
+	{
+		MemoryType memoryType = MemoryType::RAM;
+		Passthrough_LoadInfo passthrough;
 	};
 	class ResourceHandler_Interface
 	{
@@ -56,10 +64,11 @@ namespace ResourceHandler
 	
 
 		virtual ~ResourceHandler_Interface() {};
-	//	virtual long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) = 0;
+		virtual FILE_ERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) = 0;
 	
 		virtual FILE_ERROR Initialize() = 0;
 		virtual void Shutdown() = 0;
+		
 	protected:
 		ResourceHandler_Interface() {};
 
@@ -78,4 +87,5 @@ DECLDIR_RH_C void DestroyThreadPool(Utilz::ThreadPool* tp);
 DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* rh);
 DECLDIR_RH_C Utilz::ThreadPool* CreateThreadPool(uint32_t numThreads);
 DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, Utilz::ThreadPool* threadPool);
+DECLDIR_RH_C  ResourceHandler::File_Error CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, ResourceHandler::MemoryType memoryType, const char* passthrough);
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

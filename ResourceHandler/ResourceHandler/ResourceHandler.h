@@ -31,10 +31,10 @@ namespace ResourceHandler
 	public:
 		ResourceHandler_(FileSystem_Interface* loader, Utilz::ThreadPool* threadPool);
 		~ResourceHandler_();
-	//	long CreateTypePassthrough(Utilz::GUID type, MemoryType memoryType, const PassThroughCallback& passThrough) override;
-	
+
 		FILE_ERROR Initialize() override;
 		void Shutdown() override;
+		FILE_ERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) override;
 	private:
 		void LoadResource(const Resource& resource, bool invalid = false) override;
 		LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) override;
@@ -44,20 +44,19 @@ namespace ResourceHandler
 		uint32_t GetReferenceCount(const Resource& resource)const override;
 		void Invalidate(const Resource& resource)override;
 
-		FILE_ERROR  CreatePassthroughs();
+		FILE_ERROR  CreateTypes();
 
 		FileSystem_Interface * loader;
 		Utilz::ThreadPool* threadPool;
 
-		std::map<Utilz::GUID, Passthrough_Windows, Utilz::GUID::Compare> passthroughs;
+		std::map<Utilz::GUID, Type_Info, Utilz::GUID::Compare> types;
 
 		Utilz::Sofa<
 				Utilz::GUID, Utilz::GUID::Hasher,
 				ResourceDataVoid,
 				LoadStatus,
 				std::future<LoadJob>,
-				uint32_t,
-				Passthrough_Info*>
+				uint32_t>
 			entries;
 
 		struct EntryNames
@@ -68,8 +67,7 @@ namespace ResourceHandler
 				Data,
 				Status,
 				Future,
-				RefCount,
-				Passthrough
+				RefCount
 			};
 		};
 	};

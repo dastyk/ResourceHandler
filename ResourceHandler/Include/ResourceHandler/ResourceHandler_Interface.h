@@ -87,5 +87,5 @@ DECLDIR_RH_C void DestroyThreadPool(Utilz::ThreadPool* tp);
 DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* rh);
 DECLDIR_RH_C Utilz::ThreadPool* CreateThreadPool(uint32_t numThreads);
 DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, Utilz::ThreadPool* threadPool);
-DECLDIR_RH_C  ResourceHandler::File_Error CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, ResourceHandler::MemoryType memoryType, const char* passthrough);
+DECLDIR_RH_C  ResourceHandler::File_Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, ResourceHandler::MemoryType memoryType, const char* passthrough);
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

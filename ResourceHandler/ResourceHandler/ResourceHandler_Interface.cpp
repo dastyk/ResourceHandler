@@ -21,7 +21,7 @@ DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface * CreateResourceHandler(
 	return new ResourceHandler::ResourceHandler_(loader, threadPool);
 }
 
-DECLDIR_RH_C ResourceHandler::File_Error CreateType(ResourceHandler::ResourceHandler_Interface * rh, const char * type, ResourceHandler::MemoryType memoryType, const char * passthrough)
+DECLDIR_RH_C ResourceHandler::File_Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface * rh, const char * type, ResourceHandler::MemoryType memoryType, const char * passthrough)
 {
 	ResourceHandler::Type_LoadInfo info;
 	info.memoryType = memoryType;

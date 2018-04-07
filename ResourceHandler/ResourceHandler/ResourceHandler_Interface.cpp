@@ -29,12 +29,11 @@ DECLDIR_RH_C ResourceHandler::File_Error ResourceHandler_CreateType(ResourceHand
 	if (passthrough && std::string(passthrough) != "")
 	{
 		std::ifstream pt(passthrough, std::ios::ate | std::ios::binary);
-		ResourceHandler::Type_LoadInfo pti;
 
-		pti.passthrough.librarySize = pt.tellg();
-		pti.passthrough.library = new char[pti.passthrough.librarySize];
+		info.passthrough.librarySize = pt.tellg();
+		info.passthrough.library = new char[info.passthrough.librarySize];
 		pt.seekg(0);
-		pt.read(pti.passthrough.library, pti.passthrough.librarySize);
+		pt.read(info.passthrough.library, info.passthrough.librarySize);
 	}
 	
 	auto r = rh->CreateType(type, info, true);

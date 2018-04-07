@@ -161,18 +161,9 @@ TEST(ResourceHandler, PasstroughTest)
 			r = CreateS_C(bl, "Comp1", "Comp", &testInt, sizeof(testInt));
 			EXPECT_EQ(r.errornr, 0);
 
-			std::ifstream pt("TestPassthrough.dll", std::ios::ate | std::ios::binary);
-			EXPECT_TRUE(pt.is_open());
-			ResourceHandler::Type_LoadInfo pti;
-			pti.memoryType = ResourceHandler::MemoryType::RAM;
-			pti.passthrough.librarySize = pt.tellg();
-			pti.passthrough.library = new char[pti.passthrough.librarySize];
-			pt.seekg(0);
-			pt.read(pti.passthrough.library, pti.passthrough.librarySize);
-			r = rh->CreateType("Comp", pti);
+			r = ResourceHandler_CreateType(rh, "Comp", ResourceHandler::MemoryType::RAM, "TestPassthrough.dll");
 			EXPECT_EQ(r.errornr, 0);
 
-			delete[] pti.passthrough.library;
 			DestroyResourceHandler(rh);
 			DestroyLoader(bl);
 		}

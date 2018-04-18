@@ -3,7 +3,7 @@
 #include <optional>
 #include <filesystem>
 #include <fstream>
-#include <Utilz\StringReadWrite.h>
+#include <StringReadWrite.h>
 namespace fs = std::experimental::filesystem;
 #ifdef _WIN32
 #include <Windows.h>

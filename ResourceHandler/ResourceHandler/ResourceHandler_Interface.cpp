@@ -1,7 +1,8 @@
 #include <ResourceHandler\ResourceHandler_Interface.h>
 #include "ResourceHandler.h"
+#include <fstream>
 
-DECLDIR_RH_C void DestroyThreadPool(Utilz::ThreadPool * tp)
+DECLDIR_RH_C void DestroyThreadPool(ThreadPool * tp)
 {
 	delete tp;
 }
@@ -11,12 +12,12 @@ DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interf
 	delete rh;
 }
 
-DECLDIR_RH_C Utilz::ThreadPool * CreateThreadPool(uint32_t numThreads)
+DECLDIR_RH_C ThreadPool * CreateThreadPool(uint32_t numThreads)
 {
-	return new Utilz::ThreadPool(numThreads);
+	return new ThreadPool(numThreads);
 }
 
-DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface * CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, Utilz::ThreadPool* threadPool)
+DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface * CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, ThreadPool* threadPool)
 {
 	return new ResourceHandler::ResourceHandler_(loader, threadPool);
 }

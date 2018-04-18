@@ -2,7 +2,7 @@
 #include <filesystem>
 #include "../Include/ResourceHandler/FileSystem_Interface.h"
 #include "../Include/ResourceHandler/ResourceHandler_Interface.h"
-#include <Utilz\ThreadPool.h>
+#include <ThreadPool.h>
 namespace fs = std::experimental::filesystem;
 
 TEST(ResourceHandler, BasicLoad)
@@ -40,7 +40,7 @@ TEST(ResourceHandler, BasicLoad)
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			Utilz::ThreadPool tp(4);
+			ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			{
@@ -109,7 +109,7 @@ TEST(ResourceHandler, Invalidate)
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			Utilz::ThreadPool tp(4);
+			ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			{
@@ -150,7 +150,7 @@ TEST(ResourceHandler, PasstroughTest)
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			Utilz::ThreadPool tp(4);
+			ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 
@@ -175,7 +175,7 @@ TEST(ResourceHandler, PasstroughTest)
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			Utilz::ThreadPool tp(4);
+			ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			

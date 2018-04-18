@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <GUID.h>
-#include "../Include/Utilz/ThreadPool.h"
+#include <ThreadPool.h>
 #include <filesystem>
 #include "../Include/ResourceHandler/FileSystem_Interface.h"
 #include <fstream>
@@ -452,7 +452,7 @@ struct X
 		return i + x;
 	}
 
-	bool Do(Utilz::ThreadPool* tp)
+	bool Do(ThreadPool* tp)
 	{
 		auto res = tp->Enqueue(this, &X::Foo, 10);
 		return res.get() == i + 10;
@@ -460,7 +460,7 @@ struct X
 };
 TEST(ThreadPool, Various)
 {
-	Utilz::ThreadPool tp(4);
+	ThreadPool tp(4);
 	{
 		std::mutex lock;
 		int someInt = 0;

@@ -4,8 +4,8 @@
 #include <unordered_map>
 
 #include <ResourceHandler\ResourceHandler_Interface.h> 
-#include <Utilz\Sofa.h>
-#include <Utilz\ThreadPool.h>
+#include <Sofa.h>
+#include <ThreadPool.h>
 #include <windows.h> 
 #include <map>
 namespace ResourceHandler 
@@ -29,7 +29,7 @@ namespace ResourceHandler
 	{
 		friend class Resource;
 	public:
-		ResourceHandler_(FileSystem_Interface* loader, Utilz::ThreadPool* threadPool);
+		ResourceHandler_(FileSystem_Interface* loader, ThreadPool* threadPool);
 		~ResourceHandler_();
 
 		FILE_ERROR Initialize() override;
@@ -47,11 +47,11 @@ namespace ResourceHandler
 		FILE_ERROR  CreateTypes();
 
 		FileSystem_Interface * loader;
-		Utilz::ThreadPool* threadPool;
+		ThreadPool* threadPool;
 
 		std::map<Utilz::GUID, Type_Info, Utilz::GUID::Compare> types;
 
-		Utilz::Sofa<
+		SofA::Vector::SofA<
 				Utilz::GUID, Utilz::GUID::Hasher,
 				ResourceDataVoid,
 				LoadStatus,

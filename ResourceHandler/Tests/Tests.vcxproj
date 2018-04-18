@@ -35,22 +35,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
-    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include/</IncludePath>
+    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../Utilities/Utilities/Include/</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
-    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include/</IncludePath>
+    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../Utilities/Utilities/Include/</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
-    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include/</IncludePath>
+    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../Utilities/Utilities/Include/</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build/$(Configuration)/$(Platform)/</OutDir>
     <IntDir>$(ProjectDir)Intermediate/$(Configuration)/$(Platform)/</IntDir>
-    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../CompileTimeGUID/include/</IncludePath>
+    <IncludePath>$(SolutionDir)Include/;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)../../Utilities/Utilities/Include/</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\ResourceHandler\ResourceData.h" />

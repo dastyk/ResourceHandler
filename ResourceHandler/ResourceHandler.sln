@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ResourceHandler", "ResourceHandler\ResourceHandler.vcxproj", "{D4CCCF45-CBB6-406F-8B19-53666AE769B2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utilz", "Utilz\Utilz.vcxproj", "{4018032D-BBC1-483E-B4D4-9955543702AC}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{45B3FD5B-9C63-4CAF-B49E-352F8297A9D2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPassthrough", "TestPassthrough\TestPassthrough.vcxproj", "{CB582DC5-46EF-4A97-8B5C-0B41BDD87FB9}"
@@ -27,14 +25,6 @@ Global
 		{D4CCCF45-CBB6-406F-8B19-53666AE769B2}.Release|x64.Build.0 = Release|x64
 		{D4CCCF45-CBB6-406F-8B19-53666AE769B2}.Release|x86.ActiveCfg = Release|Win32
 		{D4CCCF45-CBB6-406F-8B19-53666AE769B2}.Release|x86.Build.0 = Release|Win32
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Debug|x64.ActiveCfg = Debug|x64
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Debug|x64.Build.0 = Debug|x64
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Debug|x86.ActiveCfg = Debug|Win32
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Debug|x86.Build.0 = Debug|Win32
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Release|x64.ActiveCfg = Release|x64
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Release|x64.Build.0 = Release|x64
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Release|x86.ActiveCfg = Release|Win32
-		{4018032D-BBC1-483E-B4D4-9955543702AC}.Release|x86.Build.0 = Release|Win32
 		{45B3FD5B-9C63-4CAF-B49E-352F8297A9D2}.Debug|x64.ActiveCfg = Debug|x64
 		{45B3FD5B-9C63-4CAF-B49E-352F8297A9D2}.Debug|x64.Build.0 = Debug|x64
 		{45B3FD5B-9C63-4CAF-B49E-352F8297A9D2}.Debug|x86.ActiveCfg = Debug|Win32

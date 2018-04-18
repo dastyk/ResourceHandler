@@ -43,7 +43,7 @@ namespace ResourceHandler
 		return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data };
 	}
 
-	ResourceHandler_::ResourceHandler_(FileSystem_Interface* loader, Utilz::ThreadPool* threadPool)
+	ResourceHandler_::ResourceHandler_(FileSystem_Interface* loader, ThreadPool* threadPool)
 		: loader(loader) , threadPool(threadPool)
 	{
 		_ASSERT(loader); 

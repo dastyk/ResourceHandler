@@ -1,7 +1,7 @@
 #ifndef _RESOURCE_HANDLER_LOAD_STATUS_H_
 #define _RESOURCE_HANDLER_LOAD_STATUS_H_
 #include <stdint.h>
-#include <Utilz\Flags.h>
+#include <Flags.h>
 
 namespace ResourceHandler
 {

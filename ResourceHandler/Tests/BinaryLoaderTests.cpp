@@ -417,27 +417,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 
 	fs::remove("cd.dat", err);
 }
-TEST(GUID, std)
-{
-	std::string str = "asasdasd";
-	uint32_t hash = 0;
-	for (int i = 0; i < 20000; i++)
-		hash = uint32_t(std::hash<std::string>{}(str));
-}
-TEST(GUID, GUIDRun)
-{
-	std::string str = "asasdasd";
-	Utilities::GUID hash = 0;
-	for (int i = 0; i < 20000; i++)
-		hash = str;
-}
-TEST(GUID, GUIDCom)
-{
-	std::string str = "asasdasd";
-	Utilities::GUID hash = 0;
-	for (int i = 0; i < 20000; i++)
-		hash = Utilities::GUID("asasdasd");
-}
+
 static int Chungus(int a, int b)
 {
 	return a + b;

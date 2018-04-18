@@ -19,31 +19,31 @@ namespace ResourceHandler
 		FILE_ERROR Init(const char* filePath, Mode mode)noexcept override;
 		FILE_ERROR Shutdown()noexcept override;
 
-		FILE_ERROR FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept override;
-		FILE_ERROR FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept override;
-		bool       Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept override;
-		FILE_ERROR Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid& data) noexcept override;
+		FILE_ERROR FindType(Utilities::GUID guid, Utilities::GUID& type)const noexcept override;
+		FILE_ERROR FindNameAndType(Utilities::GUID guid, Utilities::GUID& name, Utilities::GUID& type)const noexcept override;
+		bool       Exist(Utilities::GUID guid, Utilities::GUID type)const noexcept override;
+		FILE_ERROR Read(Utilities::GUID guid, Utilities::GUID type,const ResourceDataVoid& data) noexcept override;
 
 		FILE_ERROR Create(const std::string&, const std::string& type, const ResourceDataVoid& data)noexcept override;
 		FILE_ERROR CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept override;
 		FILE_ERROR CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::ostream* file)>& function)noexcept override;
 		
-		FILE_ERROR Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid& data)noexcept override;
-		FILE_ERROR WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream* file)>& function)noexcept override;
+		FILE_ERROR Write(Utilities::GUID guid, Utilities::GUID type, const ResourceDataVoid& data)noexcept override;
+		FILE_ERROR WriteFromCallback(Utilities::GUID guid, Utilities::GUID type, uint64_t size, const std::function<bool(std::ostream* file)>& function)noexcept override;
 
-		FILE_ERROR Destroy(Utilz::GUID, Utilz::GUID type)noexcept override;
+		FILE_ERROR Destroy(Utilities::GUID, Utilities::GUID type)noexcept override;
 
 		FILE_ERROR Defrag()noexcept override;
 
-		FILE_ERROR GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept override;
-		FILE_ERROR GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept override;
+		FILE_ERROR GetFilesOfType(Utilities::GUID type, std::vector<File>& files) const noexcept override;
+		FILE_ERROR GetFilesOfType(Utilities::GUID type, FILE_C files[], uint32_t numFiles) const noexcept override;
 		FILE_ERROR GetFiles(std::vector<File>& files)const noexcept override;
 		FILE_ERROR GetFiles(FILE_C* files, uint32_t numfiles)const noexcept override;
-		FILE_ERROR GetFile(FILE_C& files, Utilz::GUID guid, Utilz::GUID type)const noexcept override;
-		FILE_ERROR GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept override;
+		FILE_ERROR GetFile(FILE_C& files, Utilities::GUID guid, Utilities::GUID type)const noexcept override;
+		FILE_ERROR GetSizeOfFile(Utilities::GUID guid, Utilities::GUID type, uint64_t& size)const noexcept override;
 		uint32_t GetNumberOfFiles()const noexcept override;
 		uint32_t GetNumberOfTypes()const noexcept override;
-		uint32_t GetNumberOfFilesOfType(Utilz::GUID type)const noexcept override;
+		uint32_t GetNumberOfFilesOfType(Utilities::GUID type)const noexcept override;
 		uint64_t GetTotalSizeOfAllFiles()const noexcept override;
 		float GetFragmentationRatio()const noexcept override;
 
@@ -68,16 +68,16 @@ namespace ResourceHandler
 
 		struct FileEntries
 		{
-			std::vector <Utilz::GUID>	guid;
-			std::vector <Utilz::GUID>	type;
+			std::vector <Utilities::GUID>	guid;
+			std::vector <Utilities::GUID>	type;
 			std::vector <uint64_t>		rawSize;
 			std::vector <uint64_t>		size;
 			std::vector <uint64_t>		location;
 			std::vector <std::string>	guid_str;
 			std::vector <std::string>	type_str;
 		}entries;
-		std::vector<std::unordered_map<Utilz::GUID, uint32_t, Utilz::GUID::Hasher>> typeIndexToFiles;
-		std::unordered_map<Utilz::GUID, uint32_t, Utilz::GUID::Hasher> typeToIndex;
+		std::vector<std::unordered_map<Utilities::GUID, uint32_t, Utilities::GUID::Hasher>> typeIndexToFiles;
+		std::unordered_map<Utilities::GUID, uint32_t, Utilities::GUID::Hasher> typeToIndex;
 	};
 }
 #endif

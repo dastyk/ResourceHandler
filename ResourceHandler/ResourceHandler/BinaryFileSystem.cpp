@@ -57,9 +57,9 @@ namespace ResourceHandler
 			file.write((char*)entries.size.data(),			sizeof(entries.size[0])		* numFiles);
 			file.write((char*)entries.location.data(),		sizeof(entries.location[0]) * numFiles);
 			for (auto& s : entries.guid_str)
-				Utilz::writeString(&file, s);
+				Utilities::writeString(&file, s);
 			for (auto& t : entries.type_str)
-				Utilz::writeString(&file, t);
+				Utilities::writeString(&file, t);
 		}
 	}
 
@@ -99,7 +99,7 @@ namespace ResourceHandler
 
 
 	
-	FILE_ERROR BinaryFileSystem::GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept
+	FILE_ERROR BinaryFileSystem::GetFilesOfType(Utilities::GUID type, FILE_C files[], uint32_t numFiles) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -210,7 +210,7 @@ namespace ResourceHandler
 		AddFile(size, fileIn);
 		RETURN_FILE_SUCCESS;
 	}
-	FILE_ERROR BinaryFileSystem::GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept
+	FILE_ERROR BinaryFileSystem::GetFilesOfType(Utilities::GUID type, std::vector<File>& files) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -274,7 +274,7 @@ namespace ResourceHandler
 		else
 			return 0.0f;
 	}
-	uint32_t BinaryFileSystem::GetNumberOfFilesOfType(Utilz::GUID type) const noexcept
+	uint32_t BinaryFileSystem::GetNumberOfFilesOfType(Utilities::GUID type) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -285,7 +285,7 @@ namespace ResourceHandler
 			return uint32_t(typeIndexToFiles[find->second].size());
 		}
 	}
-	FILE_ERROR BinaryFileSystem::GetFile(FILE_C & files, Utilz::GUID guid, Utilz::GUID type) const noexcept
+	FILE_ERROR BinaryFileSystem::GetFile(FILE_C & files, Utilities::GUID guid, Utilities::GUID type) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -422,9 +422,9 @@ namespace ResourceHandler
 			file.read((char*)entries.location.data(),	sizeof(entries.location[0]) * fileHeader.numFiles);
 
 			for (auto& f : entries.guid_str)
-				Utilz::readString(&file, f);
+				Utilities::readString(&file, f);
 			for (auto& t : entries.type_str)
-				Utilz::readString(&file, t);
+				Utilities::readString(&file, t);
 			for (uint32_t i = 0; i < fileHeader.numFiles; i++)
 			{
 				
@@ -498,7 +498,7 @@ namespace ResourceHandler
 
 		RETURN_FILE_SUCCESS;
 	}
-	FILE_ERROR BinaryFileSystem::FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept
+	FILE_ERROR BinaryFileSystem::FindType(Utilities::GUID guid, Utilities::GUID& type)const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -512,7 +512,7 @@ namespace ResourceHandler
 		}
 		RETURN_FILE_ERROR_C("Type not found");
 	}
-	FILE_ERROR BinaryFileSystem::FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept
+	FILE_ERROR BinaryFileSystem::FindNameAndType(Utilities::GUID guid, Utilities::GUID& name, Utilities::GUID& type)const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -528,7 +528,7 @@ namespace ResourceHandler
 		RETURN_FILE_ERROR_C("File not found");
 	}
 	
-	bool BinaryFileSystem::Exist(Utilz::GUID guid, Utilz::GUID type) const noexcept
+	bool BinaryFileSystem::Exist(Utilities::GUID guid, Utilities::GUID type) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -540,7 +540,7 @@ namespace ResourceHandler
 		}			
 		return false;
 	}
-	FILE_ERROR BinaryFileSystem::GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size) const noexcept
+	FILE_ERROR BinaryFileSystem::GetSizeOfFile(Utilities::GUID guid, Utilities::GUID type, uint64_t& size) const noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -555,7 +555,7 @@ namespace ResourceHandler
 		}
 		RETURN_FILE_ERROR_C("File not found");
 	}
-	FILE_ERROR BinaryFileSystem::Read(Utilz::GUID guid, Utilz::GUID type,const ResourceDataVoid & data) noexcept
+	FILE_ERROR BinaryFileSystem::Read(Utilities::GUID guid, Utilities::GUID type,const ResourceDataVoid & data) noexcept
 	{
 		StartProfile;
 		Locker lg(lock, mode);
@@ -607,7 +607,7 @@ namespace ResourceHandler
 		RETURN_FILE_SUCCESS;
 	}
 
-	FILE_ERROR BinaryFileSystem::Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid & data)noexcept
+	FILE_ERROR BinaryFileSystem::Write(Utilities::GUID guid, Utilities::GUID type, const ResourceDataVoid & data)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -654,7 +654,7 @@ namespace ResourceHandler
 		RETURN_FILE_SUCCESS;
 	}
 
-	FILE_ERROR BinaryFileSystem::WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
+	FILE_ERROR BinaryFileSystem::WriteFromCallback(Utilities::GUID guid, Utilities::GUID type, uint64_t size, const std::function<bool(std::ostream*file)>& function)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)
@@ -711,7 +711,7 @@ namespace ResourceHandler
 		}
 		RETURN_FILE_SUCCESS;
 	}
-	FILE_ERROR BinaryFileSystem::Destroy(Utilz::GUID guid, Utilz::GUID type)noexcept
+	FILE_ERROR BinaryFileSystem::Destroy(Utilities::GUID guid, Utilities::GUID type)noexcept
 	{
 		StartProfile;
 		if (mode != Mode::EDIT)

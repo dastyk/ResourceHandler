@@ -40,7 +40,7 @@ TEST(ResourceHandler, BasicLoad)
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			ThreadPool tp(4);
+			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			{
@@ -109,7 +109,7 @@ TEST(ResourceHandler, Invalidate)
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			ThreadPool tp(4);
+			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			{
@@ -150,7 +150,7 @@ TEST(ResourceHandler, PasstroughTest)
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			ThreadPool tp(4);
+			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 
@@ -175,7 +175,7 @@ TEST(ResourceHandler, PasstroughTest)
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
 			EXPECT_EQ(r.errornr, 0);
-			ThreadPool tp(4);
+			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			

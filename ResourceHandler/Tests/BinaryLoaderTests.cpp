@@ -427,16 +427,16 @@ TEST(GUID, std)
 TEST(GUID, GUIDRun)
 {
 	std::string str = "asasdasd";
-	Utilz::GUID hash = 0;
+	Utilities::GUID hash = 0;
 	for (int i = 0; i < 20000; i++)
 		hash = str;
 }
 TEST(GUID, GUIDCom)
 {
 	std::string str = "asasdasd";
-	Utilz::GUID hash = 0;
+	Utilities::GUID hash = 0;
 	for (int i = 0; i < 20000; i++)
-		hash = Utilz::GUID("asasdasd");
+		hash = Utilities::GUID("asasdasd");
 }
 static int Chungus(int a, int b)
 {
@@ -452,7 +452,7 @@ struct X
 		return i + x;
 	}
 
-	bool Do(ThreadPool* tp)
+	bool Do(Utilities::ThreadPool* tp)
 	{
 		auto res = tp->Enqueue(this, &X::Foo, 10);
 		return res.get() == i + 10;
@@ -460,7 +460,7 @@ struct X
 };
 TEST(ThreadPool, Various)
 {
-	ThreadPool tp(4);
+	Utilities::ThreadPool tp(4);
 	{
 		std::mutex lock;
 		int someInt = 0;

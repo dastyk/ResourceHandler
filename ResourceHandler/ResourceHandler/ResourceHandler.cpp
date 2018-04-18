@@ -12,7 +12,7 @@ namespace fs = std::experimental::filesystem;
 ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
-	LoadJob Load(Utilz::GUID guid, Utilz::GUID type, FileSystem_Interface* loader, const Type_Info* typeInfo, LoadStatus extraFlag)
+	LoadJob Load(Utilities::GUID guid, Utilities::GUID type, FileSystem_Interface* loader, const Type_Info* typeInfo, LoadStatus extraFlag)
 	{
 
 		StartProfile;
@@ -43,7 +43,7 @@ namespace ResourceHandler
 		return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data };
 	}
 
-	ResourceHandler_::ResourceHandler_(FileSystem_Interface* loader, ThreadPool* threadPool)
+	ResourceHandler_::ResourceHandler_(FileSystem_Interface* loader, Utilities::ThreadPool* threadPool)
 		: loader(loader) , threadPool(threadPool)
 	{
 		_ASSERT(loader); 

@@ -22,8 +22,10 @@ namespace std
 		return std::unique_ptr<T, std::function<void(T*)>>(ptr, deleter);
 	}
 }
-class ThreadPool;
-
+namespace Utilities
+{
+	class ThreadPool;
+}
 namespace ResourceHandler
 {
 	typedef int32_t(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize);
@@ -81,9 +83,9 @@ namespace ResourceHandler
 
 	
 }
-DECLDIR_RH_C void DestroyThreadPool(ThreadPool* tp);
+DECLDIR_RH_C void DestroyThreadPool(Utilities::ThreadPool* tp);
 DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* rh);
-DECLDIR_RH_C ThreadPool* CreateThreadPool(uint32_t numThreads);
-DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, ThreadPool* threadPool);
+DECLDIR_RH_C Utilities::ThreadPool* CreateThreadPool(uint32_t numThreads);
+DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, Utilities::ThreadPool* threadPool);
 DECLDIR_RH_C  ResourceHandler::File_Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, ResourceHandler::MemoryType memoryType, const char* passthrough);
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

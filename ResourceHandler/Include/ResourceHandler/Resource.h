@@ -40,17 +40,17 @@ namespace ResourceHandler
 		{
 			return checkInCount;
 		}
-		inline Utilz::GUID GUID()const
+		inline Utilities::GUID GUID()const
 		{
 			return myGUID;
 		}
-		inline Utilz::GUID Type()const
+		inline Utilities::GUID Type()const
 		{
 			return myType;
 		}
 		
-		DECLDIR_RH Resource(Utilz::GUID guid, Utilz::GUID type);
-		DECLDIR_RH Resource(Utilz::GUID guid, Utilz::GUID type, bool createAsInvalid);
+		DECLDIR_RH Resource(Utilities::GUID guid, Utilities::GUID type);
+		DECLDIR_RH Resource(Utilities::GUID guid, Utilities::GUID type, bool createAsInvalid);
 		DECLDIR_RH ~Resource();
 		DECLDIR_RH void CheckIn();
 		DECLDIR_RH void CheckOut();
@@ -61,8 +61,8 @@ namespace ResourceHandler
 		DECLDIR_RH static void Reset( Resource resources[], uint32_t num);
 		DECLDIR_RH void Invalidate()const;
 	private:
-		Utilz::GUID myGUID;
-		Utilz::GUID myType;
+		Utilities::GUID myGUID;
+		Utilities::GUID myType;
 		uint32_t checkInCount;
 	};
 }

@@ -24,8 +24,8 @@ namespace ResourceHandler
 
 	struct File
 	{
-		Utilz::GUID guid;
-		Utilz::GUID type;
+		Utilities::GUID guid;
+		Utilities::GUID type;
 		std::string guid_str;
 		std::string type_str;
 	};
@@ -43,31 +43,31 @@ namespace ResourceHandler
 		virtual FILE_ERROR Init(const char* filePath, Mode mode) noexcept = 0;
 		virtual FILE_ERROR Shutdown() noexcept = 0; 
 
-		virtual FILE_ERROR FindType(Utilz::GUID guid, Utilz::GUID& type)const noexcept = 0;
-		virtual FILE_ERROR FindNameAndType(Utilz::GUID guid, Utilz::GUID& name, Utilz::GUID& type)const noexcept = 0;
-		virtual bool	   Exist(Utilz::GUID guid, Utilz::GUID type)const noexcept = 0;
-		virtual FILE_ERROR Read(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid& data) noexcept = 0;
+		virtual FILE_ERROR FindType(Utilities::GUID guid, Utilities::GUID& type)const noexcept = 0;
+		virtual FILE_ERROR FindNameAndType(Utilities::GUID guid, Utilities::GUID& name, Utilities::GUID& type)const noexcept = 0;
+		virtual bool	   Exist(Utilities::GUID guid, Utilities::GUID type)const noexcept = 0;
+		virtual FILE_ERROR Read(Utilities::GUID guid, Utilities::GUID type, const ResourceDataVoid& data) noexcept = 0;
 			
 		virtual FILE_ERROR Create(const std::string& guid,const std::string& type, const ResourceDataVoid& data) noexcept = 0;
 		virtual FILE_ERROR CreateFromFile(const char* filePath, const std::string& guid, const std::string& type) noexcept = 0;
 		virtual FILE_ERROR CreateFromCallback(const std::string& guid, const std::string& type, const std::function<bool(std::ostream* file)>& function)noexcept = 0;
 			
-		virtual FILE_ERROR Write(Utilz::GUID guid, Utilz::GUID type, const ResourceDataVoid& data)noexcept = 0;
-		virtual FILE_ERROR WriteFromCallback(Utilz::GUID guid, Utilz::GUID type, uint64_t size, const std::function<bool(std::ostream* file)>& function)noexcept = 0;
+		virtual FILE_ERROR Write(Utilities::GUID guid, Utilities::GUID type, const ResourceDataVoid& data)noexcept = 0;
+		virtual FILE_ERROR WriteFromCallback(Utilities::GUID guid, Utilities::GUID type, uint64_t size, const std::function<bool(std::ostream* file)>& function)noexcept = 0;
 			
-		virtual FILE_ERROR Destroy(Utilz::GUID guid, Utilz::GUID type) noexcept = 0;
+		virtual FILE_ERROR Destroy(Utilities::GUID guid, Utilities::GUID type) noexcept = 0;
 		
 		virtual FILE_ERROR Defrag()noexcept = 0;
 
-		virtual FILE_ERROR GetFilesOfType(Utilz::GUID type, std::vector<File>& files) const noexcept = 0;
-		virtual FILE_ERROR GetFilesOfType(Utilz::GUID type, FILE_C files[], uint32_t numFiles) const noexcept = 0;
+		virtual FILE_ERROR GetFilesOfType(Utilities::GUID type, std::vector<File>& files) const noexcept = 0;
+		virtual FILE_ERROR GetFilesOfType(Utilities::GUID type, FILE_C files[], uint32_t numFiles) const noexcept = 0;
 		virtual FILE_ERROR GetFiles(std::vector<File>& files)const noexcept = 0;
 		virtual FILE_ERROR GetFiles(FILE_C* files, uint32_t numfiles)const noexcept = 0;
-		virtual FILE_ERROR GetFile(FILE_C& files, Utilz::GUID guid, Utilz::GUID type)const noexcept = 0;
-		virtual FILE_ERROR GetSizeOfFile(Utilz::GUID guid, Utilz::GUID type, uint64_t& size)const noexcept = 0;
+		virtual FILE_ERROR GetFile(FILE_C& files, Utilities::GUID guid, Utilities::GUID type)const noexcept = 0;
+		virtual FILE_ERROR GetSizeOfFile(Utilities::GUID guid, Utilities::GUID type, uint64_t& size)const noexcept = 0;
 		virtual uint32_t GetNumberOfFiles()const noexcept = 0;
 		virtual uint32_t GetNumberOfTypes()const noexcept = 0;
-		virtual uint32_t GetNumberOfFilesOfType(Utilz::GUID type)const noexcept = 0;
+		virtual uint32_t GetNumberOfFilesOfType(Utilities::GUID type)const noexcept = 0;
 		virtual uint64_t GetTotalSizeOfAllFiles()const noexcept = 0;
 		virtual float GetFragmentationRatio()const noexcept = 0;
 	protected:

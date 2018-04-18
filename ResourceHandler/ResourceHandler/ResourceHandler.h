@@ -29,7 +29,7 @@ namespace ResourceHandler
 	{
 		friend class Resource;
 	public:
-		ResourceHandler_(FileSystem_Interface* loader, ThreadPool* threadPool);
+		ResourceHandler_(FileSystem_Interface* loader, Utilities::ThreadPool* threadPool);
 		~ResourceHandler_();
 
 		FILE_ERROR Initialize() override;
@@ -47,12 +47,12 @@ namespace ResourceHandler
 		FILE_ERROR  CreateTypes();
 
 		FileSystem_Interface * loader;
-		ThreadPool* threadPool;
+		Utilities::ThreadPool* threadPool;
 
-		std::map<Utilz::GUID, Type_Info, Utilz::GUID::Compare> types;
-
-		SofA::Vector::SofA<
-				Utilz::GUID, Utilz::GUID::Hasher,
+		std::map<Utilities::GUID, Type_Info, Utilities::GUID::Compare> types;
+		
+		Utilities::SofA::Vector::SofA<
+				Utilities::GUID, Utilities::GUID::Hasher,
 				ResourceDataVoid,
 				LoadStatus,
 				std::future<LoadJob>,

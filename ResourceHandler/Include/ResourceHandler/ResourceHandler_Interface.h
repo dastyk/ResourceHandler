@@ -64,9 +64,9 @@ namespace ResourceHandler
 	
 
 		virtual ~ResourceHandler_Interface() {};
-		virtual FILE_ERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) = 0;
+		virtual UERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) = 0;
 	
-		virtual FILE_ERROR Initialize() = 0;
+		virtual UERROR Initialize() = 0;
 		virtual void Shutdown() = 0;
 		
 	protected:
@@ -87,5 +87,5 @@ DECLDIR_RH_C void DestroyThreadPool(Utilities::ThreadPool* tp);
 DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* rh);
 DECLDIR_RH_C Utilities::ThreadPool* CreateThreadPool(uint32_t numThreads);
 DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, Utilities::ThreadPool* threadPool);
-DECLDIR_RH_C  ResourceHandler::File_Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, ResourceHandler::MemoryType memoryType, const char* passthrough);
+DECLDIR_RH_C  Utilities::Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, ResourceHandler::MemoryType memoryType, const char* passthrough);
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

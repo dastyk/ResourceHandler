@@ -1,17 +1,31 @@
 #include "ResourceHandler.h"
 #include <Profiler.h>
 #include "SecretPointer.h"
-#include <File_Error.h>
+#include <Error.h>
 #include <Windows.h>
-#include <File_Error.h>
 #include <filesystem>
 #include <fstream>
 
 namespace fs = std::experimental::filesystem;
 
 ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
+
+
+
+
 namespace ResourceHandler
 {
+
+	struct Passthrough_Windows : public Passthrough_Info
+	{
+		Passthrough_Windows(const std::string& name) : name(name)
+		{}
+		std::string name;
+		HINSTANCE lib;
+
+	};
+
+
 	LoadJob Load(Utilities::GUID guid, Utilities::GUID type, FileSystem_Interface* loader, const Type_Info* typeInfo, LoadStatus extraFlag)
 	{
 
@@ -22,11 +36,11 @@ namespace ResourceHandler
 
 		ResourceDataVoid data;
 		auto result = loader->GetSizeOfFile(guid, type, data.size);
-		if(result.errornr < 0)
+		if(result.hash != "Success"_hash)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 		data.data = operator new((size_t(data.size)));
 		result = loader->Read(guid, type, data);
-		if (result.errornr < 0)
+		if (result.hash != "Success"_hash)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 		if (typeInfo && typeInfo->passthrough)
@@ -65,7 +79,7 @@ namespace ResourceHandler
 
 		
 	}
-	FILE_ERROR ResourceHandler_::Initialize()
+	UERROR ResourceHandler_::Initialize()
 	{
 		return CreateTypes();
 	}
@@ -73,12 +87,12 @@ namespace ResourceHandler
 	{
 	}
 
-	FILE_ERROR ResourceHandler_::CreateType(const std::string& type, const Type_LoadInfo& info, bool force)
+	UERROR ResourceHandler_::CreateType(const std::string& type, const Type_LoadInfo& info, bool force)
 	{
 
 		if (auto findType = types.find(type); findType != types.end())
 			if (!force)
-				RETURN_FILE_ERROR_C("Type already exists");
+				RETURN_ERROR("Type already exists");
 
 		Type_Info typeInfo;
 		if (info.passthrough.library != nullptr)
@@ -88,25 +102,25 @@ namespace ResourceHandler
 
 			std::ofstream file(pti.name, std::ios::trunc | std::ios::binary);
 			if (!file.is_open())
-				RETURN_FILE_ERROR_C("Could not open passthrough file");
+				RETURN_ERROR("Could not open passthrough file");
 
 			file.write(info.passthrough.library, info.passthrough.librarySize);
 			file.close();
 
 			pti.lib = LoadLibrary(pti.name.c_str());
 			if (pti.lib == NULL)
-				RETURN_FILE_ERROR_C("Could not load passthrough library");
+				RETURN_ERROR("Could not load passthrough library");
 
 			pti.Parse = (Passthrough_Parse_PROC)GetProcAddress(pti.lib, "Parse");
 			if (pti.Parse == NULL)
-				RETURN_FILE_ERROR_C("Could not load 'Parse' function from passthrough library");
+				RETURN_ERROR("Could not load 'Parse' function from passthrough library");
 
 			pti.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(pti.lib, "Destroy");
 			if (pti.Destroy == NULL)
-				RETURN_FILE_ERROR_C("Could not load 'Destroy' function from passthrough library");
+				RETURN_ERROR("Could not load 'Destroy' function from passthrough library");
 		}
 
-		PASS_IF_FILE_ERROR(loader->CreateFromCallback(type, "Type", [&](std::ostream* file) {
+		PASS_IF_ERROR(loader->CreateFromCallback(type, "Type", [&](std::ostream* file) {
 			file->write((char*)&info, sizeof(info));
 			file->write(info.passthrough.library, info.passthrough.librarySize);
 			return true;
@@ -115,7 +129,7 @@ namespace ResourceHandler
 
 		types.emplace(type, typeInfo);
 
-		RETURN_FILE_SUCCESS;
+		RETURN_SUCCESS;
 	}
 	
 	void ResourceHandler_::LoadResource(const Resource& resource, bool invalid)
@@ -263,7 +277,7 @@ namespace ResourceHandler
 	}
 	
 
-	const File_Error&  ResourceHandler_::CreateTypes()
+	UERROR  ResourceHandler_::CreateTypes()
 	{
 		std::vector<File> loaded_types;
 	
@@ -271,9 +285,9 @@ namespace ResourceHandler
 		for (auto& type : loaded_types)
 		{
 			ResourceData<Type_LoadInfo> data;
-			PASS_IF_FILE_ERROR(loader->GetSizeOfFile(type.guid, type.type, data.GetVoid().size));
+			PASS_IF_ERROR(loader->GetSizeOfFile(type.guid, type.type, data.GetVoid().size));
 			data.GetVoid().data = operator new((size_t(data.GetVoid().size)));
-			PASS_IF_FILE_ERROR(loader->Read(type.guid, type.type, data));
+			PASS_IF_ERROR(loader->Read(type.guid, type.type, data));
 			Type_Info typeInfo;
 			typeInfo.memoryType = data->memoryType;
 		
@@ -285,7 +299,7 @@ namespace ResourceHandler
 				{
 					std::ofstream file(pti.name, std::ios::trunc | std::ios::binary);
 					if (!file.is_open())
-						RETURN_FILE_ERROR_C("Could not open passthrough file");
+						RETURN_ERROR("Could not open passthrough file");
 
 					auto pp = data.GetExtra();
 
@@ -297,15 +311,15 @@ namespace ResourceHandler
 
 				pti.lib = LoadLibrary(pti.name.c_str());
 				if (pti.lib == NULL)
-					RETURN_FILE_ERROR_C("Could not load passthrough library");
+					RETURN_ERROR("Could not load passthrough library");
 
 				pti.Parse = (Passthrough_Parse_PROC)GetProcAddress(pti.lib, "Parse");
 				if (pti.Parse == NULL)
-					RETURN_FILE_ERROR_C("Could not load 'Parse' function from passthrough library");
+					RETURN_ERROR("Could not load 'Parse' function from passthrough library");
 
 				pti.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(pti.lib, "Destroy");
 				if (pti.Destroy == NULL)
-					RETURN_FILE_ERROR_C("Could not load 'Destroy' function from passthrough library");
+					RETURN_ERROR("Could not load 'Destroy' function from passthrough library");
 			}
 
 		
@@ -314,6 +328,6 @@ namespace ResourceHandler
 
 		}
 
-		RETURN_FILE_SUCCESS;
+		RETURN_SUCCESS;
 	}
 }

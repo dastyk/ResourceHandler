@@ -15,26 +15,26 @@ TEST(BinaryFileSystem, CreateDestroy) {
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 	
 		char file1Data[] = { "test" };
 		auto size = sizeof(file1Data);
 		r = CreateS_C(bl, "File1", "Test", file1Data, size);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		r = CreateS_C(bl, "File1", "Test", file1Data, size);
-		EXPECT_EQ(r.errornr, 1);
+		EXPECT_EQ(r.hash, "File already exists"_hash);
 		
 		char newfile1Data[sizeof(file1Data)];
 		uint64_t newsize = 0;
 		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
 		EXPECT_EQ(newsize, size);
 		r = ReadS_C(bl, "File1", "Test", newfile1Data, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data, file1Data);
 		
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		r = DestroyS_C(bl, "File1", "Test");
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 0);
 
 		DestroyLoader(bl);
@@ -51,29 +51,29 @@ TEST(BinaryFileSystem, CreateDestroyTwo) {
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		char file1Data[] = { "test" };
 		auto size = sizeof(file1Data);
 		r = CreateS_C(bl, "File1", "Test", file1Data, size);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		r = CreateS_C(bl, "File1", "Test", file1Data, size);
-		EXPECT_EQ(r.errornr, 1);
+		EXPECT_EQ(r.hash, "File already exists"_hash);
 
 		char newfile1Data[sizeof(file1Data)];
 		uint64_t newsize = 0;
 		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
 		EXPECT_EQ(newsize, size);
 		r = ReadS_C(bl, "File1", "Test", newfile1Data, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data, file1Data);
 
 		char file2Data[] = { "test2" };
 		auto size2 = sizeof(file2Data);
 		r = CreateS_C(bl, "File2", "Test", file2Data, size2);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		r = CreateS_C(bl, "File2", "Test", file2Data, size2);
-		EXPECT_EQ(r.errornr, 1);
+		EXPECT_EQ(r.hash, "File already exists"_hash);
 		EXPECT_EQ(GetNumberOfFilesOfType_C(bl, "Test"), 2);
 
 		char newfile2Data[sizeof(file2Data)];
@@ -81,13 +81,13 @@ TEST(BinaryFileSystem, CreateDestroyTwo) {
 		r = GetSizeOfFileS_C(bl, "File2", "Test", &newsize2);
 		EXPECT_EQ(newsize2, size2);
 		r = ReadS_C(bl, "File2", "Test", newfile2Data, newsize2);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile2Data, file2Data);
 
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 2);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
 		r = DestroyS_C(bl, "File1", "Test");
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
 
@@ -96,7 +96,7 @@ TEST(BinaryFileSystem, CreateDestroyTwo) {
 		r = GetSizeOfFileS_C(bl, "File2", "Test", &newsize3);
 		EXPECT_EQ(newsize3, size2);
 		r = ReadS_C(bl, "File2", "Test", newfile3Data, newsize3);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile3Data, file2Data);
 
 		DestroyLoader(bl);
@@ -113,7 +113,7 @@ TEST(BinaryFileSystem, CreateFromFile)
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		std::ofstream out("test.txt", std::ios::binary);
 		EXPECT_TRUE(out.is_open());
@@ -124,7 +124,7 @@ TEST(BinaryFileSystem, CreateFromFile)
 		EXPECT_FALSE(out.is_open());
 
 		auto re = CreateFromFile_C(bl, "test.txt", "File", "Test");
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
 		EXPECT_EQ(GetNumberOfFilesOfType_C(bl, "Test"), 1);
@@ -134,7 +134,7 @@ TEST(BinaryFileSystem, CreateFromFile)
 		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
 		EXPECT_EQ(newsize, size);
 		r = ReadS_C(bl, "File", "Test", newfile1Data, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data, file1Data);
 
 
@@ -152,7 +152,7 @@ TEST(BinaryFileSystem, CreateFromCallback)
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		char file1Data[] = { "test" };
 		auto size = sizeof(file1Data);
 		auto lam = [&](std::ostream* file)
@@ -163,7 +163,7 @@ TEST(BinaryFileSystem, CreateFromCallback)
 		};
 
 		auto re = bl->CreateFromCallback("File", "Test", lam);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
 
@@ -172,7 +172,7 @@ TEST(BinaryFileSystem, CreateFromCallback)
 		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
 		EXPECT_EQ(newsize, size);
 		r = ReadS_C(bl, "File", "Test", newfile1Data, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data, file1Data);
 
 
@@ -190,16 +190,16 @@ TEST(BinaryFileSystem, Defrag)
 		EXPECT_TRUE(bl);
 		int count = 100;
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		for (int i = 0; i < count; i++)
 		{
 			auto str = "File" + std::to_string(i) + "asd";
 			r = bl->Create(str, "Int", { &i, sizeof(i) });
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			int c = 0;
 			r = bl->Read(str, "Int", { &c, sizeof(i) });
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			EXPECT_EQ(c, i);
 		}
 		struct TestS
@@ -212,10 +212,10 @@ TEST(BinaryFileSystem, Defrag)
 			auto str = "FileTest" + std::to_string(i);
 			TestS d{ i, i * 10 };
 			r = bl->Create(str, "Int2", { &d, sizeof(d) });
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			TestS d2;
 			r = bl->Read(str, "Int2", { &d2, sizeof(d2) });
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			EXPECT_EQ(d2.i1, d.i1);
 			EXPECT_EQ(d2.i2, d.i2);
 		}
@@ -225,13 +225,13 @@ TEST(BinaryFileSystem, Defrag)
 		{
 			auto str = "File" + std::to_string(i) + "asd";
 			r = bl->Destroy(str, "Int");
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 		}
 		EXPECT_EQ(GetNumberOfFiles_C(bl), count);
 		EXPECT_EQ(GetTotalSizeOfAllFiles_C(bl), float(sizeof(int) * count + sizeof(TestS) * count));
 		EXPECT_FLOAT_EQ(GetFragmentationRatio_C(bl), (sizeof(int)*count) / float(sizeof(int) * count + sizeof(TestS) * count));
 		r = Defrag_C(bl);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetTotalSizeOfAllFiles_C(bl), sizeof(TestS) * count);
 		EXPECT_EQ(GetFragmentationRatio_C(bl), 0.0f);
 		DestroyLoader(bl);
@@ -248,15 +248,15 @@ TEST(BinaryFileSystem, Defrag2)
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		int i = 05;
 		auto str = "File";
 		r = bl->Create(str, "Int", { &i, sizeof(i) });
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		r = bl->Defrag();
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 
 		EXPECT_TRUE(fs::exists("cd.dat"));
@@ -276,21 +276,21 @@ TEST(BinaryFileSystem, CreateAndWrite) {
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		char file1Data[] = { "test" };
 		auto size = sizeof(file1Data);
 		r = CreateS_C(bl, "File1", "Test", file1Data, size);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		r = CreateS_C(bl, "File1", "Test", file1Data, size);
-		EXPECT_EQ(r.errornr, 1);
+		EXPECT_EQ(r.hash, "File already exists"_hash);
 
 		char newfile1Data[sizeof(file1Data)];
 		uint64_t newsize = 0;
 		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
 		EXPECT_EQ(newsize, size);
 		r = ReadS_C(bl, "File1", "Test", newfile1Data, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data, file1Data);
 
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
@@ -299,7 +299,7 @@ TEST(BinaryFileSystem, CreateAndWrite) {
 		char file1DataS[] = { "asd" };
 		auto sizeS = sizeof(file1DataS);
 		r = WriteS_C(bl, "File1", "Test", file1DataS, sizeS);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 
@@ -307,26 +307,26 @@ TEST(BinaryFileSystem, CreateAndWrite) {
 		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
 		EXPECT_EQ(newsize, sizeS);
 		r = ReadS_C(bl, "File1", "Test", newfile1Data, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data, file1DataS);
 
 		char file1DataL[] = { "File12" };
 		auto sizeL = sizeof(file1DataL);
 		r = WriteS_C(bl, "File1", "Test", file1DataL, sizeL);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 
 		
 		char newfile1DataL[sizeof(file1DataL)];
 		r = GetSizeOfFileS_C(bl, "File1", "Test", &newsize);
 		EXPECT_EQ(newsize, sizeL);
 		r = ReadS_C(bl, "File1", "Test", newfile1DataL, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1DataL, file1DataL);
 
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 
 		r = DestroyS_C(bl, "File1", "Test");
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 0);
 
 		DestroyLoader(bl);
@@ -343,7 +343,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		char file1Data[] = { "test" };
 		auto size = sizeof(file1Data);
 		auto lam = [&](std::ostream* file)
@@ -354,7 +354,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 		};
 
 		auto re = bl->CreateFromCallback("File", "Test", lam);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
 
@@ -363,7 +363,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
 		EXPECT_EQ(newsize, size);
 		r = ReadS_C(bl, "File", "Test", newfile1Data, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data, file1Data);
 
 		char file1Data2[] = { "tes" };
@@ -377,7 +377,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 
 
 		 re = bl->WriteFromCallback("File", "Test", size2, lam2);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
 
@@ -386,7 +386,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
 		EXPECT_EQ(newsize, size2);
 		r = ReadS_C(bl, "File", "Test", newfile1Data2, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data2, file1Data2);
 
 		char file1Data22[] = { "test123" };
@@ -400,7 +400,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 
 
 		 re = bl->WriteFromCallback("File", "Test", size22, lam22);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_EQ(GetNumberOfFiles_C(bl), 1);
 		EXPECT_EQ(GetNumberOfTypes_C(bl), 1);
 
@@ -409,7 +409,7 @@ TEST(BinaryFileSystem, CreateAndWriteFromCallback)
 		r = GetSizeOfFileS_C(bl, "File", "Test", &newsize);
 		EXPECT_EQ(newsize, size22);
 		r = ReadS_C(bl, "File", "Test", newfile1Data22, newsize);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		EXPECT_STREQ(newfile1Data22, file1Data22);
 
 		DestroyLoader(bl);
@@ -494,12 +494,12 @@ TEST(BinaryFileSystem, WritingSame) {
 		EXPECT_TRUE(bl);
 
 		auto r = InitLoader_C(bl, "cd.dat", ResourceHandler::Mode::EDIT);
-		EXPECT_EQ(r.errornr, 0);
+		EXPECT_EQ(r.hash, "Success"_hash);
 		{
 			char file1Data[] = { "test" };
 			auto size = sizeof(file1Data);
 			r = CreateS_C(bl, "File1", "Test", file1Data, size);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			auto tf = bl->GetTotalSizeOfAllFiles();
 			auto rat = bl->GetFragmentationRatio();
@@ -510,7 +510,7 @@ TEST(BinaryFileSystem, WritingSame) {
 			for (int i = 0; i < 1000; i++)
 			{
 				r = WriteS_C(bl, "File1", "Test", file1Data, size);
-				EXPECT_EQ(r.errornr, 0);
+				EXPECT_EQ(r.hash, "Success"_hash);
 
 				tf = bl->GetTotalSizeOfAllFiles();
 				rat = bl->GetFragmentationRatio();
@@ -530,7 +530,7 @@ TEST(BinaryFileSystem, WritingSame) {
 			};
 
 			auto re = bl->CreateFromCallback("File", "Test", lam);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			auto tf = bl->GetTotalSizeOfAllFiles();
 			auto rat = bl->GetFragmentationRatio();
 
@@ -540,7 +540,7 @@ TEST(BinaryFileSystem, WritingSame) {
 			for (int i = 0; i < 1000; i++)
 			{
 				r = bl->WriteFromCallback( "File1", "Test", 5, lam);
-				EXPECT_EQ(r.errornr, 0);
+				EXPECT_EQ(r.hash, "Success"_hash);
 
 				tf = bl->GetTotalSizeOfAllFiles();
 				rat = bl->GetFragmentationRatio();

@@ -6,19 +6,11 @@
 #include <ResourceHandler\ResourceHandler_Interface.h> 
 #include <Sofa.h>
 #include <ThreadPool.h>
-#include <windows.h> 
 #include <map>
 namespace ResourceHandler 
 {
 
-	struct Passthrough_Windows : public Passthrough_Info
-	{
-		Passthrough_Windows(const std::string& name) : name(name)
-		{}
-		std::string name;
-		HINSTANCE lib;
-
-	};
+	
 	struct LoadJob
 	{
 		LoadStatus status;
@@ -32,9 +24,9 @@ namespace ResourceHandler
 		ResourceHandler_(FileSystem_Interface* loader, Utilities::ThreadPool* threadPool);
 		~ResourceHandler_();
 
-		FILE_ERROR Initialize() override;
+		UERROR Initialize() override;
 		void Shutdown() override;
-		FILE_ERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) override;
+		UERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) override;
 	private:
 		void LoadResource(const Resource& resource, bool invalid = false) override;
 		LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) override;
@@ -44,7 +36,7 @@ namespace ResourceHandler
 		uint32_t GetReferenceCount(const Resource& resource)const override;
 		void Invalidate(const Resource& resource)override;
 
-		FILE_ERROR  CreateTypes();
+		UERROR  CreateTypes();
 
 		FileSystem_Interface * loader;
 		Utilities::ThreadPool* threadPool;

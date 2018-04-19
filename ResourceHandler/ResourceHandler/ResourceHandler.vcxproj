@@ -150,7 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\File_Error.h" />
     <ClInclude Include="..\Include\ResourceHandler\FileSystem_Interface.h" />
     <ClInclude Include="..\Include\ResourceHandler\LoadStatus.h" />
     <ClInclude Include="..\Include\ResourceHandler\Resource.h" />

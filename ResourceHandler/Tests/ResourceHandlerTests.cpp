@@ -23,12 +23,12 @@ TEST(ResourceHandler, BasicLoad)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			Component asd{ 1,1,4 };
 			auto size = sizeof(asd);
 			r = CreateS_C(bl, "Comp1", "Comp", &asd, size);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			DestroyLoader(bl);
 		}
@@ -39,7 +39,7 @@ TEST(ResourceHandler, BasicLoad)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
@@ -92,12 +92,12 @@ TEST(ResourceHandler, Invalidate)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			Component asd{ 1,1,4 };
 			auto size = sizeof(asd);
 			r = CreateS_C(bl, "Comp1", "Comp", &asd, size);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			DestroyLoader(bl);
 		}
@@ -108,7 +108,7 @@ TEST(ResourceHandler, Invalidate)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data2.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
@@ -149,20 +149,20 @@ TEST(ResourceHandler, PasstroughTest)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 
 			r = rh->Initialize();
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			uint32_t testInt = 1;
 			r = CreateS_C(bl, "Comp1", "Comp", &testInt, sizeof(testInt));
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			r = ResourceHandler_CreateType(rh, "Comp", ResourceHandler::MemoryType::RAM, "TestPassthrough.dll");
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			DestroyResourceHandler(rh);
 			DestroyLoader(bl);
@@ -174,13 +174,13 @@ TEST(ResourceHandler, PasstroughTest)
 			EXPECT_TRUE(bl);
 
 			auto r = InitLoader_C(bl, "data.dat", ResourceHandler::Mode::EDIT);
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 			Utilities::ThreadPool tp(4);
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			
 			r = rh->Initialize();
-			EXPECT_EQ(r.errornr, 0);
+			EXPECT_EQ(r.hash, "Success"_hash);
 
 			ResourceHandler::Resource re ("Comp1", "Comp");
 			ResourceData<uint32_t> comp;

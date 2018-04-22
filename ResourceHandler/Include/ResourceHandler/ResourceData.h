@@ -31,12 +31,14 @@ struct ResourceData
 	{
 		return (char*)data.data + sizeof(T) - sizeof(char*);
 	}
+	operator ResourceDataVoid&() { return data; }
 private:
 	ResourceDataVoid data;
 };
 template<>
 struct ResourceData<char*>
 {
+	operator ResourceDataVoid&() { return data; }
 	inline ResourceDataVoid& GetVoid()
 	{
 		return data;

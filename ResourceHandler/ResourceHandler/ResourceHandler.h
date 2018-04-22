@@ -27,6 +27,7 @@ namespace ResourceHandler
 		UERROR Initialize() override;
 		void Shutdown() override;
 		UERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) override;
+		UERROR AddType(Utilities::GUID type, const Type_Info& info) override;
 	private:
 		void LoadResource(const Resource& resource, bool invalid = false) override;
 		LoadStatus GetData(const Resource& resource, ResourceDataVoid& data) override;
@@ -42,7 +43,7 @@ namespace ResourceHandler
 		Utilities::ThreadPool* threadPool;
 
 		std::map<Utilities::GUID, Type_Info, Utilities::GUID::Compare> types;
-		
+	
 		Utilities::SofA::Vector::SofA<
 				Utilities::GUID, Utilities::GUID::Hasher,
 				ResourceDataVoid,

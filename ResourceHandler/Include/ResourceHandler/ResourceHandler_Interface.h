@@ -39,13 +39,13 @@ namespace ResourceHandler
 
 	struct Passthrough_Info
 	{
-		Passthrough_Parse_PROC Parse;
-		Passthrough_Destroy_PROC Destroy;
+		Passthrough_Parse_PROC Parse = nullptr;
+		Passthrough_Destroy_PROC Destroy = nullptr;
 	};
 	struct Type_Info
 	{
 		MemoryType memoryType = MemoryType::RAM;
-		Passthrough_Info* passthrough = nullptr;
+		Passthrough_Info passthrough;
 	};
 	struct Passthrough_LoadInfo
 	{
@@ -65,7 +65,7 @@ namespace ResourceHandler
 
 		virtual ~ResourceHandler_Interface() {};
 		virtual UERROR CreateType(const std::string& type, const Type_LoadInfo& info, bool force = false) = 0;
-	
+		virtual UERROR AddType(Utilities::GUID type, const Type_Info& info) = 0;
 		virtual UERROR Initialize() = 0;
 		virtual void Shutdown() = 0;
 		

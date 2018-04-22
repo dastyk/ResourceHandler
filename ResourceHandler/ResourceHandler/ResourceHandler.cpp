@@ -16,7 +16,7 @@ ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 namespace ResourceHandler
 {
 
-	struct Passthrough_Windows : public Passthrough_Info
+	struct Passthrough_Windows
 	{
 		Passthrough_Windows(const std::string& name) : name(name)
 		{}
@@ -25,6 +25,7 @@ namespace ResourceHandler
 
 	};
 
+	std::vector<Passthrough_Windows> ptws;
 
 	LoadJob Load(Utilities::GUID guid, Utilities::GUID type, FileSystem_Interface* loader, const Type_Info* typeInfo, LoadStatus extraFlag)
 	{
@@ -43,10 +44,10 @@ namespace ResourceHandler
 		if (result.hash != "Success"_hash)
 			return { LoadStatus::COULD_NOT_LOAD | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
-		if (typeInfo && typeInfo->passthrough)
+		if (typeInfo && typeInfo->passthrough.Parse)
 		{
 			ResourceDataVoid parsedData;
-			auto parseResult = typeInfo->passthrough->Parse(guid, data.data, data.size, &parsedData.data, &parsedData.size);
+			auto parseResult = typeInfo->passthrough.Parse(guid, data.data, data.size, &parsedData.data, &parsedData.size);
 			if (parseResult < 0)
 				return { LoadStatus::PASS_THROUGH_FAILED | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
@@ -68,15 +69,16 @@ namespace ResourceHandler
 
 	ResourceHandler_::~ResourceHandler_()
 	{
-
-
 		for (size_t i = 0; i < entries.size(); i++)
 			if (auto findType = types.find(entries.get<EntryNames::Key>(i)); findType != types.end())
-				findType->second.passthrough->Destroy(entries.get<EntryNames::Key>()[i], entries.get<EntryNames::Data>()[i].data, entries.get<EntryNames::Data>()[i].size);
+				if(findType->second.passthrough.Destroy)
+					findType->second.passthrough.Destroy(entries.get<EntryNames::Key>()[i], entries.get<EntryNames::Data>()[i].data, entries.get<EntryNames::Data>()[i].size);
 			else
 				operator delete(entries.get<EntryNames::Data>()[i].data);
+		for (auto& ptw : ptws)
+			FreeLibrary(ptw.lib);
+		ptws.clear();
 		resourceHandler = nullptr;
-
 		
 	}
 	UERROR ResourceHandler_::Initialize()
@@ -97,26 +99,27 @@ namespace ResourceHandler
 		Type_Info typeInfo;
 		if (info.passthrough.library != nullptr)
 		{
-			typeInfo.passthrough = new Passthrough_Windows(type + ".pat");
-			auto& pti = *(Passthrough_Windows*)typeInfo.passthrough;
+			ptws.push_back(Passthrough_Windows(type + ".pat"));
+			auto& ptw = ptws.back();
+			typeInfo.passthrough = Passthrough_Info();
 
-			std::ofstream file(pti.name, std::ios::trunc | std::ios::binary);
+			std::ofstream file(ptw.name, std::ios::trunc | std::ios::binary);
 			if (!file.is_open())
 				RETURN_ERROR("Could not open passthrough file");
 
 			file.write(info.passthrough.library, info.passthrough.librarySize);
 			file.close();
 
-			pti.lib = LoadLibrary(pti.name.c_str());
-			if (pti.lib == NULL)
+			ptw.lib = LoadLibrary(ptw.name.c_str());
+			if (ptw.lib == NULL)
 				RETURN_ERROR("Could not load passthrough library");
 
-			pti.Parse = (Passthrough_Parse_PROC)GetProcAddress(pti.lib, "Parse");
-			if (pti.Parse == NULL)
+			typeInfo.passthrough.Parse = (Passthrough_Parse_PROC)GetProcAddress(ptw.lib, "Parse");
+			if (typeInfo.passthrough.Parse == NULL)
 				RETURN_ERROR("Could not load 'Parse' function from passthrough library");
 
-			pti.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(pti.lib, "Destroy");
-			if (pti.Destroy == NULL)
+			typeInfo.passthrough.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(ptw.lib, "Destroy");
+			if (typeInfo.passthrough.Destroy == NULL)
 				RETURN_ERROR("Could not load 'Destroy' function from passthrough library");
 		}
 
@@ -130,6 +133,11 @@ namespace ResourceHandler
 		types.emplace(type, typeInfo);
 
 		RETURN_SUCCESS;
+	}
+
+	UERROR ResourceHandler_::AddType(Utilities::GUID type, const Type_Info & info)
+	{
+		types.emplace(type, info);
 	}
 	
 	void ResourceHandler_::LoadResource(const Resource& resource, bool invalid)
@@ -293,11 +301,12 @@ namespace ResourceHandler
 		
 			if(data->passthrough.library != nullptr)
 			{
-				typeInfo.passthrough = new Passthrough_Windows(type.guid_str + ".pat");
-				auto& pti = *(Passthrough_Windows*)typeInfo.passthrough;
+				ptws.push_back(Passthrough_Windows(type.guid_str + ".pat"));
+				auto& ptw = ptws.back();
+				typeInfo.passthrough = Passthrough_Info();
 				if (!fs::exists(type.guid_str + ".pat"))
 				{
-					std::ofstream file(pti.name, std::ios::trunc | std::ios::binary);
+					std::ofstream file(ptw.name, std::ios::trunc | std::ios::binary);
 					if (!file.is_open())
 						RETURN_ERROR("Could not open passthrough file");
 
@@ -309,16 +318,16 @@ namespace ResourceHandler
 					operator delete(data.GetVoid().data);
 				}
 
-				pti.lib = LoadLibrary(pti.name.c_str());
-				if (pti.lib == NULL)
+				ptw.lib = LoadLibrary(ptw.name.c_str());
+				if (ptw.lib == NULL)
 					RETURN_ERROR("Could not load passthrough library");
 
-				pti.Parse = (Passthrough_Parse_PROC)GetProcAddress(pti.lib, "Parse");
-				if (pti.Parse == NULL)
+				typeInfo.passthrough.Parse = (Passthrough_Parse_PROC)GetProcAddress(ptw.lib, "Parse");
+				if (typeInfo.passthrough.Parse == NULL)
 					RETURN_ERROR("Could not load 'Parse' function from passthrough library");
 
-				pti.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(pti.lib, "Destroy");
-				if (pti.Destroy == NULL)
+				typeInfo.passthrough.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(ptw.lib, "Destroy");
+				if (typeInfo.passthrough.Destroy == NULL)
 					RETURN_ERROR("Could not load 'Destroy' function from passthrough library");
 			}
 

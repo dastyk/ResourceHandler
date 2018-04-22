@@ -1,7 +1,7 @@
 #include <ResourceHandler\ResourceHandler_Interface.h>
 #include "ResourceHandler.h"
 #include <fstream>
-
+#include "SecretPointer.h"
 DECLDIR_RH_C void DestroyThreadPool(Utilities::ThreadPool * tp)
 {
 	delete tp;
@@ -41,4 +41,9 @@ DECLDIR_RH_C Utilities::Error ResourceHandler_CreateType(ResourceHandler::Resour
 	if (info.passthrough.library)
 		delete[] info.passthrough.library;
 	return r;
+}
+
+ResourceHandler::ResourceHandler_Interface * ResourceHandler::Get()
+{
+	return resourceHandler;
 }

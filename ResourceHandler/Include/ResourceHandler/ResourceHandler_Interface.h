@@ -28,6 +28,7 @@ namespace Utilities
 }
 namespace ResourceHandler
 {
+
 	typedef int32_t(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize);
 	typedef int32_t(__cdecl *Passthrough_Destroy_PROC)(uint32_t guid, void* data, uint64_t size);
 
@@ -81,7 +82,8 @@ namespace ResourceHandler
 		virtual void Invalidate(const Resource& resource) = 0;
 	};
 
-	
+	static ResourceHandler_Interface* Get();
+
 }
 DECLDIR_RH_C void DestroyThreadPool(Utilities::ThreadPool* tp);
 DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* rh);

@@ -8,23 +8,24 @@ namespace ResourceHandler
 
 
 	template<class T>
-	struct ResourceData
+	struct ResourceData : public Resource
 	{
-		ResourceData(Utilities::GUID guid, Utilities::GUID type) : resource(guid, type)
+		ResourceData(Utilities::GUID guid, Utilities::GUID type) : Resource(guid, type)
 		{
-			resource.CheckIn();
+
 		}
-		ResourceData(Resource resource) : resource(resource)
+		ResourceData(Resource resource) : Resource(resource)
 		{
-			resource.CheckIn();
 		}
 		inline operator const T& () { return Get(); }
 		inline const T& Get()
 		{
 			if (!(status & LoadStatus::LOADED))
-				status = resource.GetData(data);
-			if (!(status & LoadStatus::LOADED))
-				THROW_ERROR_EX("Could not get data for resource", resource.GUID());
+			{
+				status = GetData(data);
+				if (!(status & LoadStatus::LOADED))
+					THROW_ERROR_EX("Could not get data for resource", GUID());
+			}
 			return *(T*)data.data;
 		}
 		const T* operator->()
@@ -40,34 +41,35 @@ namespace ResourceHandler
 			Get();
 			return data.size;
 		}
-		const char* GetExtra()
+		/*const char* GetExtra()
 		{
 			return ((char*)&Get()) + sizeof(T) - sizeof(char*);
-		}
-		inline operator T&() { return Get(); }
+		}*/
+
 	private:
-		Resource resource;
 		LoadStatus status;
 		ResourceDataVoid data;
 	};
 	template<>
-	struct ResourceData<char*>
+	struct ResourceData<char*> : public Resource
 	{
-		ResourceData(Utilities::GUID guid, Utilities::GUID type) : resource(guid, type)
+		ResourceData(Utilities::GUID guid, Utilities::GUID type) : Resource(guid, type)
 		{
-			resource.CheckIn();
+
 		}
-		ResourceData(Resource resource) : resource(resource)
+		ResourceData(Resource resource) : Resource(resource)
 		{
-			resource.CheckIn();
+
 		}
 		operator char*() { return Get(); }
 		inline char* Get()
 		{
 			if (!(status & LoadStatus::LOADED))
-				status = resource.GetData(data);
-			if (!(status & LoadStatus::LOADED))
-				THROW_ERROR_EX("Could not get data for resource", resource.GUID());
+			{
+				status = GetData(data);
+				if (!(status & LoadStatus::LOADED))
+					THROW_ERROR_EX("Could not get data for resource", GUID());
+			}
 			return (char*)data.data;
 		}
 		const size_t GetSize()
@@ -76,8 +78,6 @@ namespace ResourceHandler
 			return data.size;
 		}
 	private:
-		
-		Resource resource;
 		LoadStatus status;
 		ResourceDataVoid data;
 	};

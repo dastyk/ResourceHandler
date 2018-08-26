@@ -8,7 +8,6 @@
 
 namespace fs = std::experimental::filesystem;
 
-ResourceHandler::ResourceHandler_Interface* resourceHandler = nullptr;
 
 
 
@@ -48,14 +47,22 @@ namespace ResourceHandler
 		{
 			ResourceDataVoid parsedData;
 			auto parseResult = typeInfo->passthrough.Parse(guid, data.data, data.size, &parsedData.data, &parsedData.size);
-			if (parseResult < 0)
+			if (parseResult.hash != "Success"_hash)
 				return { LoadStatus::PASS_THROUGH_FAILED | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
 
 			operator delete(data.data);
 			data = parsedData;
 		}
-
-		return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data };
+		if (typeInfo && typeInfo->passthrough.Load)
+		{
+			ResourceDataVoid RAMData;
+			uint64_t VRAMSize = 0;
+			auto result = typeInfo->passthrough.Load(guid, data.data, data.size, &RAMData.data, &RAMData.size, &VRAMSize);
+			if(result.hash != "Success"_hash)
+				return { LoadStatus::PASS_THROUGH_FAILED | LoadStatus::FAILED | LoadStatus::NOT_LOADED };
+			return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data , RAMData, VRAMSize};
+		}
+		return { LoadStatus::SUCCESS | LoadStatus::LOADED | extraFlag, data, data};
 	}
 
 	ResourceHandler_::ResourceHandler_(FileSystem_Interface* loader, Utilities::ThreadPool* threadPool)
@@ -71,10 +78,18 @@ namespace ResourceHandler
 	{
 		for (size_t i = 0; i < entries.size(); i++)
 			if (auto findType = types.find(entries.get<EntryNames::Key>(i)); findType != types.end())
-				if(findType->second.passthrough.Destroy)
-					findType->second.passthrough.Destroy(entries.get<EntryNames::Key>()[i], entries.get<EntryNames::Data>()[i].data, entries.get<EntryNames::Data>()[i].size);
+			{
+				if (entries.get<EntryNames::Status>(i) & LoadStatus::LOADED)
+					if (findType->second.passthrough.Unload)
+						findType->second.passthrough.Unload(entries.get<EntryNames::Key>()[i], entries.get<EntryNames::RAMData>()[i].data, entries.get<EntryNames::RAMData>()[i].size, entries.get<EntryNames::VRAMSize>()[i]);
+				if(entries.get<EntryNames::Data>()[i].data)
+					if (findType->second.passthrough.DestroyParsedData)
+						findType->second.passthrough.DestroyParsedData(entries.get<EntryNames::Key>()[i], entries.get<EntryNames::Data>()[i].data, entries.get<EntryNames::Data>()[i].size);
+			
+			}
 			else
-				operator delete(entries.get<EntryNames::Data>()[i].data);
+				if(entries.get<EntryNames::Data>()[i].data)
+					operator delete(entries.get<EntryNames::Data>()[i].data);
 		for (auto& ptw : ptws)
 			FreeLibrary(ptw.lib);
 		ptws.clear();
@@ -115,12 +130,21 @@ namespace ResourceHandler
 				RETURN_ERROR("Could not load passthrough library");
 
 			typeInfo.passthrough.Parse = (Passthrough_Parse_PROC)GetProcAddress(ptw.lib, "Parse");
-			if (typeInfo.passthrough.Parse == NULL)
-				RETURN_ERROR("Could not load 'Parse' function from passthrough library");
+			//if (typeInfo.passthrough.Parse == NULL)
+			//	RETURN_ERROR("Could not load 'Parse' function from passthrough library");
 
-			typeInfo.passthrough.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(ptw.lib, "Destroy");
-			if (typeInfo.passthrough.Destroy == NULL)
-				RETURN_ERROR("Could not load 'Destroy' function from passthrough library");
+			typeInfo.passthrough.DestroyParsedData = (Passthrough_DestroyParsedData_PROC)GetProcAddress(ptw.lib, "DestroyParsedData");
+			if ((typeInfo.passthrough.DestroyParsedData == NULL) ^ (typeInfo.passthrough.Parse == NULL))
+				RETURN_ERROR("Passthrough must have both a Parse and DestroyParsedData function or neither");
+			//RETURN_ERROR("Could not load 'DestroyParsedData' function from passthrough library");
+
+			typeInfo.passthrough.Load = (Passthrough_Load_PROC)GetProcAddress(ptw.lib, "Load");
+			//if (typeInfo.passthrough.Parse == NULL)
+			//	RETURN_ERROR("Could not load 'Parse' function from passthrough library");
+
+			typeInfo.passthrough.Unload = (Passthrough_Unload_PROC)GetProcAddress(ptw.lib, "Unload");
+			if ((typeInfo.passthrough.Load == NULL) ^ (typeInfo.passthrough.Unload == NULL))
+				RETURN_ERROR("Passthrough must have both a Load and Unload function or neither");
 		}
 
 		PASS_IF_ERROR(loader->CreateFromCallback(type, "Type", [&](std::ostream* file) {
@@ -138,6 +162,7 @@ namespace ResourceHandler
 	UERROR ResourceHandler_::AddType(Utilities::GUID type, const Type_Info & info)
 	{
 		types.emplace(type, info);
+		RETURN_SUCCESS;
 	}
 	
 	void ResourceHandler_::LoadResource(const Resource& resource, bool invalid)
@@ -195,8 +220,11 @@ namespace ResourceHandler
 				
 				auto& ddata = entries.get<EntryNames::Data>(findRe->second);
 				if (ddata.data != nullptr)
-					operator delete(ddata.data);
-				data = ddata = result.data;
+					THROW_ERROR("Resource was loaded multiple times.");
+					//operator delete(ddata.data);
+				ddata = result.data;
+				data = entries.get<EntryNames::RAMData>(findRe->second) = result.RAMData;
+				entries.get<EntryNames::VRAMSize>(findRe->second) = result.VRAMSize;
 			}
 
 			if (status & LoadStatus::INVALIDATED)
@@ -292,14 +320,14 @@ namespace ResourceHandler
 		loader->GetFilesOfType("Type", loaded_types);
 		for (auto& type : loaded_types)
 		{
-			ResourceData<Type_LoadInfo> data;
-			PASS_IF_ERROR(loader->GetSizeOfFile(type.guid, type.type, data.GetVoid().size));
-			data.GetVoid().data = operator new((size_t(data.GetVoid().size)));
+			//Type_LoadInfo data;
+			ResourceDataVoid data;
+			PASS_IF_ERROR(loader->GetSizeOfFile(type.guid, type.type, data.size));
+			data.data = operator new((size_t(data.size)));
 			PASS_IF_ERROR(loader->Read(type.guid, type.type, data));
 			Type_Info typeInfo;
-			typeInfo.memoryType = data->memoryType;
-		
-			if(data->passthrough.library != nullptr)
+			Type_LoadInfo* lidata = (Type_LoadInfo*)data.data;
+			if(lidata->passthrough.library != nullptr)
 			{
 				ptws.push_back(Passthrough_Windows(type.guid_str + ".pat"));
 				auto& ptw = ptws.back();
@@ -310,12 +338,12 @@ namespace ResourceHandler
 					if (!file.is_open())
 						RETURN_ERROR("Could not open passthrough file");
 
-					auto pp = data.GetExtra();
+					auto pp = (char*)data.data + sizeof(Type_LoadInfo) - sizeof(char);
 
-					file.write(pp, data->passthrough.librarySize);
+					file.write(pp, lidata->passthrough.librarySize);
 					file.close();
 					
-					operator delete(data.GetVoid().data);
+					operator delete(data.data);
 				}
 
 				ptw.lib = LoadLibrary(ptw.name.c_str());
@@ -323,12 +351,21 @@ namespace ResourceHandler
 					RETURN_ERROR("Could not load passthrough library");
 
 				typeInfo.passthrough.Parse = (Passthrough_Parse_PROC)GetProcAddress(ptw.lib, "Parse");
-				if (typeInfo.passthrough.Parse == NULL)
-					RETURN_ERROR("Could not load 'Parse' function from passthrough library");
+				//if (typeInfo.passthrough.Parse == NULL)
+				//	RETURN_ERROR("Could not load 'Parse' function from passthrough library");
 
-				typeInfo.passthrough.Destroy = (Passthrough_Destroy_PROC)GetProcAddress(ptw.lib, "Destroy");
-				if (typeInfo.passthrough.Destroy == NULL)
-					RETURN_ERROR("Could not load 'Destroy' function from passthrough library");
+				typeInfo.passthrough.DestroyParsedData = (Passthrough_DestroyParsedData_PROC)GetProcAddress(ptw.lib, "DestroyParsedData");
+				if ((typeInfo.passthrough.DestroyParsedData == NULL) ^ (typeInfo.passthrough.Parse == NULL))
+					RETURN_ERROR("Passthrough must have both a Parse and DestroyParsedData function or neither");
+					//RETURN_ERROR("Could not load 'DestroyParsedData' function from passthrough library");
+				
+				typeInfo.passthrough.Load = (Passthrough_Load_PROC)GetProcAddress(ptw.lib, "Load");
+				//if (typeInfo.passthrough.Parse == NULL)
+				//	RETURN_ERROR("Could not load 'Parse' function from passthrough library");
+
+				typeInfo.passthrough.Unload = (Passthrough_Unload_PROC)GetProcAddress(ptw.lib, "Unload");
+				if ((typeInfo.passthrough.Load == NULL) ^ (typeInfo.passthrough.Unload == NULL))
+					RETURN_ERROR("Passthrough must have both a Load and Unload function or neither");
 			}
 
 		

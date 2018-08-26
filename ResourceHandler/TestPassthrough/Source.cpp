@@ -1,14 +1,28 @@
 #include <stdint.h>
-
-extern "C" __declspec(dllexport) int32_t Parse(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize)
+#include <Error.h>
+extern "C" __declspec(dllexport) Utilities::Error Parse(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize)
 {
 	uint32_t& num = *(uint32_t*)data;
 	*parsedSize = size;
 	*parsedData = new uint32_t(num + 1);
-	return 0;
+	RETURN_SUCCESS;
 }
-extern "C" __declspec(dllexport) int32_t Destroy(uint32_t guid, void* data, uint64_t size)
+extern "C" __declspec(dllexport) Utilities::Error DestroyParsedData(uint32_t guid, void* data, uint64_t size)
 {
 	delete (uint32_t*)data;
-	return 0; 
+	RETURN_SUCCESS;
 }
+/*
+
+extern "C" __declspec(dllexport) Utilities::Error Load(uint32_t guid, void* data, uint64_t size, void** loadedDataRAM, uint64_t* loadedSizeRAM, uint64_t* loadedSizeVRAM)
+{
+
+
+	RETURN_SUCCESS;
+}
+extern "C" __declspec(dllexport) Utilities::Error Unload(uint32_t guid, void* dataRAM, uint64_t sizeRAM, uint64_t sizeVRAM)
+{
+
+	RETURN_SUCCESS;
+}
+*/

@@ -22,14 +22,15 @@ DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface * CreateResourceHandler(
 	return new ResourceHandler::ResourceHandler_(loader, threadPool);
 }
 
-DECLDIR_RH_C Utilities::Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface * rh, const char * type, ResourceHandler::MemoryType memoryType, const char * passthrough)
+DECLDIR_RH_C Utilities::Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface * rh, const char * type, const char * passthrough)
 {
 	ResourceHandler::Type_LoadInfo info;
-	info.memoryType = memoryType;
 
 	if (passthrough && std::string(passthrough) != "")
 	{
 		std::ifstream pt(passthrough, std::ios::ate | std::ios::binary);
+		if (!pt.is_open())
+			RETURN_ERROR_EX("Could not create passthrough. File not found", passthrough);
 
 		info.passthrough.librarySize = pt.tellg();
 		info.passthrough.library = new char[info.passthrough.librarySize];
@@ -43,7 +44,9 @@ DECLDIR_RH_C Utilities::Error ResourceHandler_CreateType(ResourceHandler::Resour
 	return r;
 }
 
-ResourceHandler::ResourceHandler_Interface * ResourceHandler::Get()
+DECLDIR_RH ResourceHandler::ResourceHandler_Interface * ResourceHandler::Get()
 {
+	if (!resourceHandler)
+		THROW_ERROR("A Resource handler has not been created.");
 	return resourceHandler;
 }

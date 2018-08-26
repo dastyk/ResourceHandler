@@ -15,6 +15,8 @@ namespace ResourceHandler
 	{
 		LoadStatus status;
 		ResourceDataVoid data;
+		ResourceDataVoid RAMData;
+		uint64_t VRAMSize;
 	};
 
 	class ResourceHandler_ : public ResourceHandler_Interface
@@ -46,7 +48,9 @@ namespace ResourceHandler
 	
 		Utilities::SofA::Vector::SofA<
 				Utilities::GUID, Utilities::GUID::Hasher,
-				ResourceDataVoid,
+				ResourceDataVoid, // Parsed or not Parsed
+				ResourceDataVoid, // RAM, data and size
+				uint64_t,		 // VRAM, size
 				LoadStatus,
 				std::future<LoadJob>,
 				uint32_t>
@@ -58,6 +62,8 @@ namespace ResourceHandler
 			{
 				Key,
 				Data,
+				RAMData,
+				VRAMSize,
 				Status,
 				Future,
 				RefCount

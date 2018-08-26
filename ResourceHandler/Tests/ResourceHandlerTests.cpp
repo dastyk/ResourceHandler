@@ -53,16 +53,16 @@ TEST(ResourceHandler, BasicLoad)
 				re.CheckIn();
 				EXPECT_EQ(re.GetCheckInCount(), 2);
 				EXPECT_EQ(re.GetReferenceCount(), 1);
-				ResourceData<Component> comp;
-				EXPECT_TRUE(re.GetData(comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
+				ResourceHandler::ResourceData<Component> comp(re);
+				EXPECT_NO_THROW(comp.Get());
 				Component c2{ 1,1,4 };
-				EXPECT_EQ(comp.Get(), c2);
+				//EXPECT_EQ(*comp, c2);
 			}
 			ResourceHandler::Resource re("Comp1", "Comp");
 			EXPECT_EQ(re.GetCheckInCount(), 0);
 			EXPECT_EQ(re.GetReferenceCount(), 0);
-			ResourceData<Component> comp;
-			EXPECT_TRUE(re.GetData(comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
+			ResourceHandler::ResourceData<Component> comp(re);
+			EXPECT_NO_THROW(comp.Get());
 			DestroyResourceHandler(rh);
 			DestroyLoader(bl);
 		}
@@ -113,19 +113,18 @@ TEST(ResourceHandler, Invalidate)
 			auto rh = CreateResourceHandler(bl, &tp);
 			EXPECT_TRUE(rh);
 			{
-				ResourceHandler::Resource re("Comp1", "Comp");
-				ResourceData<Component> comp;
-				EXPECT_TRUE(re.GetData(comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
+				ResourceHandler::ResourceData<Component> comp("Comp1", "Comp");
+				EXPECT_NO_THROW(comp.Get());
 				Component c2{ 1,1,4 };
-				EXPECT_EQ(comp.Get(), c2);
+				EXPECT_EQ(*comp, c2);
 				c2.y = 3;
 				bl->Write("Comp1", "Comp", { &c2, sizeof(c2) });
 			
 			}
 			ResourceHandler::Resource re("Comp1", "Comp", true);
-			ResourceData<Component> comp;
+			ResourceHandler::ResourceData<Component> comp(re);
 			Component c2{ 1,3,4 };
-			EXPECT_TRUE(re.GetData(comp.GetVoid()) & ResourceHandler::LoadStatus::SUCCESS);
+			EXPECT_NO_THROW(comp.Get());
 			EXPECT_EQ(comp.Get(), c2);
 			DestroyResourceHandler(rh);
 			DestroyLoader(bl);
@@ -161,7 +160,7 @@ TEST(ResourceHandler, PasstroughTest)
 			r = CreateS_C(bl, "Comp1", "Comp", &testInt, sizeof(testInt));
 			EXPECT_EQ(r.hash, "Success"_hash);
 
-			r = ResourceHandler_CreateType(rh, "Comp", ResourceHandler::MemoryType::RAM, "TestPassthrough.dll");
+			r = ResourceHandler_CreateType(rh, "Comp", "TestPassthrough.dll");
 			EXPECT_EQ(r.hash, "Success"_hash);
 
 			DestroyResourceHandler(rh);
@@ -182,10 +181,9 @@ TEST(ResourceHandler, PasstroughTest)
 			r = rh->Initialize();
 			EXPECT_EQ(r.hash, "Success"_hash);
 
-			ResourceHandler::Resource re ("Comp1", "Comp");
-			ResourceData<uint32_t> comp;
-			auto status = re.GetData(comp.GetVoid());
-			EXPECT_TRUE(status & ResourceHandler::LoadStatus::LOADED);
+			ResourceHandler::ResourceData<uint32_t> comp("Comp1", "Comp");
+			EXPECT_NO_THROW(comp.Get());
+
 
 			EXPECT_EQ(*comp, 2);
 

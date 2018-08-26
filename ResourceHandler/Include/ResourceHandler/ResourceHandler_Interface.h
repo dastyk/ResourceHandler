@@ -29,23 +29,30 @@ namespace Utilities
 namespace ResourceHandler
 {
 
-	typedef int32_t(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize);
-	typedef int32_t(__cdecl *Passthrough_Destroy_PROC)(uint32_t guid, void* data, uint64_t size);
+	typedef Utilities::Error(__cdecl *Passthrough_Parse_PROC)(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize);
+	typedef Utilities::Error(__cdecl *Passthrough_DestroyParsedData_PROC)(uint32_t guid, void* data, uint64_t size);
+	typedef Utilities::Error(__cdecl *Passthrough_Load_PROC)(uint32_t guid, void* data, uint64_t size, void** loadedDataRAM, uint64_t* loadedSizeRAM, uint64_t* loadedSizeVRAM);
+	typedef Utilities::Error(__cdecl *Passthrough_Unload_PROC)(uint32_t guid, void* dataRAM, uint64_t sizeRAM, uint64_t sizeVRAM);
 
-	enum class MemoryType : uint8_t
-	{
-		RAM,
-		VRAM
-	};
-
+	using Passthrough_Parse_Func = std::function<Utilities::Error(uint32_t guid, void* data, uint64_t size, void** parsedData, uint64_t* parsedSize)>;
+	using Passthrough_DestroyParsedData_Func = std::function<Utilities::Error(uint32_t guid, void* data, uint64_t size)>;
+	using Passthrough_Load_Func = std::function<Utilities::Error(uint32_t guid, void* data, uint64_t size, void** loadedDataRAM, uint64_t* loadedSizeRAM, uint64_t* loadedSizeVRAM)>;
+	using Passthrough_Unload_Func = std::function<Utilities::Error(uint32_t guid, void* dataRAM, uint64_t sizeRAM, uint64_t sizeVRAM)>;
+	
+	//struct Passthrough_Info
+	//{
+	//	Passthrough_Parse_PROC Parse = nullptr;
+	//	Passthrough_Destroy_PROC Destroy = nullptr;
+	//};
 	struct Passthrough_Info
 	{
-		Passthrough_Parse_PROC Parse = nullptr;
-		Passthrough_Destroy_PROC Destroy = nullptr;
+		Passthrough_Parse_Func Parse;
+		Passthrough_DestroyParsedData_Func DestroyParsedData;
+		Passthrough_Load_Func Load;
+		Passthrough_Unload_Func Unload;		
 	};
 	struct Type_Info
 	{
-		MemoryType memoryType = MemoryType::RAM;
 		Passthrough_Info passthrough;
 	};
 	struct Passthrough_LoadInfo
@@ -55,7 +62,6 @@ namespace ResourceHandler
 	};
 	struct Type_LoadInfo
 	{
-		MemoryType memoryType = MemoryType::RAM;
 		Passthrough_LoadInfo passthrough;
 	};
 	class ResourceHandler_Interface
@@ -82,12 +88,12 @@ namespace ResourceHandler
 		virtual void Invalidate(const Resource& resource) = 0;
 	};
 
-	static ResourceHandler_Interface* Get();
+	DECLDIR_RH ResourceHandler_Interface* Get();
 
 }
 DECLDIR_RH_C void DestroyThreadPool(Utilities::ThreadPool* tp);
 DECLDIR_RH_C void DestroyResourceHandler(ResourceHandler::ResourceHandler_Interface* rh);
 DECLDIR_RH_C Utilities::ThreadPool* CreateThreadPool(uint32_t numThreads);
 DECLDIR_RH_C ResourceHandler::ResourceHandler_Interface* CreateResourceHandler(ResourceHandler::FileSystem_Interface* loader, Utilities::ThreadPool* threadPool);
-DECLDIR_RH_C  Utilities::Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, ResourceHandler::MemoryType memoryType, const char* passthrough);
+DECLDIR_RH_C  Utilities::Error ResourceHandler_CreateType(ResourceHandler::ResourceHandler_Interface* rh, const char* type, const char* passthrough);
 #endif // _RESOURCE_HANDLER_INTERFACE_H_

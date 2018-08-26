@@ -4,10 +4,14 @@
 #include <GUID.h>
 
 #include "LoadStatus.h"
-#include "ResourceData.h"
 #include "../DLLExport.h"
 namespace ResourceHandler
 {
+	struct ResourceDataVoid
+	{
+		void* data = nullptr;
+		uint64_t size = 0;
+	};
 	class Resource
 	{
 	public:		
@@ -16,23 +20,27 @@ namespace ResourceHandler
 		{
 			checkInCount = 0;
 			myGUID = other.myGUID;
+			myType = other.myType;
 		}
 		Resource(Resource && other) noexcept
 		{
 			checkInCount = other.checkInCount;
 			myGUID = other.myGUID;
+			myType = other.myType;
 		}
 
 		Resource & operator=(const Resource & other)noexcept
 		{
 			checkInCount = 0;
 			myGUID = other.myGUID;
+			myType = other.myType;
 			return *this;
 		}
 		Resource& operator=(Resource && other) noexcept
 		{
 			checkInCount = other.checkInCount;
 			myGUID = other.myGUID;
+			myType = other.myType;
 			return *this;
 		}
 	
